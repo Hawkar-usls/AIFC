@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/inherited-gate-hash-implementation-binding.schema.json",
+  "title": "AIFC Inherited Gate Hash Implementation Binding v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "binding_id",
+    "profile_id",
+    "profile_manifest_path",
+    "profile_manifest_git_blob_sha1",
+    "canonicalization_profile",
+    "canonicalization_source",
+    "hash_implementation_source",
+    "source_observed_at_commit",
+    "status"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/inherited-gate-hash-implementation-binding/v1"},
+    "binding_id": {"const": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1-IMPLEMENTATION-BINDING-V1"},
+    "profile_id": {"const": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1"},
+    "profile_manifest_path": {"const": "conformance/AIFC-INHERITED-GATE-HASH-PROFILE-v1.json"},
+    "profile_manifest_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "canonicalization_profile": {"const": "AIFC_VERIFIER_A_CANONICAL_JSON_TESTED_PROFILE"},
+    "canonicalization_source": {"$ref": "#/$defs/sourceBinding"},
+    "hash_implementation_source": {"$ref": "#/$defs/sourceBinding"},
+    "source_observed_at_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "status": {"const": "EXACT_SOURCE_BINDING_SUCCESSOR_CANDIDATE"}
+  },
+  "$defs": {
+    "sourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_blob_sha1"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    }
+  },
+  "description": "Adds exact canonicalizer and hash-implementation source identities without mutating the historical inherited-gate hash profile v1 manifest or changing its hash domain."
+}
