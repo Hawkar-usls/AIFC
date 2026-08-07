@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/registry-transition-body.schema.json",
+  "title": "AIFC Witness Registry Transition Body v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "previous_registry_sequence",
+    "previous_registry_hash",
+    "next_registry_sequence",
+    "next_registry_hash"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/registry-transition-body/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "previous_registry_sequence": {"type": "integer", "minimum": 0},
+    "previous_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "next_registry_sequence": {"type": "integer", "minimum": 1},
+    "next_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

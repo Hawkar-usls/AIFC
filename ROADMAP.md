@@ -17,21 +17,24 @@ AIFC is being developed as an independently reproducible scientific protocol, no
 
 ## Phase 1 — Freeze machine-readable protocol objects
 
-**Status: DRAFT OBJECT SET IMPLEMENTED / CROSS-IMPLEMENTATION FREEZE PENDING**
+**Status: DEEP DRAFT OBJECT SET IMPLEMENTED / CROSS-IMPLEMENTATION FREEZE PENDING**
 
 Draft deliverables now present:
 
-- `AIFC/hard-witness/v1` JSON Schema;
+- `AIFC/hard-witness/v1` schema;
 - PRE_RETURN certificate schema;
-- experiment-wide trial-ledger event schema;
-- entropy-profile schema;
+- experiment-wide trial-ledger event schema and deterministic genesis predecessor;
+- candidate-generation provenance profile for shadow-pool control;
+- proof-carrying entropy profile with canonical exact-rational bound;
+- frozen target-derivation profile;
 - machine-readable causal-model schema;
-- witness-registry/key-lifecycle schema;
-- individual witness-receipt schema;
-- quorum-certificate schema;
-- target-evidence schema;
+- witness registry/key-lifecycle schema;
+- typed individual witness-receipt and quorum-certificate schemas;
+- joint witness-registry transition certificate;
+- target-evidence schema binding raw source object and frozen derivation;
 - complete evidence-bundle schema;
 - verifier-result schema;
+- proof-carrying release-manifest schema;
 - normative canonicalization/domain-separation profile;
 - normative trial state machine;
 - wall-clock/causal-order boundary;
@@ -40,7 +43,7 @@ Draft deliverables now present:
 
 Still required for Phase-1 freeze:
 
-- canonicalization machine vectors;
+- canonicalization machine vectors, including rational/genesis cases;
 - schema-positive and schema-negative vectors;
 - independent implementation B of canonicalization/object parsing;
 - byte-identical output across implementations;
@@ -64,17 +67,30 @@ Deliverables:
 - verifier implemented outside Genesis;
 - no imports from producer/reference generator;
 - deterministic evidence-grade state machine;
-- global trial-ledger continuity/gap/fork checks;
+- deterministic ledger-genesis and continuity/gap/fork checks;
+- candidate-generation provenance / hidden-selection-freedom admission;
 - recomputation of candidate multiplicity;
-- proof-carrying entropy-profile verification;
+- proof-carrying entropy-profile and canonical-rational verification;
+- exact zero-cap statistical branch;
+- frozen target-selector and target-derivation replay from raw source evidence;
 - independent d-separation evaluation over frozen causal DAG;
 - witness registry/key-lifecycle verification;
+- joint old/new quorum verification for registry reconfiguration;
 - quorum safety checks;
 - freshness bindings;
-- target-event binding;
 - exact identity check;
 - frozen e-process implementation;
+- proof-carrying release-manifest verification;
 - machine-readable terminal verdicts.
+
+First red-team order:
+
+```text
+SHADOW_CANDIDATE_POOL
+-> REGISTRY_RECONFIGURATION_FORK
+-> POST_HOC_TARGET_DERIVATION
+-> NONCANONICAL_RATIONAL_BOUND
+```
 
 Exit criterion: all declared adversarial test vectors are rejected for the expected reason.
 
@@ -82,16 +98,20 @@ Exit criterion: all declared adversarial test vectors are rejected for the expec
 
 Deliverables include honest controls plus attacks against:
 
-- trial omission/selective abort/state skipping;
-- entropy claims and conditioning-view omissions;
+- trial omission/selective abort/state skipping/genesis ambiguity;
+- shadow candidate pools and undeclared candidate selection;
+- entropy claims, rational canonicality and conditioning-view omissions;
 - shared seed/prefetch/target pregeneration;
+- post-hoc target derivation;
 - causal common causes/collider selection;
 - hidden multiplicity;
 - optional stopping/e-process misuse;
 - rollback/replay/split views;
 - wall-clock trust misuse;
 - witness/key rotation/revocation/compromise;
+- unauthorized/disjoint registry reconfiguration;
 - canonicalization ambiguity;
+- release-manifest self-assertion;
 - semantic verifier promotion.
 
 Exit criterion:
@@ -107,13 +127,15 @@ FAIL_OPEN = 0
 Deliverables:
 
 - deterministic future-round selection;
+- frozen target-derivation profile;
 - PRE_RETURN quorum infrastructure;
 - target source independent of candidate host;
 - complete pre-target side-information transcript;
+- proof-carrying candidate-generation profile;
 - proof-carrying entropy profile;
 - machine-readable causal model;
 - global externally rooted trial ledger;
-- public target verification;
+- public raw-source and target verification;
 - publication of all certified initiated trials, including aborts/invalidations.
 
 Expected scientific outcome: most likely null.
@@ -148,6 +170,7 @@ Deliverables:
 Deliverables:
 
 - every machine-readable release gate at PASS;
+- proof-carrying `AIFC/release-manifest/v1` with per-gate evidence hashes;
 - immutable GitHub release;
 - DOI-backed Zenodo archive;
 - frozen specification;
@@ -175,7 +198,12 @@ SIMULATION_IS_NOT_PHYSICAL_EVIDENCE = TRUE
 RETROCAUSALITY_PROVED_BY_VERIFIER = FORBIDDEN
 GLOBAL_NOVELTY_WITHOUT_REVIEW = FORBIDDEN
 SILENT_TRIAL_DELETION = FORBIDDEN
+SHADOW_CANDIDATE_MULTIPLICITY = FORBIDDEN
+POST_HOC_TARGET_DERIVATION = FORBIDDEN
+UNAUTHORIZED_REGISTRY_RECONFIGURATION = FORBIDDEN
+NONCANONICAL_RATIONAL_BOUND = FORBIDDEN
 UNSUPPORTED_ENTROPY_BOUND = FORBIDDEN
 WALL_CLOCK_AS_SOLE_CAUSAL_ROOT = FORBIDDEN
+FROZEN_PASS_WITHOUT_GATE_EVIDENCE = FORBIDDEN
 PREMATURE_V1_FROZEN_TAG = FORBIDDEN
 ```

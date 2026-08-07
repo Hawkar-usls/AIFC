@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/registry-transition-certificate.schema.json",
+  "title": "AIFC Witness Registry Transition Certificate v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "transition_body",
+    "transition_body_hash",
+    "old_registry_authorization",
+    "new_registry_acceptance"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/registry-transition-certificate/v1"},
+    "transition_body": {"$ref": "registry-transition-body.schema.json"},
+    "transition_body_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "old_registry_authorization": {"$ref": "registry-transition-quorum.schema.json"},
+    "new_registry_acceptance": {"$ref": "registry-transition-quorum.schema.json"}
+  },
+  "description": "Verifier MUST recompute transition_body_hash from the domain-separated canonical transition_body, require next_sequence=previous_sequence+1, and require old/new quorum roles plus signing_registry_hash bindings to match the transition body."
+}

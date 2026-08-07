@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/target-derivation-profile.schema.json",
+  "title": "AIFC Target Derivation Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "source_id",
+    "source_protocol_version",
+    "raw_source_object_schema",
+    "event_selector_hash",
+    "extraction_rule",
+    "transformation_rule",
+    "domain_separator",
+    "output_length_bits",
+    "frozen_before_target"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/target-derivation-profile/v1"},
+    "profile_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "raw_source_object_schema": {"type": "string", "minLength": 1, "maxLength": 512},
+    "event_selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "extraction_rule": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "transformation_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "input_order"],
+      "properties": {
+        "algorithm": {"enum": ["IDENTITY", "SHA-256", "OTHER_FROZEN_ALGORITHM"]},
+        "input_order": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "other_algorithm_spec_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "domain_separator": {"type": "string", "minLength": 1, "maxLength": 256},
+    "output_length_bits": {"type": "integer", "minimum": 1, "maximum": 65536},
+    "frozen_before_target": {"const": true}
+  },
+  "description": "The profile's identity is its external domain-separated canonical content hash. No self-hash field is permitted."
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/registry-transition-receipt.schema.json",
+  "title": "AIFC Registry Transition Witness Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "transition_body_hash",
+    "signing_registry_hash",
+    "role",
+    "witness_id",
+    "key_id",
+    "signature_algorithm",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/registry-transition-receipt/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "transition_body_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signing_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "role": {"enum": ["OLD_REGISTRY_AUTHORIZATION", "NEW_REGISTRY_ACCEPTANCE"]},
+    "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+    "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
+    "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
+  }
+}

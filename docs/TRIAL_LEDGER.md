@@ -34,6 +34,20 @@ The canonical event hash is domain separated:
 SHA256("AIFC:TRIAL_LEDGER_EVENT:v1\0" || canonical_event_bytes)
 ```
 
+## Experiment genesis predecessor
+
+Independent implementations MUST NOT invent their own predecessor convention for the first event.
+
+For event `E_0`, `previous_event_hash` is the lowercase hexadecimal SHA-256 digest of:
+
+```text
+ASCII("AIFC:EXPERIMENT_GENESIS:v1") || 0x00 || UTF8(experiment_id)
+```
+
+No trailing newline, NUL after `experiment_id`, all-zero digest, empty string, or implementation-defined sentinel is admissible.
+
+The verifier MUST recompute this value. For all events after `E_0`, `previous_event_hash` MUST equal the domain-separated canonical hash of the immediately preceding event.
+
 ## No-gap rule
 
 For fixed-horizon experiments, the experiment plan MUST declare the intended trial count and indices before execution.
@@ -69,6 +83,14 @@ Candidate production MUST NOT precede certified trial creation. Otherwise an ope
 
 If the experiment uses a schedule, participant action, sensor trigger, or other eligibility rule to decide when a new trial starts, that rule MUST be frozen before outcomes and included in the experiment plan.
 
+## Shadow-candidate rule
+
+Certified `CREATED` prevents selective trial creation after observing a candidate, but does not by itself exclude a hidden pool produced before or outside the visible trial process.
+
+Every strongest-grade trial MUST therefore bind an `AIFC/candidate-generation-profile/v1` object. The profile MUST declare the candidate-generation implementation/state, the externally certified `CREATED` slot it follows, the upper bound on candidate-set cardinality, any operator selection freedom, external evidence, and unresolved assumptions.
+
+The verifier MUST fail closed if a shadow pool or undeclared candidate-selection freedom cannot be excluded under the admitted model. Software provenance cannot prove the absence of arbitrary undisclosed human/off-system information; such trust assumptions MUST remain explicit rather than being silently converted into `K_i=1`.
+
 ## Selective abort
 
 After `CREATED` is certified, the slot can never disappear. Crash, timeout, refusal to arm the target, source outage, or operator abort all terminate visibly and remain in multiplicity/reporting accounting as specified by the statistical protocol.
@@ -89,4 +111,7 @@ A release MUST include:
 
 No summary table is a substitute for the underlying ledger.
 
-Schema: [`../schemas/trial-ledger-event.schema.json`](../schemas/trial-ledger-event.schema.json).
+Schemas:
+
+- [`../schemas/trial-ledger-event.schema.json`](../schemas/trial-ledger-event.schema.json)
+- [`../schemas/candidate-generation-profile.schema.json`](../schemas/candidate-generation-profile.schema.json)

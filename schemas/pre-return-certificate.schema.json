@@ -4,7 +4,20 @@
   "title": "AIFC PRE_RETURN Certificate v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "experiment_id", "trial_index", "run_id", "candidate_set_hash", "candidate_multiplicity", "freeze_event_hash", "ledger_head_hash", "quorum_certificate_hash", "target_selector_hash"],
+  "required": [
+    "schema",
+    "experiment_id",
+    "trial_index",
+    "run_id",
+    "candidate_set_hash",
+    "candidate_multiplicity",
+    "candidate_generation_profile_hash",
+    "freeze_event_hash",
+    "ledger_head_hash",
+    "quorum_certificate_hash",
+    "target_selector_hash",
+    "target_derivation_profile_hash"
+  ],
   "properties": {
     "schema": {"const": "AIFC/pre-return-certificate/v1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
@@ -12,10 +25,12 @@
     "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "candidate_set_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "candidate_multiplicity": {"type": "integer", "minimum": 1},
+    "candidate_generation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "freeze_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "ledger_head_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "quorum_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_derivation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "conditioning_view_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
   }
 }
