@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/conditioning-view-policy.schema.json",
+  "title": "AIFC Conditioning View Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "capture_state",
+    "required_binding_classes",
+    "operator_state_evidence_required",
+    "source_state_evidence_required",
+    "externally_certified",
+    "post_target_reconstruction_forbidden",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/conditioning-view-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "capture_state": {"const": "TARGET_ARMED"},
+    "required_binding_classes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "EXPERIMENT_PLAN",
+          "LEDGER_HEAD",
+          "CANDIDATE_SET",
+          "CANDIDATE_GENERATION_PROFILE",
+          "PRE_RETURN_CERTIFICATE",
+          "PRE_RETURN_QUORUM",
+          "WITNESS_REGISTRY",
+          "TARGET_SELECTOR_PROFILE",
+          "TARGET_DERIVATION_PROFILE",
+          "CAUSAL_MODEL",
+          "OPERATOR_STATE",
+          "SOURCE_STATE"
+        ]
+      }
+    },
+    "operator_state_evidence_required": {"const": true},
+    "source_state_evidence_required": {"const": true},
+    "externally_certified": {"const": true},
+    "post_target_reconstruction_forbidden": {"const": true},
+    "unresolved_assumptions_policy": {"enum": ["BLOCK_STRONGEST_GRADE", "ALLOW_ONLY_WITH_EXPLICIT_DOWNGRADE"]},
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "Defines what must be included in the concrete AIFC/pre-target-conditioning-view/v1 object. The view is frozen at TARGET_ARMED and cannot be sanitized after target observation."
+}
