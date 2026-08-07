@@ -37,9 +37,9 @@
     },
     "anchor_role": {
       "enum": [
-        "EXPERIMENT_PLAN_CERTIFICATE",
+        "EXPERIMENT_PLAN",
         "PRE_RETURN_QUORUM_CERTIFICATE",
-        "TARGET_ARMED_CERTIFICATE"
+        "PRE_TARGET_VIEW_QUORUM_CERTIFICATE"
       ]
     },
     "anchor_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -61,5 +61,5 @@
     "frozen_before_target_observed": {"const": true},
     "alternative_selected_events": {"type": "array", "maxItems": 0}
   },
-  "description": "This is the per-trial selector instance. The verifier must resolve policy_hash to AIFC/target-selector-policy/v1, verify exact policy agreement, bind the declared certified anchor, recompute selected_event_id, and reject any alternate-event freedom."
+  "description": "Per-trial selector instance. The verifier resolves policy_hash, checks exact policy agreement and anchor identity, and recomputes selected_event_id. For FIXED_EVENT_ID_FROM_PLAN, anchor_hash must be the experiment-plan hash."
 }
