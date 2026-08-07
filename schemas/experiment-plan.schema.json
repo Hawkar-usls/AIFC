@@ -38,6 +38,7 @@
     "target_derivation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "entropy_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "signature_preimage_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "key_lifecycle_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "causal_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "statistical_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "publication_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -53,5 +54,5 @@
       "then": {"properties": {"declared_trial_count": {"type": "integer", "minimum": 1}}}
     }
   ],
-  "description": "The pre-experiment contract. signature_preimage_policy_hash is the v0.5 strongest-grade binding that freezes the exact future Ed25519 message format before first CREATED. It remains optional at this draft schema layer only so historical v0.2/v0.3 fixtures remain readable; Verifier A v0.5 and the frozen release gate reject strongest-grade admission when it is absent. This compatibility allowance must be removed before v1.0 FROZEN."
+  "description": "The pre-experiment contract. signature_preimage_policy_hash freezes the exact Ed25519 message format and key_lifecycle_policy_hash freezes how later compromise/revocation evidence retroactively affects old signatures. Both remain optional only at this draft schema layer so historical development fixtures remain readable; Verifier A v0.5+ and v0.7 strongest admission require their respective bindings. These compatibility allowances must be removed before v1.0 FROZEN."
 }
