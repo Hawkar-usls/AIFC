@@ -62,14 +62,22 @@ def verify_replay_manifest(manifest: Mapping[str, Any], resolver: EvidenceResolv
     try:
         lifecycle_summary = replay_historical_key_lifecycle(manifest, resolver, preimage_summary)
     except (KeyLifecycleError, EvidenceResolutionError, KeyError, TypeError, ValueError) as exc:
-        result = _invalid(manifest, "HISTORICAL_KEY_LIFECYCLE_REJECTED", str(exc))
+        detail = str(exc)
+        result = _invalid(manifest, "HISTORICAL_KEY_LIFECYCLE_REJECTED", detail)
         gates = result["gate_results"]
         gates["SIGNATURE_PREIMAGE_POLICY_VALID"] = "PASS"
         gates["SIGNATURE_PREIMAGE_REPLAY"] = "PASS"
         gates["CANONICAL_ED25519_ENCODING"] = "PASS"
         gates["REGISTRY_LOCAL_KEY_ELIGIBILITY"] = "PASS"
         gates["ED25519_SIGNATURE_CRYPTO"] = "PASS"
-        gates["KEY_LIFECYCLE_POLICY_VALID"] = "PASS"
+
+        # A detected historical quorum collapse means policy/ledger replay and the
+        # retroactive re-evaluation mechanism worked correctly; the evidence failed.
+        if "HISTORICAL_QUORUM_COLLAPSE" in detail:
+            gates["KEY_LIFECYCLE_POLICY_VALID"] = "PASS"
+            gates["KEY_LIFECYCLE_LEDGER_REPLAY"] = "PASS"
+            gates["RETROACTIVE_KEY_QUORUM_REEVALUATION"] = "PASS"
+            gates["HISTORICAL_KEY_LIFECYCLE"] = "FAIL"
         return result
 
     result = verify_v03(manifest, resolver)
