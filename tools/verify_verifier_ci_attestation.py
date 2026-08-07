@@ -32,10 +32,7 @@ def raw_sha(path: Path) -> str:
 def source_set(paths: list[Path]) -> dict:
     rows = []
     for path in sorted({p.resolve() for p in paths}):
-        rows.append({
-            "path": path.relative_to(ROOT.resolve()).as_posix(),
-            "raw_sha256": raw_sha(path),
-        })
+        rows.append({"path": path.relative_to(ROOT.resolve()).as_posix(), "raw_sha256": raw_sha(path)})
     payload = canonical_json_bytes({"schema": "AIFC/source-set-manifest/v1", "files": rows})
     return {
         "manifest_sha256": hashlib.sha256(b"AIFC:SOURCE_SET_MANIFEST:v1\x00" + payload).hexdigest(),
@@ -90,15 +87,16 @@ def main() -> int:
     for name, expected in expected_sets.items():
         require(att["bound_source_sets"][name] == expected, f"DETACHED_CI_PASS_ATTESTATION:{name.upper()}_SET")
 
-    for key in ("base_conformance", "self_audit_conformance", "unittest"):
+    for key in ("base_conformance", "preregistration_conformance", "self_audit_conformance", "unittest"):
         verify_report(att["reports"][key], artifact_dir)
 
     exits = [
         att["reports"]["base_conformance"]["exit_code"],
+        att["reports"]["preregistration_conformance"]["exit_code"],
         att["reports"]["self_audit_conformance"]["exit_code"],
         att["reports"]["unittest"]["exit_code"],
     ]
-    expected_status = "PASS" if exits == [0, 0, 0] else "FAIL"
+    expected_status = "PASS" if exits == [0, 0, 0, 0] else "FAIL"
     require(att["overall_status"] == expected_status, "CI_ATTESTATION_STATUS_REPORT_MISMATCH")
 
     raw = attestation_path.read_bytes()
