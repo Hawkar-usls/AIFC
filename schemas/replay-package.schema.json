@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/replay-package.schema.json",
+  "title": "AIFC Verifier A Replay Package v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "declared_trial_count",
+    "subject_trial_index",
+    "ledger_events",
+    "evidence_bundle",
+    "hard_witnesses",
+    "candidate_set",
+    "candidate_generation_profile",
+    "pre_return_certificate",
+    "created_quorum_certificate",
+    "pre_return_quorum_certificate",
+    "entropy_profile",
+    "target_derivation_profile",
+    "causal_model",
+    "witness_registry",
+    "registry_transition_certificates",
+    "target_evidence"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/replay-package/v0.2"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "declared_trial_count": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "subject_trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "ledger_events": {"type": "array", "minItems": 1, "items": {"$ref": "trial-ledger-event.schema.json"}},
+    "evidence_bundle": {"$ref": "evidence-bundle.schema.json"},
+    "hard_witnesses": {"type": "array", "minItems": 1, "items": {"$ref": "hard-witness.schema.json"}},
+    "candidate_set": {"$ref": "candidate-set.schema.json"},
+    "candidate_generation_profile": {"$ref": "candidate-generation-profile.schema.json"},
+    "pre_return_certificate": {"$ref": "pre-return-certificate.schema.json"},
+    "created_quorum_certificate": {"$ref": "quorum-certificate.schema.json"},
+    "pre_return_quorum_certificate": {"$ref": "quorum-certificate.schema.json"},
+    "entropy_profile": {"$ref": "entropy-profile.schema.json"},
+    "target_derivation_profile": {"$ref": "target-derivation-profile.schema.json"},
+    "causal_model": {"$ref": "causal-model.schema.json"},
+    "witness_registry": {"$ref": "witness-registry.schema.json"},
+    "registry_transition_certificates": {
+      "type": "array",
+      "items": {"$ref": "registry-transition-certificate.schema.json"}
+    },
+    "target_evidence": {"$ref": "target-evidence.schema.json"}
+  },
+  "description": "Development interface for standalone Verifier A replay. It deliberately carries actual evidence objects rather than only producer-supplied hashes. It is not a frozen AIFC v1 protocol object and does not establish Implementation A PASS."
+}
