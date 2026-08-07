@@ -18,7 +18,8 @@
     "receipts": {
       "type": "array",
       "minItems": 1,
-      "items": {"type": "object"}
+      "items": {"$ref": "witness-receipt.schema.json"}
     }
-  }
+  },
+  "description": "Schema typing is necessary but not sufficient. Verifier MUST additionally enforce distinct witness_id counting, registry membership, active key interval/signature validity, same-position binding and 2q > n+f."
 }
