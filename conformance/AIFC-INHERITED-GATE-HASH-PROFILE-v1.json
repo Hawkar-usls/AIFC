@@ -1,0 +1,11 @@
+{
+  "schema": "AIFC/inherited-gate-hash-profile/v1",
+  "profile_id": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1",
+  "domain_ascii": "AIFC:INHERITED-GATE-OBLIGATION-SET:v1",
+  "domain_terminator_hex": "00",
+  "canonicalization": "AIFC_CANONICAL_JSON_CURRENT_TESTED_PYTHON_PROFILE",
+  "object_schema": "AIFC/inherited-gate-obligation-set/v1",
+  "historical_extension_policy": "FORBIDDEN",
+  "semantic_change_policy": "NEW_PROFILE_ID_REQUIRED",
+  "status": "CANDIDATE_EXACT_SOURCE_BINDING_REQUIRES_PR_ATTESTATION"
+}
