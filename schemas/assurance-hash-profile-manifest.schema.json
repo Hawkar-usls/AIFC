@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/assurance-hash-profile-manifest.schema.json",
+  "title": "AIFC Assurance Hash Profile Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "domain_ascii",
+    "domain_terminator_hex",
+    "member_schema_ids",
+    "canonicalization_profile",
+    "canonicalization_source",
+    "hash_implementation_source",
+    "historical_source_commit",
+    "historical_extension_policy",
+    "semantic_change_policy",
+    "status"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/assurance-hash-profile-manifest/v1"},
+    "profile_id": {"const": "AIFC/assurance-evidence-hash/v1"},
+    "domain_ascii": {"const": "AIFC:ASSURANCE-EVIDENCE:v1"},
+    "domain_terminator_hex": {"const": "00"},
+    "member_schema_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 256}
+    },
+    "canonicalization_profile": {"type": "string", "minLength": 1, "maxLength": 256},
+    "canonicalization_source": {"$ref": "#/$defs/sourceBinding"},
+    "hash_implementation_source": {"$ref": "#/$defs/sourceBinding"},
+    "historical_source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "historical_extension_policy": {"const": "FORBIDDEN"},
+    "semantic_change_policy": {"const": "NEW_PROFILE_ID_REQUIRED"},
+    "status": {"type": "string", "minLength": 1, "maxLength": 256}
+  },
+  "$defs": {
+    "sourceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_blob_sha1"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    }
+  }
+}
