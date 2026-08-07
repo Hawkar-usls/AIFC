@@ -18,14 +18,17 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install pinned verifier runtime dependencies
+        run: python -m pip install --disable-pip-version-check -r reference/verifier/requirements.txt
+
       - name: Run repository-level conformance checks
         run: python tools/check_repo_conformance.py
 
       - name: Run Verifier A frontier and replay tests
         run: |
           python -m unittest discover -s reference/tests -v
-          echo "VERIFIER_A_FRONTIER_CORE = PASS"
-          echo "VERIFIER_A_REPLAY_V0_2 = PASS"
+          echo "CURRENT_RUN_FRONTIER_AND_REPLAY_TESTS = PASS"
+          echo "CURRENT_TREE_CI_PASS_REQUIRES_PROOF_CARRYING_ATTESTATION = TRUE"
           echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
           echo "AIFC_V1_FROZEN = FALSE"
 
