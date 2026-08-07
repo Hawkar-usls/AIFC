@@ -9,28 +9,30 @@
     "experiment_id",
     "trial_index",
     "run_id",
+    "experiment_plan_hash",
     "candidate_set_hash",
     "candidate_multiplicity",
     "candidate_generation_profile_hash",
     "freeze_event_hash",
     "ledger_head_hash",
     "quorum_certificate_hash",
-    "target_selector_hash",
-    "target_derivation_profile_hash"
+    "target_selector_policy_hash",
+    "target_derivation_policy_hash"
   ],
   "properties": {
     "schema": {"const": "AIFC/pre-return-certificate/v1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "trial_index": {"type": "integer", "minimum": 1},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "candidate_set_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "candidate_multiplicity": {"type": "integer", "minimum": 1},
+    "candidate_multiplicity": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "candidate_generation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "freeze_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "ledger_head_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "quorum_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "target_selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "target_derivation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "conditioning_view_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
-  }
+    "target_selector_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_derivation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "description": "PRE_RETURN binds the pre-experiment selector and derivation policies. The concrete per-trial selector/derivation instances are finalized later at TARGET_ARMED and included in the frozen pre-target conditioning view."
 }
