@@ -9,6 +9,7 @@ from canonical_v02 import protocol_hash_v02
 from replay import _active_key, _validate_registry_object, experiment_genesis_hash
 from resolver import EvidenceResolutionError
 from resolver_v02 import EvidenceResolverV02
+from signature_preimage_v05 import SignaturePreimageError, assert_normative_policy
 
 
 def _invalid(manifest: Mapping[str, Any], code: str, detail: str = "") -> dict[str, Any]:
@@ -53,6 +54,20 @@ def verify_plan_preregistration(manifest: Mapping[str, Any], resolver: EvidenceR
         plan = _obj(resolver, plan_hash, "AIFC/experiment-plan/v1")
         if plan.get("experiment_id") != experiment_id or plan.get("frozen_before_first_created") is not True:
             return _invalid(manifest, "EXPERIMENT_PLAN_NOT_FROZEN_OR_REBOUND")
+
+        signature_policy_hash = plan.get("signature_preimage_policy_hash")
+        if not isinstance(signature_policy_hash, str) or len(signature_policy_hash) != 64:
+            return _invalid(manifest, "SIGNATURE_PREIMAGE_POLICY_HASH_INVALID")
+        signature_policy = _obj(resolver, signature_policy_hash, "AIFC/signature-preimage-policy/v1")
+        if signature_policy.get("experiment_id") != experiment_id:
+            return _invalid(manifest, "SIGNATURE_PREIMAGE_POLICY_EXPERIMENT_REBINDING")
+        if signature_policy.get("frozen_before_first_created") is not True:
+            return _invalid(manifest, "SIGNATURE_PREIMAGE_POLICY_NOT_FROZEN")
+        try:
+            assert_normative_policy(signature_policy, experiment_id)
+        except SignaturePreimageError as exc:
+            return _invalid(manifest, "SIGNATURE_PREIMAGE_POLICY_NON_NORMATIVE", str(exc))
+
         registry_hash = plan.get("initial_witness_registry_hash")
         if not isinstance(registry_hash, str):
             return _invalid(manifest, "INITIAL_REGISTRY_HASH_INVALID")
@@ -121,5 +136,5 @@ def verify_plan_preregistration(manifest: Mapping[str, Any], resolver: EvidenceR
         if protocol_hash_v02(quorum) != plan_quorum_hash:
             return _invalid(manifest, "PLAN_QUORUM_HASH_RECOMPUTE_MISMATCH")
         return None
-    except (EvidenceResolutionError, CanonicalizationError, KeyError, TypeError, ValueError) as exc:
+    except (EvidenceResolutionError, CanonicalizationError, SignaturePreimageError, KeyError, TypeError, ValueError) as exc:
         return _invalid(manifest, "EXPERIMENT_PLAN_PREREGISTRATION_EVIDENCE_FAILURE", str(exc))
