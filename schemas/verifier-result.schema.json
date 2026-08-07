@@ -41,8 +41,30 @@
         "executable_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       }
     },
+    "key_lifecycle_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lifecycle_event_count",
+        "boundary_count",
+        "invalidated_signature_count",
+        "quorum_group_count",
+        "cutoff_registry_sequence",
+        "final_head_hash",
+        "external_completeness_proven"
+      ],
+      "properties": {
+        "lifecycle_event_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "boundary_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "invalidated_signature_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "quorum_group_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "cutoff_registry_sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "final_head_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "external_completeness_proven": {"const": false}
+      }
+    },
     "physical_interpretation": {"const": "NO_AUTOMATIC_PHYSICAL_RETROCAUSALITY_CLAIM"},
     "fail_open": {"const": false}
   },
-  "description": "crypto_backend is optional for historical verifier results. Verifier A v0.6 populates it when Ed25519 cryptographic replay is attempted so the implementation backend is explicit. A backend fingerprint is reproducibility evidence, not independent proof that the backend is bug-free."
+  "description": "crypto_backend is optional for historical verifier results. key_lifecycle_summary is optional for pre-v0.7 results and records only local lifecycle-chain replay; its external_completeness_proven field is deliberately false until a later external freshness/transparency gate independently establishes the accepted lifecycle head."
 }
