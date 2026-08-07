@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/normative-authority-receipt.schema.json",
+  "title": "AIFC Normative Authority Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "tested_source_commit",
+    "tested_tree_sha",
+    "unit_test_count",
+    "workflow_runs",
+    "artifacts",
+    "checks",
+    "platform_trust_proven",
+    "status"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/normative-authority-receipt/v1"},
+    "receipt_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "tested_source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "tested_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "unit_test_count": {"type": "integer", "minimum": 1},
+    "workflow_runs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["draft", "replay", "self_audit", "sal"],
+      "properties": {
+        "draft": {"type": "integer", "minimum": 1},
+        "replay": {"type": "integer", "minimum": 1},
+        "self_audit": {"type": "integer", "minimum": 1},
+        "sal": {"type": "integer", "minimum": 1}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_id", "name", "digest", "head_sha"],
+        "properties": {
+          "artifact_id": {"type": "integer", "minimum": 1},
+          "name": {"type": "string", "minLength": 1, "maxLength": 256},
+          "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all_four_workflows_success",
+        "unit_test_count_recomputed",
+        "ci_attestation_pass",
+        "platform_receipt_pass",
+        "platform_artifact_bytes_bound",
+        "sal_conformance_pass"
+      ],
+      "properties": {
+        "all_four_workflows_success": {"const": true},
+        "unit_test_count_recomputed": {"const": true},
+        "ci_attestation_pass": {"const": true},
+        "platform_receipt_pass": {"const": true},
+        "platform_artifact_bytes_bound": {"const": true},
+        "sal_conformance_pass": {"const": true}
+      }
+    },
+    "platform_trust_proven": {"const": false},
+    "status": {"const": "EXACT_POST_MERGE_RECEIPT_CONFIRMED"}
+  }
+}
