@@ -4,27 +4,32 @@
   "title": "AIFC Registry Transition Witness Receipt v1",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema",
-    "experiment_id",
-    "transition_body_hash",
-    "signing_registry_hash",
-    "role",
-    "witness_id",
-    "key_id",
-    "signature_algorithm",
-    "signature"
-  ],
+  "required": ["schema", "experiment_id", "transition_body_hash", "signing_registry_hash", "role", "witness_id", "key_id", "signature_algorithm", "signature"],
   "properties": {
     "schema": {"const": "AIFC/registry-transition-receipt/v1"},
+    "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "transition_body_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "content_schema": {"const": "AIFC/registry-transition-body/v1"},
     "signing_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "registry_sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
     "role": {"enum": ["OLD_REGISTRY_AUTHORIZATION", "NEW_REGISTRY_ACCEPTANCE"]},
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
     "signature": {"type": "string", "minLength": 64, "maxLength": 256},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
-  }
+  },
+  "allOf": [
+    {
+      "if": {"required": ["signature_profile_id"]},
+      "then": {
+        "required": ["content_schema", "registry_sequence", "wall_clock_timestamp"],
+        "properties": {
+          "signature": {"pattern": "^[0-9a-f]{128}$"}
+        }
+      }
+    }
+  ],
+  "description": "Historical registry-transition receipts without signature_profile_id remain schema-readable for old replay corpus. Strongest-grade v0.5 receipts declare the normative typed preimage profile, sign content_schema, signing registry sequence and role, use explicit timestamp/null, and encode exactly 64 signature bytes as lowercase hex."
 }

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/signature-preimage-policy.schema.json",
+  "title": "AIFC Signature Preimage Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "protocol_version",
+    "signature_profile_id",
+    "signature_algorithm",
+    "domain_separator",
+    "framing",
+    "prehash_mode",
+    "public_key_encoding",
+    "signature_encoding",
+    "timestamp_semantics",
+    "field_tags",
+    "receipt_profiles",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/signature-preimage-policy/v1"},
+    "policy_id": {"const": "AIFC-ED25519-SIGNATURE-PREIMAGE-POLICY-V1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "protocol_version": {"type": "string", "minLength": 1, "maxLength": 64},
+    "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "domain_separator": {"const": "AIFC:SIGNATURE_PREIMAGE:v1"},
+    "framing": {"const": "TAG_U8_LENGTH_U64BE_V1"},
+    "prehash_mode": {"const": "NONE_DIRECT_ED25519"},
+    "public_key_encoding": {"const": "LOWERCASE_HEX_32_BYTES"},
+    "signature_encoding": {"const": "LOWERCASE_HEX_64_BYTES"},
+    "timestamp_semantics": {"const": "SIGNED_IF_PRESENT_INTEGRITY_ONLY_NOT_FRESHNESS"},
+    "field_tags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_schema",
+        "protocol_version",
+        "signature_profile_id",
+        "scope_kind",
+        "experiment_id",
+        "trial_index_or_absent",
+        "logical_position_or_transition_role",
+        "content_schema",
+        "content_hash",
+        "registry_hash",
+        "registry_sequence",
+        "witness_id",
+        "key_id",
+        "timestamp_present",
+        "timestamp_utf8"
+      ],
+      "properties": {
+        "receipt_schema": {"const": 1},
+        "protocol_version": {"const": 2},
+        "signature_profile_id": {"const": 3},
+        "scope_kind": {"const": 4},
+        "experiment_id": {"const": 5},
+        "trial_index_or_absent": {"const": 6},
+        "logical_position_or_transition_role": {"const": 7},
+        "content_schema": {"const": 8},
+        "content_hash": {"const": 9},
+        "registry_hash": {"const": 10},
+        "registry_sequence": {"const": 11},
+        "witness_id": {"const": 12},
+        "key_id": {"const": 13},
+        "timestamp_present": {"const": 14},
+        "timestamp_utf8": {"const": 15}
+      }
+    },
+    "receipt_profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trial_witness", "experiment_plan", "registry_transition"],
+      "properties": {
+        "trial_witness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["receipt_schema", "scope_kind", "position_source", "content_hash_source", "registry_hash_source"],
+          "properties": {
+            "receipt_schema": {"const": "AIFC/witness-receipt/v1"},
+            "scope_kind": {"const": "TRIAL"},
+            "position_source": {"const": "logical_position"},
+            "content_hash_source": {"const": "content_hash"},
+            "registry_hash_source": {"const": "registry_hash"}
+          }
+        },
+        "experiment_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["receipt_schema", "scope_kind", "position_source", "content_hash_source", "registry_hash_source"],
+          "properties": {
+            "receipt_schema": {"const": "AIFC/experiment-plan-receipt/v1"},
+            "scope_kind": {"const": "EXPERIMENT"},
+            "position_source": {"const": "logical_position"},
+            "content_hash_source": {"const": "content_hash"},
+            "registry_hash_source": {"const": "registry_hash"}
+          }
+        },
+        "registry_transition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["receipt_schema", "scope_kind", "position_source", "content_hash_source", "registry_hash_source"],
+          "properties": {
+            "receipt_schema": {"const": "AIFC/registry-transition-receipt/v1"},
+            "scope_kind": {"const": "EXPERIMENT"},
+            "position_source": {"const": "role"},
+            "content_hash_source": {"const": "transition_body_hash"},
+            "registry_hash_source": {"const": "signing_registry_hash"}
+          }
+        }
+      }
+    },
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "Strongest-grade AIFC v1 does not permit claimant-defined signature message formats. This policy selects one normative direct-Ed25519 binary preimage profile. The preimage begins with ASCII('AIFC:SIGNATURE_PREIMAGE:v1') || 0x00. Each subsequent field is encoded as u8(type_tag) || u64_be(length) || exact_field_bytes in ascending tag order. trial_index_or_absent is 0x01||u64_be(trial_index) for trial scope and the single byte 0x00 for experiment scope. content_hash and registry_hash are decoded 32-byte values, registry_sequence is u64_be, timestamp_present is 0x00/0x01, and timestamp_utf8 is exact UTF-8 when present or empty when absent. Ed25519 signs the resulting bytes directly with no separate prehash. A signed timestamp has integrity only and is not freshness proof."
+}

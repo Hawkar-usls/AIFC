@@ -37,6 +37,7 @@
     "target_selector_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_derivation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "entropy_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signature_preimage_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "causal_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "statistical_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "publication_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -52,5 +53,5 @@
       "then": {"properties": {"declared_trial_count": {"type": "integer", "minimum": 1}}}
     }
   ],
-  "description": "The pre-experiment contract. Every referenced hash, including the entropy-admission policy controlling how p_i may be justified, must resolve through the evidence resolver before first CREATED. The plan itself is externally certified before trial creation."
+  "description": "The pre-experiment contract. signature_preimage_policy_hash is the v0.5 strongest-grade binding that freezes the exact future Ed25519 message format before first CREATED. It remains optional at this draft schema layer only so historical v0.2/v0.3 fixtures remain readable; Verifier A v0.5 and the frozen release gate reject strongest-grade admission when it is absent. This compatibility allowance must be removed before v1.0 FROZEN."
 }
