@@ -38,7 +38,7 @@ Therefore `1/2` is canonical while `2/4`, `01/02`, `10/20`, and `0/7` are invali
 
 The scientific verifier MUST reject a non-reduced or otherwise noncanonical bound even if it is mathematically equal to a valid bound.
 
-If the admitted exact-hit cap `a_i` is zero, an observed hit is a null-model contradiction and the verifier MUST NOT evaluate an expression containing `X_i/a_i`. The zero-cap case MUST take an explicit branch. For a miss with `a_i=0`, the preregistered sequential factor is evaluated by the zero-cap rule defined by the statistical profile; division by zero is never an implementation-defined behavior.
+If the admitted exact-hit cap `a_i` is zero, an observed hit is a null-model contradiction and the verifier MUST NOT evaluate an expression containing `X_i/a_i`. The zero-cap case MUST take an explicit branch. Division by zero is never implementation-defined behavior.
 
 ## 3. Endianness
 
@@ -60,14 +60,20 @@ Frozen separators include:
 
 ```text
 AIFC:HARD_WITNESS:v1
+AIFC:PRE_RETURN_CERTIFICATE:v1
 AIFC:TRIAL_LEDGER_EVENT:v1
 AIFC:CANDIDATE_GENERATION_PROFILE:v1
-AIFC:TARGET_DERIVATION_PROFILE:v1
 AIFC:ENTROPY_PROFILE:v1
+AIFC:TARGET_DERIVATION_PROFILE:v1
+AIFC:TARGET_EVIDENCE:v1
 AIFC:CAUSAL_MODEL:v1
 AIFC:WITNESS_REGISTRY:v1
-AIFC:REGISTRY_TRANSITION_CERTIFICATE:v1
+AIFC:WITNESS_RECEIPT:v1
 AIFC:QUORUM_CERTIFICATE:v1
+AIFC:REGISTRY_TRANSITION_BODY:v1
+AIFC:REGISTRY_TRANSITION_RECEIPT:v1
+AIFC:REGISTRY_TRANSITION_QUORUM:v1
+AIFC:REGISTRY_TRANSITION_CERTIFICATE:v1
 AIFC:EVIDENCE_BUNDLE:v1
 AIFC:VERIFIER_RESULT:v1
 AIFC:RELEASE_MANIFEST:v1
@@ -81,19 +87,27 @@ SHA256(ASCII("AIFC:EXPERIMENT_GENESIS:v1") || 0x00 || UTF8(experiment_id))
 
 Separators are ASCII and case-sensitive.
 
-## 5. Hash algorithm
+## 5. No self-hash fields
+
+A hash-critical protocol object SHOULD NOT contain its own canonical content hash because that creates a circular preimage convention.
+
+Object identity is the external domain-separated hash of canonical bytes. If an object must bind another object's identity, it stores that other object's hash.
+
+Any future exception requires an explicit versioned preimage rule defining exactly which fields are excluded; no such exception exists in AIFC v1 draft.
+
+## 6. Hash algorithm
 
 AIFC v1 uses SHA-256 for content identity and protocol binding unless a specific schema explicitly declares another algorithm.
 
 Algorithm agility MUST NOT be achieved by silently accepting multiple algorithms. A change of hash algorithm requires a versioned schema/profile update.
 
-## 6. Signature input
+## 7. Signature input
 
 Signatures MUST bind the domain-separated digest plus the signer identity/key identifier and the logical protocol position required by the relevant certificate schema.
 
 A signature over human-readable text or an uncanonicalized JSON rendering is not an AIFC v1 protocol signature.
 
-## 7. Conformance requirement
+## 8. Conformance requirement
 
 Before v1.0 FROZEN, at least two independent implementations MUST produce byte-identical canonical bytes and identical domain-separated SHA-256 digests for every canonicalization test vector, including:
 
@@ -110,7 +124,8 @@ Before v1.0 FROZEN, at least two independent implementations MUST produce byte-i
 - rational equivalents `1/2`, `2/4`, `01/02` with only `1/2` admitted;
 - canonical `0/1` and `1/1`;
 - zero-probability e-process branch;
-- experiment genesis predecessor hash.
+- experiment genesis predecessor hash;
+- all new protocol-object domain separators.
 
 Release criterion:
 
