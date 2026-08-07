@@ -15,7 +15,8 @@
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
-  }
+  },
+  "description": "Trial-scoped Ed25519 receipt. External signature encoding is exactly 64 signature bytes as 128 lowercase hexadecimal characters. Signature validity remains BLOCKED until the v1 preimage profile and Ed25519 crypto gates are independently admitted. A signed wall-clock timestamp, when present, provides integrity only and is not freshness proof."
 }
