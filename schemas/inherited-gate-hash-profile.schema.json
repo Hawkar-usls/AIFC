@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/inherited-gate-hash-profile.schema.json",
+  "title": "AIFC Inherited Gate Hash Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "domain_ascii",
+    "domain_terminator_hex",
+    "canonicalization",
+    "object_schema",
+    "historical_extension_policy",
+    "semantic_change_policy",
+    "status"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/inherited-gate-hash-profile/v1"},
+    "profile_id": {"const": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1"},
+    "domain_ascii": {"const": "AIFC:INHERITED-GATE-OBLIGATION-SET:v1"},
+    "domain_terminator_hex": {"const": "00"},
+    "canonicalization": {"type": "string", "minLength": 1, "maxLength": 256},
+    "object_schema": {"const": "AIFC/inherited-gate-obligation-set/v1"},
+    "historical_extension_policy": {"const": "FORBIDDEN"},
+    "semantic_change_policy": {"const": "NEW_PROFILE_ID_REQUIRED"},
+    "status": {"type": "string", "minLength": 1, "maxLength": 256}
+  }
+}
