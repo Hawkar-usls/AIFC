@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/target-selector-policy.schema.json",
+  "title": "AIFC Target Selector Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "source_id",
+    "source_protocol_version",
+    "selection_algorithm",
+    "anchor_role",
+    "parameters",
+    "exactly_one_event_per_trial",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/target-selector-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "selection_algorithm": {
+      "enum": [
+        "FIXED_EVENT_ID_FROM_PLAN",
+        "FIRST_SCHEDULED_EVENT_STRICTLY_AFTER_ANCHOR_PLUS_MARGIN",
+        "ROUND_OFFSET_FROM_EXTERNALLY_CERTIFIED_ANCHOR"
+      ]
+    },
+    "anchor_role": {
+      "enum": [
+        "EXPERIMENT_PLAN_CERTIFICATE",
+        "PRE_RETURN_QUORUM_CERTIFICATE",
+        "TARGET_ARMED_CERTIFICATE"
+      ]
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fixed_event_id": {"type": ["string", "null"], "maxLength": 256},
+        "safety_margin_events": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+        "round_offset": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+        "source_schedule_spec_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "schedule_epoch_external_evidence_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "exactly_one_event_per_trial": {"const": true},
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "This policy freezes how a per-trial AIFC/target-selector-profile/v1 instance must be derived. The instance supplies the concrete certified anchor and selected event; the verifier recomputes it under this policy."
+}
