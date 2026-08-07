@@ -11,6 +11,10 @@ ROOT = Path(__file__).resolve().parents[1]
 VERIFIER = ROOT / "reference" / "verifier"
 sys.path.insert(0, str(VERIFIER))
 
+from assurance_evidence_v1 import (  # noqa: E402
+    ASSURANCE_EVIDENCE_HASH_PROFILE,
+    ASSURANCE_PROTOCOL_SCHEMAS,
+)
 from assurance_monotonicity import (  # noqa: E402
     ADMISSION_ALLOWED_SUCCESSORS,
     compare_release_gate_sets,
@@ -35,6 +39,7 @@ SOURCE_BYTES_COMMIT = "6169db0af0d15b1fdf5c37674f869de5dcb51c3c"
 
 REQUIRED = [
     "spec/ASSURANCE-MONOTONICITY-v1.1.md",
+    "reference/verifier/assurance_evidence_v1.py",
     "reference/verifier/assurance_monotonicity.py",
     "reference/verifier/gate_lineage_verifier.py",
     "reference/tests/test_assurance_convergence.py",
@@ -113,6 +118,29 @@ def main() -> int:
     if miss in frozen_order[candidate]:
         fail("incomparable forward-null semantic rewrite remains permitted")
     print("ADMISSION_AUTHORITY_PARTIAL_ORDER_VALID = PASS")
+
+    if ASSURANCE_EVIDENCE_HASH_PROFILE != "AIFC/assurance-evidence-hash/v1":
+        fail("assurance evidence hash profile identity drift")
+    expected_assurance_schemas = {
+        "AIFC/gate-definition/v1",
+        "AIFC/gate-strengthening-evidence/v1",
+        "AIFC/gate-lineage-transition/v1",
+    }
+    if set(ASSURANCE_PROTOCOL_SCHEMAS) != expected_assurance_schemas:
+        fail("assurance evidence hash schema-domain drift")
+    historical_v02 = (VERIFIER / "canonical_v02.py").read_text(encoding="utf-8")
+    for schema_id in sorted(expected_assurance_schemas):
+        if schema_id in historical_v02:
+            fail(f"HISTORICAL_HASH_DOMAIN_MUTATION:v0.2 unexpectedly contains {schema_id}")
+    assurance_source = (VERIFIER / "assurance_evidence_v1.py").read_text(encoding="utf-8")
+    for token in (
+        "AIFC:ASSURANCE-EVIDENCE:v1",
+        "assurance_protocol_hash_v1",
+        "AssuranceEvidenceResolverV1",
+    ):
+        if token not in assurance_source:
+            fail(f"assurance evidence domain implementation missing: {token}")
+    print("ASSURANCE_EVIDENCE_DOMAIN_SEPARATION = PASS (historical v0.2 untouched)")
 
     manifest_path = ROOT / "conformance" / "AIFC-VALIDATOR-SEMANTICS-MANIFEST-v1.json"
     manifest = load("conformance/AIFC-VALIDATOR-SEMANTICS-MANIFEST-v1.json")
@@ -211,7 +239,10 @@ def main() -> int:
     print("FULL_NORMATIVE_SCHEMA_GRAPH_COVERAGE = NOT_ESTABLISHED")
 
     monotonicity_source = (VERIFIER / "assurance_monotonicity.py").read_text(encoding="utf-8")
-    if "inherited_gate_ids" in re.search(r"def compare_verifier_results\([\s\S]*?\) -> MonotonicityComparison:", monotonicity_source).group(0):
+    signature_match = re.search(r"def compare_verifier_results\([\s\S]*?\) -> MonotonicityComparison:", monotonicity_source)
+    if signature_match is None:
+        fail("compare_verifier_results signature not found")
+    if "inherited_gate_ids" in signature_match.group(0):
         fail("INHERITED_GATE_SET_OMISSION: comparator still trusts caller-supplied inherited_gate_ids")
     for token in (
         "derive_inherited_gate_obligations",
