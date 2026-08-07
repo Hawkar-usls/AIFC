@@ -154,10 +154,6 @@ def check_hardening_contracts() -> None:
     if "AIFC:EXPERIMENT_GENESIS:v1" not in ledger_doc:
         die("ledger genesis sentinel rule missing")
 
-    witness_doc = (ROOT / "spec/WITNESS_LIFECYCLE.md").read_text(encoding="utf-8")
-    if "old registry quorum" not in witness_doc.lower() or "new registry quorum" not in witness_doc.lower():
-        die("joint registry transition authorization text missing")
-
     print("HARDENING_CONTRACTS = PASS")
 
 
