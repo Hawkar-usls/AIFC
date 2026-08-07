@@ -24,8 +24,11 @@ REQUIRED_FILES = [
     "spec/WITNESS_LIFECYCLE.md",
     "spec/TIME_AND_ORDERING.md",
     "docs/TRIAL_LEDGER.md",
+    "docs/CANDIDATE_PROVENANCE.md",
     "docs/ENTROPY_EVIDENCE.md",
+    "docs/TARGET_DERIVATION.md",
     "docs/CAUSAL_MODEL.md",
+    "docs/RELEASE_MANIFEST.md",
     "schemas/hard-witness.schema.json",
     "schemas/pre-return-certificate.schema.json",
     "schemas/trial-ledger-event.schema.json",
@@ -128,6 +131,10 @@ def check_hardening_contracts() -> None:
     ledger_doc = (ROOT / "docs/TRIAL_LEDGER.md").read_text(encoding="utf-8")
     if "AIFC:EXPERIMENT_GENESIS:v1" not in ledger_doc:
         die("ledger genesis sentinel rule missing")
+
+    witness_doc = (ROOT / "spec/WITNESS_LIFECYCLE.md").read_text(encoding="utf-8")
+    if "old registry quorum" not in witness_doc.lower() or "new registry quorum" not in witness_doc.lower():
+        die("joint registry transition authorization text missing")
 
     print("HARDENING_CONTRACTS = PASS")
 
