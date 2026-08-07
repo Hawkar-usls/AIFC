@@ -8,6 +8,8 @@
     "schema",
     "profile_id",
     "experiment_id",
+    "trial_index",
+    "policy_hash",
     "source_id",
     "source_protocol_version",
     "selection_algorithm",
@@ -23,6 +25,7 @@
     "profile_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
     "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
     "selection_algorithm": {
@@ -58,5 +61,5 @@
     "frozen_before_target_observed": {"const": true},
     "alternative_selected_events": {"type": "array", "maxItems": 0}
   },
-  "description": "The verifier must recompute selected_event_id from the frozen algorithm, anchor and parameters. strongest-grade v1 permits exactly one selected event per trial; post-hoc event choice or a set of alternative events is forbidden."
+  "description": "This is the per-trial selector instance. The verifier must resolve policy_hash to AIFC/target-selector-policy/v1, verify exact policy agreement, bind the declared certified anchor, recompute selected_event_id, and reject any alternate-event freedom."
 }
