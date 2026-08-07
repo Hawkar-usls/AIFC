@@ -1,0 +1,66 @@
+{
+  "schema": "AIFC/validator-semantics-manifest/v1",
+  "semantics_id": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V04_CONTENT_BOUND",
+  "source_files": [
+    {
+      "path": "reference/verifier/schema_runtime.py",
+      "git_blob_sha1": "e029cff5d15f7e50a136886193feb4551883748f",
+      "raw_sha256": "916e563f9be827f687660b4911f935dcbf8c6a2ff519c873deac3960c6ab361d"
+    }
+  ],
+  "runtime": {
+    "implementation": "CPython",
+    "version": "3.12.13",
+    "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+    "validator_class": "jsonschema.Draft202012Validator",
+    "format_checker": "jsonschema.FormatChecker",
+    "schema_source_parser": "stdlib-json-with-object_pairs_hook",
+    "schema_source_encoding": "UTF8_STRICT_NO_BOM",
+    "duplicate_key_policy": "REJECT",
+    "schema_catalog_policy": "ALL_LOCAL_SCHEMAS_GLOB_SORTED",
+    "ref_resolution_policy": "LOCAL_REPOSITORY_REGISTRY_ONLY_NO_NETWORK",
+    "protocol_schema_selector": "properties.schema.const",
+    "error_selection_policy": "SORT_BY_ABSOLUTE_PATH_THEN_MESSAGE_FIRST_ERROR",
+    "number_model": "PYTHON_JSON_NUMBERS_AS_INTERPRETED_BY_JSONSCHEMA_4_25_1",
+    "unicode_policy": "STRICT_UTF8_SCHEMA_SOURCE_PROTOCOL_CANONICALIZATION_PRECEDES_SCHEMA"
+  },
+  "dependency_lock": {
+    "path": "reference/verifier/requirements.lock.txt",
+    "git_blob_sha1": "1fb5b20d71b3eac742573fb3b4885537e6c512b7",
+    "raw_sha256": "29641c36db47b33ea5d56f3cc4ee2cf1ee8caa79f50d5e62193c9d70ccef07a6",
+    "install_policy": "ONLY_BINARY_REQUIRE_HASHES",
+    "distributions": [
+      {
+        "name": "attrs",
+        "version": "26.1.0",
+        "wheel_sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309"
+      },
+      {
+        "name": "jsonschema",
+        "version": "4.25.1",
+        "wheel_sha256": "3fba0169e345c7175110351d456342c364814cfcf3b964ba4587f22915230a63"
+      },
+      {
+        "name": "jsonschema-specifications",
+        "version": "2025.9.1",
+        "wheel_sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe"
+      },
+      {
+        "name": "referencing",
+        "version": "0.37.0",
+        "wheel_sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231"
+      },
+      {
+        "name": "rpds-py",
+        "version": "2026.6.3",
+        "wheel_sha256": "ecabd69db66de867690f9797f2f8fa27ba501bbc24540cbdbdc649cd15888ba6"
+      },
+      {
+        "name": "typing-extensions",
+        "version": "4.16.0",
+        "wheel_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+      }
+    ]
+  },
+  "claim_boundary": "This manifest binds the tested JSON Schema acceptance semantics implementation and dependency environment used by the registered issued-schema graph. It does not prove every future runtime or platform has equivalent semantics."
+}
