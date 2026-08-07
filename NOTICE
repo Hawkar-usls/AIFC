@@ -1,0 +1,12 @@
+AIFC — Auditable Independent-Future Challenge
+Copyright 2026 Alexander Agapov (Hawkar-usls)
+
+AIFC originated from the JANUS causal-consistency / independent-future research line and is maintained as a standalone scientific methodology so that the protocol can be evaluated independently of JANUS or Genesis.
+
+Formalization and adversarial hardening were developed with AI assistance from OpenAI GPT-5.6 Sol. AI assistance is acknowledged as part of the development process; it does not alter authorship, provenance boundaries, or scientific claim requirements.
+
+This repository does not claim observation of physical retrocausality, faster-than-light communication, closed timelike curves, precognition, or information transfer to the past.
+
+Scientific novelty of the complete AIFC composition is under review. Individual components including conditional min-entropy, d-separation, e-processes, rollback protection, transparency/gossip, and Byzantine quorum intersection have established prior art.
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
