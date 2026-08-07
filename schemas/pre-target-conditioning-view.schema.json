@@ -25,7 +25,6 @@
     "source_state_evidence_hashes",
     "additional_pre_target_evidence_hashes",
     "unresolved_assumptions",
-    "externally_certified",
     "frozen_before_target_observed"
   ],
   "properties": {
@@ -65,9 +64,7 @@
       "items": {"type": "string", "minLength": 1},
       "uniqueItems": true
     },
-    "externally_certified": {"const": true},
-    "certification_quorum_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "frozen_before_target_observed": {"const": true}
   },
-  "description": "This object is the concrete protocol representation of the conditioning view F_{i-1}. It must be finalized and externally certified at TARGET_ARMED before target observation. Entropy-profile conditioning_view_hash must equal its domain-separated content hash. A post-target reconstruction of the view is inadmissible."
+  "description": "Concrete representation of F_{i-1}. ledger_head_hash is the replayed QUORUM_CERTIFIED event head immediately before arming. The view contains no self-certification hash. A separate quorum certificate signs the view hash; the TARGET_ARMED ledger event then binds that quorum-certificate hash. Entropy-profile conditioning_view_hash must equal this view's domain-separated hash."
 }
