@@ -13,9 +13,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Mapping
 
 from canonical import CanonicalizationError, canonical_json_bytes, loads_strict
+from schema_runtime import RuntimeSchemaError, validate_protocol_object
 
 
 SAL_BOOTSTRAP_ROOT_COMMIT = "908de7afddcf9f72c98c2b3fb696a41be1e438e0"
@@ -23,6 +24,11 @@ NORMATIVE_ROOT_REGISTRY_ID = "AIFC-NORMATIVE-ASSURANCE-ROOTS-V1"
 ADMISSION_ORDER_ARTIFACT_ID = "AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1"
 INHERITED_GATE_HASH_PROFILE_ID = "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1"
 INHERITED_GATE_HASH_DOMAIN = b"AIFC:INHERITED-GATE-OBLIGATION-SET:v1\x00"
+
+_RUNTIME_VALIDATED_NORMATIVE_KINDS = {
+    "ASSURANCE_HASH_PROFILE",
+    "INHERITED_GATE_HASH_PROFILE",
+}
 
 
 class ScientificAssuranceLineageError(ValueError):
@@ -80,6 +86,13 @@ def _strict_json_object(raw: bytes, label: str) -> Mapping[str, Any]:
     return parsed
 
 
+def _runtime_validate(value: Mapping[str, Any], expected_schema: str, label: str) -> None:
+    try:
+        validate_protocol_object(value, expected_schema)
+    except RuntimeSchemaError as exc:
+        raise NormativeIdentityError(f"NORMATIVE_OBJECT_RUNTIME_SCHEMA_REJECTED:{label}:{exc}") from exc
+
+
 class NormativeRepositoryResolver:
     """Resolve normative assurance objects from a bootstrap-rooted registry.
 
@@ -91,8 +104,11 @@ class NormativeRepositoryResolver:
 
     def __init__(self, root: Path, registry: Mapping[str, Any]):
         self.root = Path(root)
-        if registry.get("schema") != "AIFC/normative-assurance-root-registry/v1":
-            raise NormativeIdentityError("NORMATIVE_ROOT_REGISTRY_SCHEMA_INVALID")
+        _runtime_validate(
+            registry,
+            "AIFC/normative-assurance-root-registry/v1",
+            "NORMATIVE_ROOT_REGISTRY",
+        )
         if registry.get("registry_id") != NORMATIVE_ROOT_REGISTRY_ID:
             raise NormativeIdentityError("NORMATIVE_ROOT_REGISTRY_ID_REBINDING")
         if registry.get("bootstrap_root_commit") != SAL_BOOTSTRAP_ROOT_COMMIT:
@@ -156,6 +172,8 @@ class NormativeRepositoryResolver:
             raise NormativeIdentityError(
                 f"NORMATIVE_OBJECT_SCHEMA_REBINDING:{artifact_id}:{expected_schema}:{parsed.get('schema')}"
             )
+        if kind in _RUNTIME_VALIDATED_NORMATIVE_KINDS:
+            _runtime_validate(parsed, str(expected_schema), artifact_id)
         return ResolvedNormativeObject(
             artifact_id=artifact_id,
             kind=str(kind),
@@ -204,8 +222,12 @@ def inherited_gate_obligation_hash_v1(material: Mapping[str, Any]) -> str:
 
     This intentionally does not extend AIFC/assurance-evidence-hash/v1.
     """
-    if material.get("schema") != "AIFC/inherited-gate-obligation-set/v1":
-        raise ScientificAssuranceLineageError("INHERITED_GATE_OBLIGATION_SCHEMA_INVALID")
+    try:
+        validate_protocol_object(material, "AIFC/inherited-gate-obligation-set/v1")
+    except RuntimeSchemaError as exc:
+        raise ScientificAssuranceLineageError(
+            f"INHERITED_GATE_OBLIGATION_SCHEMA_INVALID:{exc}"
+        ) from exc
     return hashlib.sha256(INHERITED_GATE_HASH_DOMAIN + canonical_json_bytes(material)).hexdigest()
 
 
