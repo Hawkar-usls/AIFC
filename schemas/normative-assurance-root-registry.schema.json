@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/normative-assurance-root-registry.schema.json",
+  "title": "AIFC Normative Assurance Root Registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "registry_id",
+    "bootstrap_root_commit",
+    "records"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/normative-assurance-root-registry/v1"},
+    "registry_id": {"const": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V1"},
+    "bootstrap_root_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "kind",
+          "expected_schema",
+          "relative_path",
+          "git_blob_sha1",
+          "authority_status"
+        ],
+        "properties": {
+          "artifact_id": {"type": "string", "minLength": 1, "maxLength": 256},
+          "kind": {
+            "enum": [
+              "RELEASE_GATE",
+              "ADMISSION_ORDER",
+              "ASSURANCE_HASH_PROFILE",
+              "INHERITED_GATE_HASH_PROFILE",
+              "OTHER_NORMATIVE_OBJECT"
+            ]
+          },
+          "expected_schema": {"type": "string", "minLength": 1, "maxLength": 256},
+          "relative_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "authority_status": {
+            "enum": [
+              "HISTORICAL_ROOT_AT_BOOTSTRAP_COMMIT",
+              "SUCCESSOR_CANDIDATE_REQUIRES_EXACT_COMMIT_ATTESTATION"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "description": "Bootstraps authoritative assurance-object resolution from the exact post-merge-attested v1.1 root commit. Callers identify normative objects by artifact_id; they do not supply the normative documents themselves."
+}
