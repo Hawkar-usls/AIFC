@@ -1,0 +1,60 @@
+{
+  "schema": "AIFC/provenance-origin/v1.0.0",
+  "artifact_uuid": "AIFC-ORIGIN-PROVENANCE-V1.0",
+  "snapshot_timestamp_local": "2026-08-07T10:46:00+03:00",
+  "project": {
+    "name": "Auditable Independent-Future Challenge",
+    "acronym": "AIFC",
+    "repository": "Hawkar-usls/AIFC",
+    "repository_initial_commit": "8fc43ff2139a657585c0ab5c9181cd64af375e7e",
+    "repository_initial_commit_timestamp_utc": "2026-08-07T07:45:08Z"
+  },
+  "origin": {
+    "originating_researcher": "Alexander Agapov / Hawkar-usls",
+    "research_line": "JANUS causal consistency / independent-future witness",
+    "formalization_and_adversarial_hardening": "collaboration with OpenAI GPT-5.6 Sol",
+    "standalone_repository_purpose": "Separate the protocol from JANUS/Genesis so that external researchers can evaluate and reproduce AIFC without trusting the originating sandbox."
+  },
+  "upstream_provenance": [
+    {
+      "repository": "Hawkar-usls/janus-meta-registry",
+      "role": "first frozen causal-consistency witness priority capsule",
+      "path": "data/proofs/JANUS-CAUSAL-CONSISTENCY-WITNESS-PRIORITY-CAPSULE-v1.0.json",
+      "commit": "b812880153ea8ffc2ae81fe3e2518d21eb8ece96",
+      "commit_timestamp_utc": "2026-08-07T05:37:17Z"
+    },
+    {
+      "repository": "Hawkar-usls/janus-meta-registry",
+      "role": "AIFC research-contribution dossier",
+      "path": "registry/research_portfolio/AIFC-AUDITABLE-INDEPENDENT-FUTURE-CHALLENGE-RESEARCH-DOSSIER-v1.0.0.json",
+      "creation_commit": "5513e68103a60f7a21169c4caeab600d3b97b6a9",
+      "canonical_json_sha256": "e6fe7ffb4d13c06cb9aea0fc4fe892ddc15fb7dbedefa59cb1cabefbecff1202"
+    },
+    {
+      "repository": "Hawkar-usls/janus-meta-registry",
+      "role": "dedicated AIFC content receipt",
+      "commit": "26af70f13cf37dcec28624eff4f867ebcedea65f"
+    }
+  ],
+  "research_line_hardening_commits": {
+    "independent_future_no_go_and_evidence_policy_v0_5": "5d41ee57ed2733f8a854648bb03aec86b02da893",
+    "sequential_adaptive_witness_v0_6": "0285dafb616985714714e495b70e50d744c80337",
+    "anytime_valid_witness_v0_7": "71825817125c1272b5b25ccad782d8b419513558",
+    "causal_isolation_dseparation_v0_8": "5d9a724e20cc1acb0b4da24b75e1d332495ada38",
+    "temporal_continuity_rollback_replay_v0_9": "64e268172aa4de2f45f51238a054ad6f456daf0c",
+    "multi_witness_quorum_v1_0": "ed38aa2bb54a677a1eb42c854a2099be7dcf66b3"
+  },
+  "boundaries": {
+    "provenance_establishes": [
+      "dated public Git history",
+      "content identity when bound by commit/blob/hash",
+      "development lineage"
+    ],
+    "provenance_does_not_establish": [
+      "global scientific novelty",
+      "priority over all unpublished or published prior art",
+      "truth of a physical theory",
+      "observation of retrocausality, FTL, or CTCs"
+    ]
+  }
+}
