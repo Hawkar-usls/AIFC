@@ -1,0 +1,37 @@
+{
+  "schema": "AIFC/verifier-replay-status/v1",
+  "verifier_id": "AIFC-Verifier-A",
+  "version": "0.2.1-preregistration-draft",
+  "status": "CI_PENDING_AFTER_EXPERIMENT_PLAN_PREREGISTRATION_HARDENING",
+  "supersedes_only_after_clean_ci": "conformance/VERIFIER-A-REPLAY-v0.2.json",
+  "new_candidate_gates": [
+    "EXPERIMENT_PLAN_PREREGISTRATION",
+    "EXPERIMENT_SCOPED_PLAN_FREEZE_QUORUM",
+    "FIRST_CREATED_PREREQUISITE_BINDING",
+    "ENTROPY_POLICY_REPLAY",
+    "POST_TARGET_ENTROPY_METHOD_SUBSTITUTION_REJECTION"
+  ],
+  "new_attack_vectors": [
+    "CREATED_WITHOUT_PLAN_QUORUM_PREREQUISITE",
+    "PLAN_QUORUM_FAULT_MODEL_REBINDING",
+    "PLAN_QUORUM_SAME_FAILURE_DOMAIN_SYBIL",
+    "PLAN_RECEIPT_EXPERIMENT_REBINDING",
+    "POST_TARGET_ENTROPY_METHOD_SUBSTITUTION"
+  ],
+  "required_fresh_evidence": [
+    "GitHub Actions run on the current PR #5 head after preregistration changes",
+    "supplemental preregistration conformance PASS",
+    "complete reference/tests discovery PASS"
+  ],
+  "release_gate_effect": {
+    "EXPERIMENT_PLAN_CERTIFIED_BEFORE_CREATED": "NOT_ESTABLISHED_UNTIL_FRESH_CI",
+    "VERIFIER_A_REPLAY_V0_2_1": "NOT_ESTABLISHED_UNTIL_FRESH_CI",
+    "IMPLEMENTATION_A_PASS": "NOT_ESTABLISHED",
+    "AIFC_V1_FROZEN": false
+  },
+  "scientific_boundary": {
+    "physical_retrocausality": "NOT_OBSERVED",
+    "future_information_effect": "NOT_ESTABLISHED",
+    "global_novelty": "NOT_ESTABLISHED"
+  }
+}
