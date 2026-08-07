@@ -6,25 +6,33 @@
   "additionalProperties": false,
   "required": [
     "schema",
+    "signature_profile_id",
     "experiment_id",
     "logical_position",
+    "content_schema",
     "content_hash",
     "registry_hash",
+    "registry_sequence",
     "witness_id",
     "key_id",
     "signature_algorithm",
-    "signature"
+    "signature",
+    "wall_clock_timestamp"
   ],
   "properties": {
     "schema": {"const": "AIFC/experiment-plan-receipt/v1"},
+    "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "logical_position": {"const": "EXPERIMENT_PLAN_FROZEN"},
+    "content_schema": {"const": "AIFC/experiment-plan/v1"},
     "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "registry_sequence": {"const": 0},
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "minLength": 1, "maxLength": 1024}
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
   },
-  "description": "Experiment-scoped receipt over the frozen experiment-plan content hash. It intentionally has no trial_index because certification precedes creation of the first trial slot. Full verifier must check canonical signature input, key lifecycle, registry membership and failure-domain semantics."
+  "description": "Experiment-scoped receipt over the exact frozen experiment-plan hash. It intentionally has no trial_index because certification precedes creation of the first trial. registry_sequence is exactly zero because the initial registry certifies the plan. The typed binary preimage includes an explicit absent-trial marker. A timestamp, if present, is integrity data only and not freshness proof."
 }
