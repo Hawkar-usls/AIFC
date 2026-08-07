@@ -13,7 +13,6 @@ from dataclasses import dataclass
 import hashlib
 from typing import Any, Mapping
 
-from resolver import EvidenceResolutionError
 from resolver_v02 import EvidenceResolverV02
 from signature_policy_admission import SignaturePreimageMaterial, SignaturePreimageReplaySummary
 
@@ -230,19 +229,20 @@ def replay_historical_key_lifecycle(
     effective = _effective_boundary_map(boundaries)
     cutoff_sequence = int(ledger["cutoff_registry_sequence"])
 
-    groups: dict[str, list[SignaturePreimageMaterial]] = {}
+    groups: dict[str, list[tuple[int, SignaturePreimageMaterial]]] = {}
     invalidated: set[int] = set()
     for index, material in enumerate(signatures.materials):
         _require(material.certificate_group_id != "", "KEY_LIFECYCLE_SIGNATURE_GROUP_MISSING")
         _require(material.required_q >= 1, "KEY_LIFECYCLE_SIGNATURE_Q_INVALID")
         _require(material.registry_sequence <= cutoff_sequence, "KEY_LIFECYCLE_CUTOFF_BEFORE_SIGNATURE_SEQUENCE")
-        groups.setdefault(material.certificate_group_id, []).append(material)
+        groups.setdefault(material.certificate_group_id, []).append((index, material))
         boundary = effective.get((material.witness_id, material.key_id))
         if boundary is not None and material.registry_sequence >= boundary.effective_from_registry_sequence:
             invalidated.add(index)
 
     quorum_results: list[HistoricalQuorumResult] = []
-    for group_id, materials in groups.items():
+    for group_id, indexed_materials in groups.items():
+        materials = [material for _, material in indexed_materials]
         q_values = {m.required_q for m in materials}
         registry_hashes = {m.registry_hash for m in materials}
         registry_sequences = {m.registry_sequence for m in materials}
@@ -256,9 +256,8 @@ def replay_historical_key_lifecycle(
         trusted_witnesses: set[str] = set()
         trusted_domains: set[str] = set()
         invalidated_count = 0
-        for material in materials:
-            index = signatures.materials.index(material)
-            if index in invalidated:
+        for global_index, material in indexed_materials:
+            if global_index in invalidated:
                 invalidated_count += 1
                 continue
             trusted_witnesses.add(material.witness_id)
