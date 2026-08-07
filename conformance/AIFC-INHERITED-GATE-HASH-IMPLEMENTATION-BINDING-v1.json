@@ -1,0 +1,18 @@
+{
+  "schema": "AIFC/inherited-gate-hash-implementation-binding/v1",
+  "binding_id": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1-IMPLEMENTATION-BINDING-V1",
+  "profile_id": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1",
+  "profile_manifest_path": "conformance/AIFC-INHERITED-GATE-HASH-PROFILE-v1.json",
+  "profile_manifest_git_blob_sha1": "df68961799dad62d5aef61b48a177d46c470176c",
+  "canonicalization_profile": "AIFC_VERIFIER_A_CANONICAL_JSON_TESTED_PROFILE",
+  "canonicalization_source": {
+    "path": "reference/verifier/canonical.py",
+    "git_blob_sha1": "b5c1244df48adc89f256bb47c3a25df9b0d6dfe4"
+  },
+  "hash_implementation_source": {
+    "path": "reference/verifier/inherited_gate_hash_v1.py",
+    "git_blob_sha1": "fc351b2e64cf8647ac7f282bc804b5bebf29efa9"
+  },
+  "source_observed_at_commit": "7f3f3662dd99bfb2baec7f91d2c39ec61631898c",
+  "status": "EXACT_SOURCE_BINDING_SUCCESSOR_CANDIDATE"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "AIFC/normative-authority-receipt/v1",
+  "receipt_id": "AIFC-SAL-V1.2-EXACT-MAIN-RECEIPT-7e58b47",
+  "tested_source_commit": "7e58b47398fe585b24db6304ee6122871095d668",
+  "tested_tree_sha": "e3aa8a8cd09f0faa9a6f9e976d0f5cbe8291f2c9",
+  "unit_test_count": 165,
+  "workflow_runs": {
+    "draft": 31224356394,
+    "replay": 31224356455,
+    "self_audit": 31224356379,
+    "sal": 31224356683
+  },
+  "artifacts": [
+    {
+      "artifact_id": 9011542150,
+      "name": "verifier-a-v04-ci-attestation-31224356379",
+      "digest": "sha256:43a8a4fe906d6e6d25e749e220d490cc8b313c58a723b20d713acce2698927b6",
+      "head_sha": "7e58b47398fe585b24db6304ee6122871095d668"
+    },
+    {
+      "artifact_id": 9011548464,
+      "name": "verifier-a-v04-platform-receipt-31224356379",
+      "digest": "sha256:3d61fb7e866f73518b566182fe4895ec5575daa73ffe63cbd20f2c14b2d621c0",
+      "head_sha": "7e58b47398fe585b24db6304ee6122871095d668"
+    },
+    {
+      "artifact_id": 9011541276,
+      "name": "sal-v12-conformance-31224356683",
+      "digest": "sha256:0a2c3a7205e2c0acd5fe818466571a54746dbbe23c77f72cbf2076444670729b",
+      "head_sha": "7e58b47398fe585b24db6304ee6122871095d668"
+    }
+  ],
+  "checks": {
+    "all_four_workflows_success": true,
+    "unit_test_count_recomputed": true,
+    "ci_attestation_pass": true,
+    "platform_receipt_pass": true,
+    "platform_artifact_bytes_bound": true,
+    "sal_conformance_pass": true
+  },
+  "platform_trust_proven": false,
+  "status": "EXACT_POST_MERGE_RECEIPT_CONFIRMED"
+}
