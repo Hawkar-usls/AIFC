@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import urllib.error
 import urllib.request
 import zipfile
 
@@ -28,23 +29,49 @@ class PlatformReceiptRejected(ValueError):
     pass
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: D401
+        return None
+
+
 def require(condition: bool, code: str) -> None:
     if not condition:
         raise PlatformReceiptRejected(code)
 
 
-def request(url: str, token: str, accept: str = "application/vnd.github+json") -> bytes:
+def github_request(url: str, token: str) -> bytes:
     req = urllib.request.Request(url, headers={
         "Authorization": f"Bearer {token}",
-        "Accept": accept,
+        "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": API_VERSION,
     })
     with urllib.request.urlopen(req, timeout=60) as response:
         return response.read()
 
 
+def download_github_archive(url: str, token: str) -> bytes:
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": API_VERSION,
+    })
+    opener = urllib.request.build_opener(NoRedirect)
+    try:
+        with opener.open(req, timeout=60) as response:
+            require(response.status == 302, f"CI_PLATFORM_ARTIFACT_DOWNLOAD_EXPECTED_302_GOT_{response.status}")
+            location = response.headers.get("Location")
+    except urllib.error.HTTPError as exc:
+        if exc.code != 302:
+            raise
+        location = exc.headers.get("Location")
+    require(isinstance(location, str) and location.startswith("https://"), "CI_PLATFORM_ARTIFACT_REDIRECT_LOCATION_MISSING")
+    blob_req = urllib.request.Request(location, headers={"User-Agent": "AIFC-Verifier-A/0.4"})
+    with urllib.request.urlopen(blob_req, timeout=60) as response:
+        return response.read()
+
+
 def api_json(url: str, token: str) -> dict:
-    return json.loads(request(url, token).decode("utf-8", errors="strict"))
+    return json.loads(github_request(url, token).decode("utf-8", errors="strict"))
 
 
 def main() -> int:
@@ -92,7 +119,7 @@ def main() -> int:
     require(artifact_run.get("id") == run_id, "CI_PLATFORM_ARTIFACT_RUN_REBINDING")
     require(artifact_run.get("head_sha") in (None, receipt["tested_source_commit_sha"]), "CI_PLATFORM_ARTIFACT_HEAD_REBINDING")
 
-    zip_raw = request(f"{base}/actions/artifacts/{artifact_id}/zip", token, accept="application/octet-stream")
+    zip_raw = download_github_archive(f"{base}/actions/artifacts/{artifact_id}/zip", token)
     try:
         with zipfile.ZipFile(io.BytesIO(zip_raw), "r") as zf:
             names = set(zf.namelist())
