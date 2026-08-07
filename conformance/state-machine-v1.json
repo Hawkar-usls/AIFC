@@ -1,0 +1,47 @@
+{
+  "schema": "AIFC/state-machine/v1",
+  "initial_state": null,
+  "states": [
+    "CREATED",
+    "PRE_RETURN_FROZEN",
+    "QUORUM_CERTIFIED",
+    "TARGET_ARMED",
+    "TARGET_OBSERVED",
+    "VERIFIED",
+    "TERMINAL"
+  ],
+  "terminal_subtypes": [
+    "COMPLETED_HIT",
+    "COMPLETED_MISS",
+    "INVALIDATED_EVIDENCE",
+    "ABORTED_PRE_FREEZE",
+    "ABORTED_POST_FREEZE_PRE_TARGET",
+    "ABORTED_POST_TARGET_PRE_VERIFY",
+    "ABORTED_RECOVERY_FAILURE"
+  ],
+  "normal_transitions": [
+    [null, "CREATED"],
+    ["CREATED", "PRE_RETURN_FROZEN"],
+    ["PRE_RETURN_FROZEN", "QUORUM_CERTIFIED"],
+    ["QUORUM_CERTIFIED", "TARGET_ARMED"],
+    ["TARGET_ARMED", "TARGET_OBSERVED"],
+    ["TARGET_OBSERVED", "VERIFIED"],
+    ["VERIFIED", "TERMINAL"]
+  ],
+  "abort_transitions": [
+    ["CREATED", "TERMINAL"],
+    ["PRE_RETURN_FROZEN", "TERMINAL"],
+    ["QUORUM_CERTIFIED", "TERMINAL"],
+    ["TARGET_ARMED", "TERMINAL"],
+    ["TARGET_OBSERVED", "TERMINAL"],
+    ["VERIFIED", "TERMINAL"]
+  ],
+  "forbidden": {
+    "candidate_before_created_certified": true,
+    "target_before_quorum_certified": true,
+    "target_selection_after_observing_target": true,
+    "silent_trial_deletion": true,
+    "terminal_to_nonterminal": true,
+    "state_skip_without_terminal_abort": true
+  }
+}

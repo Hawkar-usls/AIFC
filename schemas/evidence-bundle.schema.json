@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/evidence-bundle.schema.json",
+  "title": "AIFC Evidence Bundle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "trial_index",
+    "run_id",
+    "trial_ledger_head_hash",
+    "pre_return_certificate_hash",
+    "entropy_profile_hash",
+    "causal_model_hash",
+    "witness_registry_hash",
+    "target_evidence_hash",
+    "candidate_set_hash",
+    "candidate_multiplicity",
+    "publication_manifest_hash"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/evidence-bundle/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_ledger_head_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pre_return_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "entropy_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "causal_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "witness_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_set_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_multiplicity": {"type": "integer", "minimum": 1},
+    "eprocess_state_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "publication_manifest_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "additional_evidence_hashes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "uniqueItems": true
+    }
+  }
+}

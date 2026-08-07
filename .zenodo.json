@@ -1,5 +1,6 @@
 {
   "title": "AIFC — Auditable Independent-Future Challenge",
+  "version": "0.1.0",
   "description": "A proof-carrying, adversarial scientific protocol for testing claims that exact information about independently generated future random events existed before target generation, with causal isolation, certified randomness, rollback-resistant provenance, Byzantine witness continuity, and anytime-valid statistics.",
   "creators": [
     {

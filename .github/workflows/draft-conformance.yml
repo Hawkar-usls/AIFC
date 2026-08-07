@@ -1,0 +1,33 @@
+name: AIFC Draft Conformance
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run repository-level conformance checks
+        run: python tools/check_repo_conformance.py
+
+      - name: Block premature v1.0 frozen tags
+        if: startsWith(github.ref, 'refs/tags/v1.0')
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          gate=json.loads(Path('conformance/AIFC-RELEASE-GATE-v1.json').read_text())
+          if gate.get('status') != 'FROZEN_PASS':
+              raise SystemExit('AIFC v1.0 tag blocked: frozen release gate is not FROZEN_PASS')
+          PY

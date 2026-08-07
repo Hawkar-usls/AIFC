@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/trial-ledger-event.schema.json",
+  "title": "AIFC Trial Ledger Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "event_index",
+    "trial_index",
+    "run_id",
+    "transition_ordinal",
+    "state_from",
+    "state_to",
+    "previous_event_hash",
+    "payload_hash",
+    "reason_code"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/trial-ledger-event/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "event_index": {"type": "integer", "minimum": 0},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "transition_ordinal": {"type": "integer", "minimum": 0},
+    "state_from": {
+      "enum": [null, "CREATED", "PRE_RETURN_FROZEN", "QUORUM_CERTIFIED", "TARGET_ARMED", "TARGET_OBSERVED", "VERIFIED", "TERMINAL"]
+    },
+    "state_to": {
+      "enum": ["CREATED", "PRE_RETURN_FROZEN", "QUORUM_CERTIFIED", "TARGET_ARMED", "TARGET_OBSERVED", "VERIFIED", "TERMINAL"]
+    },
+    "terminal_subtype": {
+      "enum": [null, "COMPLETED_HIT", "COMPLETED_MISS", "INVALIDATED_EVIDENCE", "ABORTED_PRE_FREEZE", "ABORTED_POST_FREEZE_PRE_TARGET", "ABORTED_POST_TARGET_PRE_VERIFY", "ABORTED_RECOVERY_FAILURE"]
+    },
+    "previous_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "payload_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_bundle_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "reason_code": {"type": "string", "minLength": 1, "maxLength": 96},
+    "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"},
+    "wall_clock_role": {"const": "METADATA_ONLY_UNLESS_EXTERNAL_TIMING_PROFILE_DECLARED"},
+    "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "AIFC/conformance-release-gate/v1",
+  "profile": "AIFC-v1.0-FROZEN",
+  "status": "DRAFT_NOT_SATISFIED",
+  "required_checks": [
+    {"id": "SPEC_SCHEMA_VALID", "required": true},
+    {"id": "STATE_MACHINE_VALID", "required": true},
+    {"id": "TRIAL_LEDGER_CONTINUITY", "required": true},
+    {"id": "ENTROPY_PROFILE_VALID", "required": true},
+    {"id": "CAUSAL_MODEL_VALID", "required": true},
+    {"id": "WITNESS_LIFECYCLE_VALID", "required": true},
+    {"id": "CITATION_ZENODO_METADATA_SYNC", "required": true},
+    {"id": "ALL_HONEST_VECTORS_PASS", "required": true},
+    {"id": "ALL_ATTACK_VECTORS_EXPECTED_REJECTION", "required": true},
+    {"id": "IMPLEMENTATION_A_PASS", "required": true},
+    {"id": "IMPLEMENTATION_B_PASS", "required": true},
+    {"id": "BYTE_IDENTICAL_CANONICALIZATION", "required": true},
+    {"id": "FAIL_OPEN_ZERO", "required": true},
+    {"id": "COMPLETE_TRIAL_PUBLICATION", "required": true},
+    {"id": "EXTERNAL_BENCH_EVIDENCE_ROOTED_OUTSIDE_GENESIS", "required": true}
+  ],
+  "freeze_rule": "AIFC v1.0 MUST NOT be labeled FROZEN unless every required check has machine-verifiable PASS evidence bound into the release manifest.",
+  "forbidden_shortcuts": [
+    "manual override of failed conformance gate",
+    "dropping attack vectors from the frozen corpus after observing failures",
+    "using one implementation twice as independent implementations",
+    "claiming canonical equivalence without byte-identical test-vector results",
+    "claiming complete reporting without a verified global trial ledger"
+  ]
+}
