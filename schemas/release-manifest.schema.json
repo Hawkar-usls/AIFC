@@ -8,16 +8,17 @@
     "schema",
     "release_id",
     "protocol_version",
-    "repository_commit",
+    "source_commit",
     "release_gate_profile_hash",
     "gate_results",
+    "delivery_mode",
     "overall_status"
   ],
   "properties": {
     "schema": {"const": "AIFC/release-manifest/v1"},
     "release_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "protocol_version": {"type": "string", "minLength": 1, "maxLength": 64},
-    "repository_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "release_gate_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "gate_results": {
       "type": "array",
@@ -37,7 +38,9 @@
         }
       }
     },
+    "delivery_mode": {"const": "OUT_OF_TREE_RELEASE_ASSET_BOUND_TO_IMMUTABLE_SOURCE_COMMIT"},
+    "release_record_binding_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "overall_status": {"enum": ["DRAFT_NOT_SATISFIED", "FROZEN_PASS", "REJECTED"]}
   },
-  "description": "The release manifest is identified by its external domain-separated canonical content hash. A self-hash field is intentionally forbidden. Verifier must enforce exact gate-set coverage, unique gate_id values, evidence resolution and all-PASS semantics for FROZEN_PASS."
+  "description": "The final release manifest is generated after an immutable source_commit exists and is distributed as an out-of-tree release asset (for example a GitHub Release/Zenodo asset). Its external domain-separated content hash is then bound by the release record. It MUST NOT be required to live inside source_commit, avoiding a Git commit fixed-point. FROZEN_PASS requires evidence resolution for every gate; syntactic hashes are insufficient."
 }
