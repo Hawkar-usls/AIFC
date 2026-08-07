@@ -19,6 +19,39 @@
     "ABORTED_POST_TARGET_PRE_VERIFY",
     "ABORTED_RECOVERY_FAILURE"
   ],
+  "terminal_subtypes_by_state": {
+    "CREATED": [
+      "ABORTED_PRE_FREEZE",
+      "INVALIDATED_EVIDENCE",
+      "ABORTED_RECOVERY_FAILURE"
+    ],
+    "PRE_RETURN_FROZEN": [
+      "ABORTED_POST_FREEZE_PRE_TARGET",
+      "INVALIDATED_EVIDENCE",
+      "ABORTED_RECOVERY_FAILURE"
+    ],
+    "QUORUM_CERTIFIED": [
+      "ABORTED_POST_FREEZE_PRE_TARGET",
+      "INVALIDATED_EVIDENCE",
+      "ABORTED_RECOVERY_FAILURE"
+    ],
+    "TARGET_ARMED": [
+      "ABORTED_POST_FREEZE_PRE_TARGET",
+      "INVALIDATED_EVIDENCE",
+      "ABORTED_RECOVERY_FAILURE"
+    ],
+    "TARGET_OBSERVED": [
+      "ABORTED_POST_TARGET_PRE_VERIFY",
+      "INVALIDATED_EVIDENCE",
+      "ABORTED_RECOVERY_FAILURE"
+    ],
+    "VERIFIED": [
+      "COMPLETED_HIT",
+      "COMPLETED_MISS",
+      "INVALIDATED_EVIDENCE",
+      "ABORTED_RECOVERY_FAILURE"
+    ]
+  },
   "normal_transitions": [
     [null, "CREATED"],
     ["CREATED", "PRE_RETURN_FROZEN"],
@@ -42,6 +75,7 @@
     "target_selection_after_observing_target": true,
     "silent_trial_deletion": true,
     "terminal_to_nonterminal": true,
-    "state_skip_without_terminal_abort": true
+    "state_skip_without_terminal_abort": true,
+    "impossible_terminal_subtype": true
   }
 }
