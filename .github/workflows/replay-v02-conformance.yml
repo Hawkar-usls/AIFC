@@ -18,6 +18,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install pinned verifier runtime dependencies
+        run: python -m pip install --disable-pip-version-check -r reference/verifier/requirements.txt
+
       - name: Run base repository conformance
         run: python tools/check_repo_conformance.py
 
@@ -27,9 +30,10 @@ jobs:
       - name: Run complete Verifier A test suite
         run: |
           python -m unittest discover -s reference/tests -v
-          echo "EXPERIMENT_PLAN_PREREGISTRATION = CANDIDATE_PASS_IF_TESTS_GREEN"
-          echo "ENTROPY_POLICY_REPLAY = CANDIDATE_PASS_IF_TESTS_GREEN"
-          echo "VERIFIER_A_REPLAY_V0_2 = CANDIDATE_PASS_IF_TESTS_GREEN"
+          echo "CURRENT_RUN_EXPERIMENT_PLAN_PREREGISTRATION = PASS_IF_TESTS_GREEN"
+          echo "CURRENT_RUN_ENTROPY_POLICY_REPLAY = PASS_IF_TESTS_GREEN"
+          echo "CURRENT_RUN_VERIFIER_A_REPLAY = PASS_IF_TESTS_GREEN"
+          echo "CURRENT_TREE_CI_PASS_REQUIRES_PROOF_CARRYING_ATTESTATION = TRUE"
           echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
           echo "AIFC_V1_FROZEN = FALSE"
 
@@ -37,7 +41,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v1.0')
         run: |
           echo "AIFC v1.0 frozen tag blocked by draft workflow."
-          echo "Frozen release requires resolved 39-class proof-carrying gate evidence,"
-          echo "two independent implementations, byte-identical canonicalization,"
-          echo "cryptographic witness/source verification and an external bench."
+          echo "Frozen release requires proof-carrying gate evidence, two independent"
+          echo "implementations, byte-identical canonicalization, cryptographic witness/source"
+          echo "verification and an external bench."
           exit 1

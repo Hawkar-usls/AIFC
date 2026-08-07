@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""AIFC v0.2 evidence resolver with experiment-plan preregistration domains."""
+"""AIFC v0.2/v0.3 evidence resolver with plan-preregistration domains."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Mapping
 
 from canonical import CanonicalizationError, canonical_json_bytes, loads_strict, raw_evidence_hash
 from canonical_v02 import protocol_hash_v02
 from resolver import EvidenceResolutionError, EvidenceResolver, ResolvedEvidence
+from schema_runtime import RuntimeSchemaError, validate_protocol_object
 
 
 class EvidenceResolverV02(EvidenceResolver):
@@ -49,4 +49,8 @@ class EvidenceResolverV02(EvidenceResolver):
         actual = protocol_hash_v02(parsed)
         if actual != content_hash:
             raise EvidenceResolutionError(f"PROTOCOL_OBJECT_HASH_MISMATCH:{content_hash}:{actual}")
+        try:
+            validate_protocol_object(parsed, expected_schema=expected_schema)
+        except RuntimeSchemaError as exc:
+            raise EvidenceResolutionError(f"RUNTIME_JSON_SCHEMA_REJECTED:{content_hash}:{exc}") from exc
         return ResolvedEvidence(content_hash, kind, str(media_type), str(schema), raw, parsed, path)

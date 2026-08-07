@@ -10,6 +10,8 @@
     "experiment_id",
     "method",
     "slot_index_rule",
+    "declared_trial_count",
+    "schedule_or_trigger_spec_hash",
     "candidate_generation_before_created_forbidden",
     "silent_slot_deletion_forbidden",
     "frozen_before_first_created"
@@ -25,5 +27,25 @@
     "candidate_generation_before_created_forbidden": {"const": true},
     "silent_slot_deletion_forbidden": {"const": true},
     "frozen_before_first_created": {"const": true}
-  }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"method": {"const": "PREALLOCATED_SLOTS"}}, "required": ["method"]},
+      "then": {
+        "properties": {
+          "declared_trial_count": {"type": "integer", "minimum": 1},
+          "schedule_or_trigger_spec_hash": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"method": {"enum": ["DETERMINISTIC_SCHEDULE", "EXTERNAL_TRIGGER_POLICY"]}}, "required": ["method"]},
+      "then": {
+        "properties": {
+          "schedule_or_trigger_spec_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    }
+  ],
+  "description": "PREALLOCATED_SLOTS is fully replayable only from the frozen declared slot set and therefore carries no schedule/trigger spec. Schedule/trigger methods must bind an external frozen specification; Verifier A v0.3 fails closed/blocks strongest admission until those method-specific creation conditions are executable."
 }
