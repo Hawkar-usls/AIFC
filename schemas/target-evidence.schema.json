@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/target-evidence.schema.json",
+  "title": "AIFC Target Evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "experiment_id", "trial_index", "source_id", "target_selector_hash", "target_event_id", "target_canonical_hash", "entropy_profile_hash", "source_evidence_hashes"],
+  "properties": {
+    "schema": {"const": "AIFC/target-evidence/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "target_selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_event_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "target_canonical_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_bytes_hex": {"type": ["string", "null"], "pattern": "^[0-9a-f]*$"},
+    "entropy_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_evidence_hashes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "uniqueItems": true
+    },
+    "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
+  }
+}
