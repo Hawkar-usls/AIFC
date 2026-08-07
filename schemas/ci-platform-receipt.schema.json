@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/ci-platform-receipt.schema.json",
+  "title": "AIFC CI Platform Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "platform",
+    "repository",
+    "tested_source_commit_sha",
+    "workflow_run",
+    "verifier_job",
+    "attestation_artifact",
+    "attestation_binding",
+    "api_observation",
+    "scope",
+    "claim_ceiling"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/ci-platform-receipt/v1"},
+    "platform": {"const": "GITHUB_ACTIONS"},
+    "repository": {"const": "Hawkar-usls/AIFC"},
+    "tested_source_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "workflow_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "run_attempt", "workflow_id", "event_name", "head_sha", "head_branch"],
+      "properties": {
+        "run_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "run_attempt": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "workflow_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "event_name": {"type": "string", "minLength": 1, "maxLength": 64},
+        "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "head_branch": {"type": ["string", "null"], "maxLength": 256}
+      }
+    },
+    "verifier_job": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_id", "name", "status", "conclusion"],
+      "properties": {
+        "job_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "name": {"const": "Verifier A environment self-audit"},
+        "status": {"const": "completed"},
+        "conclusion": {"const": "success"}
+      }
+    },
+    "attestation_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "name", "digest", "size_in_bytes", "expired"],
+      "properties": {
+        "artifact_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "size_in_bytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "expired": {"const": false}
+      }
+    },
+    "attestation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attestation_raw_sha256", "attestation_protocol_hash"],
+      "properties": {
+        "attestation_raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "attestation_protocol_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "api_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["api_version", "observed_at"],
+      "properties": {
+        "api_version": {"const": "2022-11-28"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "scope": {
+      "const": "ATTESTS_EXISTENCE_AND_PLATFORM_METADATA_OF_THE_VERIFIER_JOB_AND_ITS_ALREADY_UPLOADED_ATTESTATION_ARTIFACT;DOES_NOT_SELF_BIND_THIS_PLATFORM_RECEIPTS_OWN_ARTIFACT_ID_OR_DIGEST"
+    },
+    "claim_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implementation_a_pass", "aifc_v1_frozen", "platform_trust_proven"],
+      "properties": {
+        "implementation_a_pass": {"const": false},
+        "aifc_v1_frozen": {"const": false},
+        "platform_trust_proven": {"const": false}
+      }
+    }
+  },
+  "description": "Post-upload platform observation. It binds GitHub Actions run/head metadata, a completed successful verifier job, and the immutable artifact id/digest assigned to the already-uploaded Verifier CI Attestation artifact. It deliberately does not claim to solve the infinite regress of attesting its own later artifact identifier."
+}
