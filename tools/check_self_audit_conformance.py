@@ -21,9 +21,18 @@ REQUIRED = [
     "reference/tests/test_schema_runtime.py",
     "reference/tests/test_protocol_semantics_v03.py",
     "schemas/verifier-ci-attestation.schema.json",
+    "conformance/AIFC-RELEASE-GATE-v1.0.3-draft.json",
     "tools/build_verifier_ci_attestation.py",
     "tools/verify_verifier_ci_attestation.py",
 ]
+
+NEW_V03_FROZEN_GATES = {
+    "RUNTIME_JSON_SCHEMA_ADMISSION",
+    "CI_PASS_PROVENANCE_BINDING",
+    "TRIAL_CREATION_POLICY_REPLAY",
+    "TERMINAL_SUBTYPE_SEMANTICS",
+    "DECLARED_TRIAL_LEDGER_COVERAGE",
+}
 
 
 def fail(msg: str) -> None:
@@ -36,6 +45,10 @@ def load(rel: str):
         return json.loads((ROOT / rel).read_text(encoding="utf-8"))
     except Exception as exc:
         fail(f"cannot parse {rel}: {exc}")
+
+
+def required_gate_ids(obj: dict) -> list[str]:
+    return [row.get("id") for row in obj.get("required_checks", []) if row.get("required") is True]
 
 
 def main() -> int:
@@ -70,6 +83,26 @@ def main() -> int:
     if set(("COMPLETED_HIT", "COMPLETED_MISS")) - set(table.get("VERIFIED", [])):
         fail("VERIFIED must permit completed hit/miss terminal subtypes")
     print("TERMINAL_SUBTYPE_MACHINE_TABLE = PASS")
+
+    previous_gate = load("conformance/AIFC-RELEASE-GATE-v1.0.2-draft.json")
+    current_gate = load("conformance/AIFC-RELEASE-GATE-v1.0.3-draft.json")
+    previous_ids = required_gate_ids(previous_gate)
+    current_ids = required_gate_ids(current_gate)
+    if len(previous_ids) != len(set(previous_ids)) or len(current_ids) != len(set(current_ids)):
+        fail("duplicate frozen gate id")
+    expected_current = set(previous_ids) | NEW_V03_FROZEN_GATES
+    if set(current_ids) != expected_current:
+        fail(
+            f"v0.3 frozen gate drift missing={sorted(expected_current-set(current_ids))} "
+            f"extra={sorted(set(current_ids)-expected_current)}"
+        )
+    if len(current_ids) != 44:
+        fail(f"v0.3 frozen gate count must be 44, got {len(current_ids)}")
+    if current_gate.get("status") != "DRAFT_NOT_SATISFIED":
+        fail("v0.3 frozen gate must remain DRAFT_NOT_SATISFIED")
+    if current_gate.get("supersedes_for_draft_evaluation") != "conformance/AIFC-RELEASE-GATE-v1.0.2-draft.json":
+        fail("v0.3 frozen gate supersession chain invalid")
+    print("SELF_AUDITING_FROZEN_RELEASE_GATE = BLOCKED_AS_EXPECTED (44 unmet evidence classes declared)")
 
     ci_schema = load("schemas/verifier-ci-attestation.schema.json")
     validate_protocol_object({
