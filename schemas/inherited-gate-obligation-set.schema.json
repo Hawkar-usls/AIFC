@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/inherited-gate-obligation-set.schema.json",
+  "title": "AIFC Inherited Gate Obligation Set v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "hash_profile_id",
+    "predecessor_release_gate_id",
+    "predecessor_release_gate_git_blob_sha1",
+    "successor_release_gate_id",
+    "successor_release_gate_git_blob_sha1",
+    "obligations"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/inherited-gate-obligation-set/v1"},
+    "hash_profile_id": {"const": "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1"},
+    "predecessor_release_gate_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "predecessor_release_gate_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "successor_release_gate_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "successor_release_gate_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["predecessor_gate_id", "successor_gate_ids", "transition_hash"],
+        "properties": {
+          "predecessor_gate_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+          "successor_gate_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}
+          },
+          "transition_hash": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            ]
+          }
+        }
+      }
+    }
+  },
+  "description": "Domain-separated material for the checker-derived predecessor-to-successor obligation set. v1 additive comparisons use null transition hashes; gate replacement remains blocked until authoritative gate-definition anchoring exists."
+}
