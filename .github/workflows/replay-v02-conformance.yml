@@ -1,0 +1,43 @@
+name: AIFC Replay v0.2 Conformance
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay-v02-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run base repository conformance
+        run: python tools/check_repo_conformance.py
+
+      - name: Run preregistration and replay supplemental conformance
+        run: python tools/check_preregistration_conformance.py
+
+      - name: Run complete Verifier A test suite
+        run: |
+          python -m unittest discover -s reference/tests -v
+          echo "EXPERIMENT_PLAN_PREREGISTRATION = CANDIDATE_PASS_IF_TESTS_GREEN"
+          echo "ENTROPY_POLICY_REPLAY = CANDIDATE_PASS_IF_TESTS_GREEN"
+          echo "VERIFIER_A_REPLAY_V0_2 = CANDIDATE_PASS_IF_TESTS_GREEN"
+          echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
+          echo "AIFC_V1_FROZEN = FALSE"
+
+      - name: Block all v1.0 frozen tags in draft workflow
+        if: startsWith(github.ref, 'refs/tags/v1.0')
+        run: |
+          echo "AIFC v1.0 frozen tag blocked by draft workflow."
+          echo "Frozen release requires resolved 39-class proof-carrying gate evidence,"
+          echo "two independent implementations, byte-identical canonicalization,"
+          echo "cryptographic witness/source verification and an external bench."
+          exit 1

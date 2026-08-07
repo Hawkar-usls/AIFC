@@ -8,7 +8,7 @@
   "properties": {
     "schema": {"const": "AIFC/verifier-result/v1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "trial_index": {"type": "integer", "minimum": 1},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "verifier_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "verifier_version": {"type": "string", "minLength": 1, "maxLength": 64},
     "evidence_bundle_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -25,6 +25,11 @@
         "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE",
         "INVALIDATED_EVIDENCE"
       ]
+    },
+    "failure_codes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 2048},
+      "uniqueItems": true
     },
     "physical_interpretation": {"const": "NO_AUTOMATIC_PHYSICAL_RETROCAUSALITY_CLAIM"},
     "fail_open": {"const": false}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/target-selector-profile.schema.json",
+  "title": "AIFC Target Selector Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "experiment_id",
+    "trial_index",
+    "policy_hash",
+    "source_id",
+    "source_protocol_version",
+    "selection_algorithm",
+    "anchor_role",
+    "anchor_hash",
+    "parameters",
+    "selected_event_id",
+    "selection_transcript_hash",
+    "frozen_before_target_observed"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/target-selector-profile/v1"},
+    "profile_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "selection_algorithm": {
+      "enum": [
+        "FIXED_EVENT_ID_FROM_PLAN",
+        "FIRST_SCHEDULED_EVENT_STRICTLY_AFTER_ANCHOR_PLUS_MARGIN",
+        "ROUND_OFFSET_FROM_EXTERNALLY_CERTIFIED_ANCHOR"
+      ]
+    },
+    "anchor_role": {
+      "enum": [
+        "EXPERIMENT_PLAN",
+        "PRE_RETURN_QUORUM_CERTIFICATE",
+        "PRE_TARGET_VIEW_QUORUM_CERTIFICATE"
+      ]
+    },
+    "anchor_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fixed_event_id": {"type": ["string", "null"], "maxLength": 256},
+        "schedule_period_numerator_ns": {"type": ["string", "null"], "pattern": "^(0|[1-9][0-9]*)$"},
+        "schedule_period_denominator": {"type": ["string", "null"], "pattern": "^[1-9][0-9]*$"},
+        "schedule_epoch_external_evidence_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "safety_margin_events": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+        "round_offset": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+        "source_schedule_spec_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "selected_event_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "selection_transcript_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "frozen_before_target_observed": {"const": true},
+    "alternative_selected_events": {"type": "array", "maxItems": 0}
+  },
+  "description": "Per-trial selector instance. The verifier resolves policy_hash, checks exact policy agreement and anchor identity, and recomputes selected_event_id. For FIXED_EVENT_ID_FROM_PLAN, anchor_hash must be the experiment-plan hash."
+}

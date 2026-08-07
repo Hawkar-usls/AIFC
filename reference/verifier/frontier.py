@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""AIFC Verifier A frontier core v0.1.
+"""AIFC Verifier A frontier core v0.2.
 
-This module deliberately implements only deterministic admission logic for the
-first four verifier-grade attack surfaces:
+This module implements deterministic fail-closed admission logic for selected
+frontier attack surfaces. It is NOT the frozen AIFC verifier and does not
+establish IMPLEMENTATION_A_PASS.
 
+Current explicit frontier attacks include:
 - SHADOW_CANDIDATE_POOL
+- POST_CREATED_OPERATOR_CHOICE
 - REGISTRY_RECONFIGURATION_FORK
+- REGISTRY_EXPERIMENT_REBINDING
 - POST_HOC_TARGET_DERIVATION
 - NONCANONICAL_RATIONAL_BOUND
-
-It is NOT the frozen AIFC verifier and does not establish IMPLEMENTATION_A_PASS.
-Cryptographic signature verification, full RFC 8785 cross-implementation
-canonicalization, complete causal-DAG evaluation, full ledger replay and the
-frozen statistical engine remain separate release gates.
+- FAKE_FROZEN_PASS_WITH_DANGLING_EVIDENCE
 """
 from __future__ import annotations
 
@@ -126,6 +126,10 @@ def validate_candidate_generation_profile(profile: Mapping[str, Any], strongest_
         return fail("CANDIDATE_PROFILE_EXTERNAL_EVIDENCE_MISSING")
 
     if strongest_grade:
+        # Without an experiment-level policy and an explicit charged choice count,
+        # any operator freedom after CREATED remains hidden multiplicity.
+        if selection.get("operator_choice_after_created") is True:
+            return fail("POST_CREATED_OPERATOR_CHOICE_NOT_CHARGED")
         if selection.get("operator_choice_after_generation") is True:
             return fail("UNDECLARED_OR_DISALLOWED_POST_GENERATION_CANDIDATE_CHOICE")
         if unresolved:
@@ -163,10 +167,22 @@ def validate_target_derivation_bindings(
     if target_evidence.get("target_selector_hash") != profile.get("event_selector_hash"):
         return fail("TARGET_SELECTOR_DERIVATION_MISMATCH")
 
-    rule = profile.get("transformation_rule")
-    if not isinstance(rule, Mapping):
+    extraction = profile.get("extraction")
+    if not isinstance(extraction, Mapping) or extraction.get("method") not in {
+        "WHOLE_RAW_BYTES",
+        "JSON_POINTER_UTF8_STRING",
+        "JSON_POINTER_HEX_BYTES",
+        "JSON_POINTER_BASE64_BYTES",
+    }:
+        return fail("TARGET_EXTRACTION_DSL_INVALID")
+    transformation = profile.get("transformation")
+    if not isinstance(transformation, Mapping):
         return fail("TARGET_TRANSFORMATION_RULE_MISSING")
-    if not isinstance(rule.get("input_order"), list) or not rule.get("input_order"):
+    if transformation.get("algorithm") not in {"IDENTITY", "SHA-256"}:
+        return fail("TARGET_TRANSFORMATION_ALGORITHM_NOT_STRONGEST_V1")
+    if transformation.get("framing") != "AIFC_TYPED_LENGTH_PREFIXED_V1":
+        return fail("AMBIGUOUS_DERIVATION_ENCODING")
+    if not isinstance(transformation.get("input_order"), list) or not transformation.get("input_order"):
         return fail("TARGET_TRANSFORMATION_INPUT_ORDER_INVALID")
 
     return ok("TARGET_DERIVATION_BINDINGS_PASS")
@@ -175,12 +191,15 @@ def validate_target_derivation_bindings(
 def _validate_transition_quorum(
     qobj: Mapping[str, Any],
     *,
+    expected_experiment_id: str,
     expected_role: str,
     expected_registry_hash: str,
     expected_body_hash: str,
 ) -> CheckResult:
     if qobj.get("schema") != "AIFC/registry-transition-quorum/v1":
         return fail("REGISTRY_TRANSITION_QUORUM_SCHEMA_MISMATCH", expected_role)
+    if qobj.get("experiment_id") != expected_experiment_id:
+        return fail("REGISTRY_EXPERIMENT_REBINDING", expected_role)
     if qobj.get("role") != expected_role:
         return fail("REGISTRY_TRANSITION_QUORUM_ROLE_MISMATCH", expected_role)
     if qobj.get("signing_registry_hash") != expected_registry_hash:
@@ -206,6 +225,8 @@ def _validate_transition_quorum(
             return fail("REGISTRY_TRANSITION_RECEIPT_UNTYPED", expected_role)
         if receipt.get("schema") != "AIFC/registry-transition-receipt/v1":
             return fail("REGISTRY_TRANSITION_RECEIPT_SCHEMA_MISMATCH", expected_role)
+        if receipt.get("experiment_id") != expected_experiment_id:
+            return fail("REGISTRY_EXPERIMENT_REBINDING", f"{expected_role}:receipt")
         if receipt.get("role") != expected_role:
             return fail("REGISTRY_TRANSITION_RECEIPT_ROLE_MISMATCH", expected_role)
         if receipt.get("signing_registry_hash") != expected_registry_hash:
@@ -230,6 +251,9 @@ def validate_registry_transition(certificate: Mapping[str, Any]) -> CheckResult:
     body = certificate.get("transition_body")
     if not isinstance(body, Mapping) or body.get("schema") != "AIFC/registry-transition-body/v1":
         return fail("REGISTRY_TRANSITION_BODY_INVALID")
+    experiment_id = body.get("experiment_id")
+    if not isinstance(experiment_id, str) or not experiment_id:
+        return fail("REGISTRY_TRANSITION_EXPERIMENT_ID_INVALID")
     prev_seq, next_seq = body.get("previous_registry_sequence"), body.get("next_registry_sequence")
     if not isinstance(prev_seq, int) or not isinstance(next_seq, int) or next_seq != prev_seq + 1:
         return fail("REGISTRY_SEQUENCE_JUMP")
@@ -247,6 +271,7 @@ def validate_registry_transition(certificate: Mapping[str, Any]) -> CheckResult:
 
     old_res = _validate_transition_quorum(
         old_q,
+        expected_experiment_id=experiment_id,
         expected_role="OLD_REGISTRY_AUTHORIZATION",
         expected_registry_hash=prev_hash,
         expected_body_hash=body_hash,
@@ -255,6 +280,7 @@ def validate_registry_transition(certificate: Mapping[str, Any]) -> CheckResult:
         return old_res
     new_res = _validate_transition_quorum(
         new_q,
+        expected_experiment_id=experiment_id,
         expected_role="NEW_REGISTRY_ACCEPTANCE",
         expected_registry_hash=next_hash,
         expected_body_hash=body_hash,
@@ -264,7 +290,7 @@ def validate_registry_transition(certificate: Mapping[str, Any]) -> CheckResult:
 
     return ok(
         "REGISTRY_TRANSITION_STRUCTURAL_PASS",
-        "Signature/key-interval verification remains pending in Verifier A v0.1.",
+        "Body-hash recomputation, registry fault-model membership, failure-domain and signature replay are full-verifier duties.",
     )
 
 
@@ -311,9 +337,9 @@ def validate_release_manifest_structure(manifest: Mapping[str, Any], required_ga
     if set(ids) != set(required_gate_ids):
         return fail("RELEASE_MANIFEST_GATE_SET_MISMATCH")
 
+    # Frontier code is not an evidence resolver and must never positively admit
+    # a claimed frozen release merely because hashes look syntactically valid.
     if manifest.get("overall_status") == "FROZEN_PASS":
-        for row in rows:
-            if row.get("result") != "PASS":
-                return fail("FROZEN_PASS_WITH_NONPASS_GATE", str(row.get("gate_id")))
+        return fail("FULL_RELEASE_EVIDENCE_RESOLUTION_NOT_IMPLEMENTED")
 
-    return ok("RELEASE_MANIFEST_STRUCTURE_PASS")
+    return ok("RELEASE_MANIFEST_DRAFT_STRUCTURE_PASS")

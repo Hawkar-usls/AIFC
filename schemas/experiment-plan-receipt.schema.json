@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/experiment-plan-receipt.schema.json",
+  "title": "AIFC Experiment Plan Freeze Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "logical_position",
+    "content_hash",
+    "registry_hash",
+    "witness_id",
+    "key_id",
+    "signature_algorithm",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/experiment-plan-receipt/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "logical_position": {"const": "EXPERIMENT_PLAN_FROZEN"},
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+    "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signature": {"type": "string", "minLength": 1, "maxLength": 1024}
+  },
+  "description": "Experiment-scoped receipt over the frozen experiment-plan content hash. It intentionally has no trial_index because certification precedes creation of the first trial slot. Full verifier must check canonical signature input, key lifecycle, registry membership and failure-domain semantics."
+}

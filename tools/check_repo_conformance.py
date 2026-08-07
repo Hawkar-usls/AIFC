@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """AIFC repository-level draft conformance checks.
 
-This is not the scientific verifier. It checks that the repository contains the
-machine-readable protocol objects required for the draft and that key hardening
-contracts cannot silently drift before release.
+This is deliberately NOT the scientific verifier. It checks that the repository
+contains the current draft protocol surface and that selected fail-closed
+contracts cannot silently drift. Scientific admission remains a separate replay
+and release-manifest problem.
 """
 from __future__ import annotations
 
@@ -14,10 +15,51 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+SCHEMA_FILES = [
+    "schemas/hard-witness.schema.json",
+    "schemas/candidate-set.schema.json",
+    "schemas/pre-return-certificate.schema.json",
+    "schemas/trial-ledger-event.schema.json",
+    "schemas/trial-creation-policy.schema.json",
+    "schemas/experiment-plan.schema.json",
+    "schemas/candidate-generation-policy.schema.json",
+    "schemas/candidate-generation-profile.schema.json",
+    "schemas/target-selector-policy.schema.json",
+    "schemas/target-selector-profile.schema.json",
+    "schemas/target-derivation-policy.schema.json",
+    "schemas/target-derivation-profile.schema.json",
+    "schemas/conditioning-view-policy.schema.json",
+    "schemas/pre-target-conditioning-view.schema.json",
+    "schemas/entropy-policy.schema.json",
+    "schemas/entropy-profile.schema.json",
+    "schemas/causal-model.schema.json",
+    "schemas/statistical-plan.schema.json",
+    "schemas/eprocess-state.schema.json",
+    "schemas/witness-registry.schema.json",
+    "schemas/witness-receipt.schema.json",
+    "schemas/quorum-certificate.schema.json",
+    "schemas/registry-transition-body.schema.json",
+    "schemas/registry-transition-receipt.schema.json",
+    "schemas/registry-transition-quorum.schema.json",
+    "schemas/registry-transition-certificate.schema.json",
+    "schemas/external-freshness-policy.schema.json",
+    "schemas/publication-policy.schema.json",
+    "schemas/publication-manifest.schema.json",
+    "schemas/target-evidence.schema.json",
+    "schemas/evidence-bundle.schema.json",
+    "schemas/evidence-store-index.schema.json",
+    "schemas/replay-package.schema.json",
+    "schemas/verifier-result.schema.json",
+    "schemas/release-manifest.schema.json",
+]
+
 REQUIRED_FILES = [
     "README.md",
     "CITATION.cff",
     ".zenodo.json",
+    "ROADMAP.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
     "spec/AIFC-SPEC-v1.0-draft.md",
     "spec/STATE_MACHINE.md",
     "spec/CANONICALIZATION.md",
@@ -29,30 +71,63 @@ REQUIRED_FILES = [
     "docs/TARGET_DERIVATION.md",
     "docs/CAUSAL_MODEL.md",
     "docs/RELEASE_MANIFEST.md",
-    "schemas/hard-witness.schema.json",
-    "schemas/pre-return-certificate.schema.json",
-    "schemas/trial-ledger-event.schema.json",
-    "schemas/candidate-generation-profile.schema.json",
-    "schemas/entropy-profile.schema.json",
-    "schemas/target-derivation-profile.schema.json",
-    "schemas/causal-model.schema.json",
-    "schemas/witness-registry.schema.json",
-    "schemas/witness-receipt.schema.json",
-    "schemas/quorum-certificate.schema.json",
-    "schemas/registry-transition-body.schema.json",
-    "schemas/registry-transition-receipt.schema.json",
-    "schemas/registry-transition-quorum.schema.json",
-    "schemas/registry-transition-certificate.schema.json",
-    "schemas/target-evidence.schema.json",
-    "schemas/evidence-bundle.schema.json",
-    "schemas/verifier-result.schema.json",
-    "schemas/release-manifest.schema.json",
     "conformance/state-machine-v1.json",
     "conformance/AIFC-RELEASE-GATE-v1.json",
-]
+    "conformance/VERIFIER-A-FRONTIER-v0.1.json",
+    "conformance/VERIFIER-A-REPLAY-v0.2.json",
+    "reference/verifier/canonical.py",
+    "reference/verifier/frontier.py",
+    "reference/verifier/bindings.py",
+    "reference/verifier/resolver.py",
+    "reference/verifier/replay.py",
+    "reference/verifier/replay_engine.py",
+    "reference/verifier/aifc_verify.py",
+    "reference/tests/test_frontier.py",
+    "reference/tests/test_replay.py",
+] + SCHEMA_FILES
 
-SCHEMA_FILES = [p for p in REQUIRED_FILES if p.startswith("schemas/")]
 EXPECTED_SCHEMA_IDS = {rel: f"https://github.com/Hawkar-usls/AIFC/{rel}" for rel in SCHEMA_FILES}
+
+EXPECTED_RELEASE_GATES = {
+    "SPEC_SCHEMA_VALID",
+    "STATE_MACHINE_VALID",
+    "EXPERIMENT_PLAN_VALID",
+    "TRIAL_CREATION_POLICY_VALID",
+    "TRIAL_LEDGER_CONTINUITY",
+    "LEDGER_GENESIS_SENTINEL_VALID",
+    "CANDIDATE_SET_RECOMPUTED",
+    "CANDIDATE_GENERATION_PROVENANCE_VALID",
+    "POST_CREATED_OPERATOR_CHOICE_EXCLUDED",
+    "PRE_TARGET_CONDITIONING_VIEW_VALID",
+    "TARGET_SELECTOR_PROFILE_VALID",
+    "TARGET_DERIVATION_PROFILE_VALID",
+    "TARGET_DERIVATION_BYTE_REPLAY",
+    "ENTROPY_POLICY_VALID",
+    "ENTROPY_PROFILE_VALID",
+    "CANONICAL_RATIONAL_VALID",
+    "EVIDENCE_RESOLVER_PASS",
+    "CAUSAL_MODEL_VALID",
+    "CAUSAL_EVIDENCE_RESOLUTION",
+    "WITNESS_LIFECYCLE_VALID",
+    "WITNESS_FAILURE_DOMAIN_INDEPENDENCE",
+    "REGISTRY_TRANSITION_VALID",
+    "STATISTICAL_PLAN_VALID",
+    "STATISTICAL_ENGINE_REPLAY",
+    "PUBLICATION_MANIFEST_VALID",
+    "COMPLETE_TRIAL_PUBLICATION",
+    "CITATION_ZENODO_METADATA_SYNC",
+    "ALL_HONEST_VECTORS_PASS",
+    "ALL_ATTACK_VECTORS_EXPECTED_REJECTION",
+    "IMPLEMENTATION_A_PASS",
+    "IMPLEMENTATION_B_PASS",
+    "BYTE_IDENTICAL_CANONICALIZATION",
+    "FAIL_OPEN_ZERO",
+    "RELEASE_ASSET_CHOREOGRAPHY_VALID",
+    "RELEASE_MANIFEST_PROOF_CARRYING",
+    "RELEASE_MANIFEST_EVIDENCE_RESOLUTION",
+    "TARGET_SOURCE_CRYPTOGRAPHIC_PROOF",
+    "EXTERNAL_BENCH_EVIDENCE_ROOTED_OUTSIDE_GENESIS",
+}
 
 
 def die(msg: str) -> None:
@@ -72,6 +147,12 @@ def cff_scalar(text: str, key: str) -> str:
     if not m:
         die(f"missing CFF scalar {key}")
     return next(x for x in m.groups() if x is not None).strip()
+
+
+def require_keys(obj: dict, required: tuple[str, ...], label: str) -> None:
+    missing = [key for key in required if key not in obj.get("required", [])]
+    if missing:
+        die(f"{label} missing required bindings: {', '.join(missing)}")
 
 
 def check_required_files() -> None:
@@ -94,61 +175,181 @@ def check_schema_headers() -> None:
 
 
 def check_hardening_contracts() -> None:
+    candidate_set = load_json("schemas/candidate-set.schema.json")
+    require_keys(candidate_set, ("hard_witness_hashes", "cardinality"), "candidate set")
+
+    candidate_policy = load_json("schemas/candidate-generation-policy.schema.json")
+    props = candidate_policy["properties"]
+    if props["operator_choice_after_created_policy"].get("const") != "FORBIDDEN_FOR_STRONGEST_GRADE_V1":
+        die("strongest-grade post-CREATED operator choice must remain forbidden")
+
+    candidate_profile = load_json("schemas/candidate-generation-profile.schema.json")
+    require_keys(candidate_profile, ("policy_hash", "created_slot_certificate_hash", "candidate_set_cardinality_upper_bound"), "candidate profile")
+    selection = candidate_profile["properties"]["selection_freedom"]["properties"]
+    if selection["operator_choice_after_created"].get("const") is not False:
+        die("candidate profile must fail closed on post-CREATED operator choice")
+
+    plan = load_json("schemas/experiment-plan.schema.json")
+    require_keys(plan, (
+        "trial_creation_policy_hash",
+        "candidate_generation_policy_hash",
+        "target_selector_policy_hash",
+        "target_derivation_policy_hash",
+        "entropy_policy_hash",
+        "causal_model_hash",
+        "statistical_plan_hash",
+        "publication_policy_hash",
+        "external_freshness_policy_hash",
+        "conditioning_view_policy_hash",
+    ), "experiment plan")
+
+    pre = load_json("schemas/pre-return-certificate.schema.json")
+    require_keys(pre, (
+        "experiment_plan_hash",
+        "candidate_generation_profile_hash",
+        "target_selector_policy_hash",
+        "target_derivation_policy_hash",
+    ), "PRE_RETURN")
+    if "target_derivation_profile_hash" in pre.get("properties", {}):
+        die("PRE_RETURN must bind derivation policy, not a later concrete derivation instance")
+
+    selector = load_json("schemas/target-selector-profile.schema.json")
+    require_keys(selector, ("policy_hash", "anchor_hash", "selected_event_id", "selection_transcript_hash"), "target selector")
+    if selector["properties"]["alternative_selected_events"].get("maxItems") != 0:
+        die("strongest-grade selector must permit exactly one selected event")
+
+    derivation = load_json("schemas/target-derivation-profile.schema.json")
+    require_keys(derivation, ("policy_hash", "target_selector_profile_hash", "extraction", "transformation"), "target derivation")
+    algorithms = derivation["properties"]["transformation"]["properties"]["algorithm"].get("enum", [])
+    if set(algorithms) != {"IDENTITY", "SHA-256"}:
+        die("strongest-grade target derivation algorithm set drift")
+    if "profile_hash" in derivation.get("properties", {}):
+        die("target derivation must not contain self-hash field")
+
+    view = load_json("schemas/pre-target-conditioning-view.schema.json")
+    require_keys(view, (
+        "ledger_head_hash",
+        "target_selector_profile_hash",
+        "target_derivation_profile_hash",
+        "operator_state_evidence_hashes",
+        "source_state_evidence_hashes",
+    ), "pre-target conditioning view")
+    if "certification_quorum_hash" in view.get("properties", {}):
+        die("pre-target conditioning view must not contain its own quorum hash")
+
+    entropy_policy = load_json("schemas/entropy-policy.schema.json")
+    require_keys(entropy_policy, (
+        "source_id",
+        "source_protocol_version",
+        "allowed_derivation_methods",
+        "required_external_evidence_types",
+        "post_target_method_selection_forbidden",
+    ), "entropy policy")
+    if entropy_policy["properties"]["post_target_method_selection_forbidden"].get("const") is not True:
+        die("entropy policy must forbid post-target method selection")
+
     entropy = load_json("schemas/entropy-profile.schema.json")
     rat = entropy["properties"]["point_probability_upper_bound"]["properties"]
     if rat["numerator_dec"].get("pattern") != r"^(0|[1-9][0-9]*)$":
         die("canonical rational numerator grammar drift")
     if rat["denominator_dec"].get("pattern") != r"^[1-9][0-9]*$":
         die("canonical rational denominator grammar drift")
-    if "target_derivation_profile_hash" not in entropy.get("required", []):
-        die("entropy profile must bind target derivation profile")
+    require_keys(entropy, ("target_selector_profile_hash", "target_derivation_profile_hash", "conditioning_view_hash"), "entropy profile")
 
-    target_profile = load_json("schemas/target-derivation-profile.schema.json")
-    if "profile_hash" in target_profile.get("properties", {}):
-        die("target derivation profile must not contain self-hash field")
+    causal = load_json("schemas/causal-model.schema.json")
+    require_keys(causal, ("experiment_id", "edges", "no_edge_claims", "unresolved_assumptions"), "causal model")
+    edge_items = causal["properties"]["edges"]["items"]
+    if "evidence_hashes" not in edge_items.get("required", []):
+        die("causal edge claims must carry evidence hashes")
+
+    statistical = load_json("schemas/statistical-plan.schema.json")
+    if statistical["properties"]["target_derivation_rule"].get("const") != "EXACTLY_ONE_ADMITTED_TARGET_DERIVATION_PER_TRIAL":
+        die("statistical plan must freeze exactly one target derivation per trial")
 
     quorum = load_json("schemas/quorum-certificate.schema.json")
-    receipt_items = quorum["properties"]["receipts"].get("items", {})
-    if receipt_items.get("$ref") != "witness-receipt.schema.json":
+    if quorum["properties"]["receipts"].get("items", {}).get("$ref") != "witness-receipt.schema.json":
         die("quorum receipts must $ref witness-receipt schema")
 
-    target = load_json("schemas/target-evidence.schema.json")
-    for key in ("target_derivation_profile_hash", "raw_source_object_hash"):
-        if key not in target.get("required", []):
-            die(f"target evidence missing required binding: {key}")
-
-    pre = load_json("schemas/pre-return-certificate.schema.json")
-    for key in ("candidate_generation_profile_hash", "target_derivation_profile_hash"):
-        if key not in pre.get("required", []):
-            die(f"PRE_RETURN missing frozen binding: {key}")
-
-    bundle = load_json("schemas/evidence-bundle.schema.json")
-    for key in ("candidate_generation_profile_hash", "target_derivation_profile_hash", "witness_registry_transition_hash"):
-        if key not in bundle.get("required", []):
-            die(f"evidence bundle missing binding: {key}")
-
     registry = load_json("schemas/witness-registry.schema.json")
+    fault_props = registry["properties"]["fault_model"]["properties"]
+    if fault_props["independence_unit"].get("const") != "FAILURE_DOMAIN":
+        die("witness independence unit must remain FAILURE_DOMAIN")
     if "transition_certificate_hash" not in registry.get("properties", {}):
         die("witness registry missing transition certificate binding")
 
     transition = load_json("schemas/registry-transition-certificate.schema.json")
-    props = transition.get("properties", {})
-    if props.get("transition_body", {}).get("$ref") != "registry-transition-body.schema.json":
+    tprops = transition.get("properties", {})
+    if tprops.get("transition_body", {}).get("$ref") != "registry-transition-body.schema.json":
         die("registry transition must bind typed transition body")
-    if props.get("old_registry_authorization", {}).get("$ref") != "registry-transition-quorum.schema.json":
+    if tprops.get("old_registry_authorization", {}).get("$ref") != "registry-transition-quorum.schema.json":
         die("old registry transition authorization must use experiment-scoped quorum")
-    if props.get("new_registry_acceptance", {}).get("$ref") != "registry-transition-quorum.schema.json":
+    if tprops.get("new_registry_acceptance", {}).get("$ref") != "registry-transition-quorum.schema.json":
         die("new registry transition acceptance must use experiment-scoped quorum")
 
-    rtq = load_json("schemas/registry-transition-quorum.schema.json")
-    if rtq["properties"]["receipts"]["items"].get("$ref") != "registry-transition-receipt.schema.json":
-        die("registry transition quorum receipts must be typed")
+    target = load_json("schemas/target-evidence.schema.json")
+    require_keys(target, (
+        "target_selector_profile_hash",
+        "target_derivation_profile_hash",
+        "conditioning_view_hash",
+        "raw_source_object_hash",
+    ), "target evidence")
+
+    bundle = load_json("schemas/evidence-bundle.schema.json")
+    require_keys(bundle, (
+        "experiment_plan_hash",
+        "candidate_set_hash",
+        "target_selector_profile_hash",
+        "target_derivation_profile_hash",
+        "conditioning_view_hash",
+        "statistical_plan_hash",
+    ), "evidence bundle")
+    if "publication_manifest_hash" in bundle.get("properties", {}):
+        die("per-trial evidence bundle must not point forward to publication manifest")
+
+    publication = load_json("schemas/publication-manifest.schema.json")
+    require_keys(publication, ("final_ledger_head_hash", "trial_records", "external_publication_root_hash"), "publication manifest")
+
+    resolver_schema = load_json("schemas/evidence-store-index.schema.json")
+    require_keys(resolver_schema, ("store_id", "entries"), "evidence store index")
+
+    replay_package = load_json("schemas/replay-package.schema.json")
+    require_keys(replay_package, (
+        "experiment_plan_hash",
+        "ledger_event_hashes",
+        "evidence_bundle_hash",
+        "pre_target_conditioning_view_hash",
+        "publication_manifest_hash",
+    ), "replay package")
+    if "evidence_bundle" in replay_package.get("properties", {}):
+        die("replay package must be content-addressed, not embed producer evidence objects")
 
     release_manifest = load_json("schemas/release-manifest.schema.json")
-    if "gate_results" not in release_manifest.get("required", []):
-        die("release manifest must carry per-gate results")
+    require_keys(release_manifest, ("source_commit", "gate_results", "delivery_mode"), "release manifest")
+    if "repository_commit" in release_manifest.get("properties", {}):
+        die("release manifest must use two-stage source_commit choreography")
+    if release_manifest["properties"]["delivery_mode"].get("const") != "OUT_OF_TREE_RELEASE_ASSET_BOUND_TO_IMMUTABLE_SOURCE_COMMIT":
+        die("release manifest delivery choreography drift")
     if "manifest_hash" in release_manifest.get("properties", {}):
         die("release manifest must not contain self-hash field")
+
+    resolver_source = (ROOT / "reference/verifier/resolver.py").read_text(encoding="utf-8")
+    for token in ("DANGLING_EVIDENCE_HASH", "NONCANONICAL_STORED_PROTOCOL_BYTES", "PROTOCOL_OBJECT_HASH_MISMATCH"):
+        if token not in resolver_source:
+            die(f"evidence resolver missing fail-closed path: {token}")
+
+    replay_sources = (
+        (ROOT / "reference/verifier/replay.py").read_text(encoding="utf-8")
+        + (ROOT / "reference/verifier/replay_engine.py").read_text(encoding="utf-8")
+    )
+    for token in (
+        "POST_HOC_CONDITIONING_VIEW_SANITIZATION",
+        "FAULT_MODEL_REBINDING",
+        "SAME_FAILURE_DOMAIN_SYBIL",
+        "TARGET_DERIVATION_REPLAY",
+        "PUBLICATION_MANIFEST_REPLAY",
+    ):
+        if token not in replay_sources:
+            die(f"replay engine missing frontier failure path: {token}")
 
     ledger_doc = (ROOT / "docs/TRIAL_LEDGER.md").read_text(encoding="utf-8")
     if "AIFC:EXPERIMENT_GENESIS:v1" not in ledger_doc:
@@ -190,31 +391,12 @@ def check_state_machine() -> None:
 def check_release_gate() -> None:
     gate = load_json("conformance/AIFC-RELEASE-GATE-v1.json")
     ids = [x.get("id") for x in gate.get("required_checks", []) if x.get("required") is True]
-    needed = {
-        "SPEC_SCHEMA_VALID",
-        "STATE_MACHINE_VALID",
-        "TRIAL_LEDGER_CONTINUITY",
-        "LEDGER_GENESIS_SENTINEL_VALID",
-        "CANDIDATE_GENERATION_PROVENANCE_VALID",
-        "ENTROPY_PROFILE_VALID",
-        "CANONICAL_RATIONAL_VALID",
-        "TARGET_DERIVATION_PROFILE_VALID",
-        "CAUSAL_MODEL_VALID",
-        "WITNESS_LIFECYCLE_VALID",
-        "REGISTRY_TRANSITION_VALID",
-        "CITATION_ZENODO_METADATA_SYNC",
-        "ALL_HONEST_VECTORS_PASS",
-        "ALL_ATTACK_VECTORS_EXPECTED_REJECTION",
-        "IMPLEMENTATION_A_PASS",
-        "IMPLEMENTATION_B_PASS",
-        "BYTE_IDENTICAL_CANONICALIZATION",
-        "FAIL_OPEN_ZERO",
-        "COMPLETE_TRIAL_PUBLICATION",
-        "RELEASE_MANIFEST_PROOF_CARRYING",
-        "EXTERNAL_BENCH_EVIDENCE_ROOTED_OUTSIDE_GENESIS",
-    }
-    if set(ids) != needed:
-        die("release gate required-check set drift")
+    if len(ids) != len(set(ids)):
+        die("duplicate required release gate id")
+    if set(ids) != EXPECTED_RELEASE_GATES:
+        missing = sorted(EXPECTED_RELEASE_GATES - set(ids))
+        extra = sorted(set(ids) - EXPECTED_RELEASE_GATES)
+        die(f"release gate required-check set drift; missing={missing}; extra={extra}")
     if gate.get("status") != "DRAFT_NOT_SATISFIED":
         die("draft repository must not self-assert frozen conformance")
     print(f"FROZEN_RELEASE_GATE = BLOCKED_AS_EXPECTED ({len(ids)} unmet evidence classes declared)")

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/pre-target-conditioning-view.schema.json",
+  "title": "AIFC Pre-Target Conditioning View v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "view_id",
+    "experiment_id",
+    "trial_index",
+    "run_id",
+    "logical_state",
+    "ledger_head_hash",
+    "experiment_plan_hash",
+    "candidate_set_hash",
+    "candidate_generation_profile_hash",
+    "pre_return_certificate_hash",
+    "pre_return_quorum_certificate_hash",
+    "witness_registry_hash",
+    "target_selector_profile_hash",
+    "target_derivation_profile_hash",
+    "causal_model_hash",
+    "operator_state_evidence_hashes",
+    "source_state_evidence_hashes",
+    "additional_pre_target_evidence_hashes",
+    "unresolved_assumptions",
+    "frozen_before_target_observed"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/pre-target-conditioning-view/v1"},
+    "view_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "logical_state": {"const": "TARGET_ARMED"},
+    "ledger_head_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "experiment_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_set_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_generation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pre_return_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pre_return_quorum_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "witness_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_selector_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_derivation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "causal_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "operator_state_evidence_hashes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "uniqueItems": true
+    },
+    "source_state_evidence_hashes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "uniqueItems": true
+    },
+    "additional_pre_target_evidence_hashes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "uniqueItems": true
+    },
+    "unresolved_assumptions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "frozen_before_target_observed": {"const": true}
+  },
+  "description": "Concrete representation of F_{i-1}. ledger_head_hash is the replayed QUORUM_CERTIFIED event head immediately before arming. The view contains no self-certification hash. A separate quorum certificate signs the view hash; the TARGET_ARMED ledger event then binds that quorum-certificate hash. Entropy-profile conditioning_view_hash must equal this view's domain-separated hash."
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/statistical-plan.schema.json",
+  "title": "AIFC Statistical Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "experiment_id",
+    "mode",
+    "alpha",
+    "candidate_multiplicity_rule",
+    "target_derivation_rule",
+    "fixed_horizon_product_bound_policy",
+    "anytime_eprocess_policy",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/statistical-plan/v1"},
+    "plan_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "mode": {"enum": ["FIXED_HORIZON", "ANYTIME_VALID"]},
+    "alpha": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator_dec", "denominator_dec", "canonical_reduced"],
+      "properties": {
+        "numerator_dec": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+        "denominator_dec": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "canonical_reduced": {"const": true}
+      }
+    },
+    "candidate_multiplicity_rule": {"const": "USE_VERIFIED_CANDIDATE_SET_CARDINALITY"},
+    "target_derivation_rule": {"const": "EXACTLY_ONE_ADMITTED_TARGET_DERIVATION_PER_TRIAL"},
+    "fixed_horizon_product_bound_policy": {
+      "enum": [
+        "ONLY_FOR_DETERMINISTIC_OR_PREREGISTERED_CAP_SEQUENCE",
+        "DISABLED"
+      ]
+    },
+    "declared_horizon": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+    "anytime_eprocess_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "lambda_policy_type"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "lambda_policy_type": {"enum": ["DISABLED", "FIXED_RATIONAL", "PREDICTABLE_ALGORITHM"]},
+        "fixed_lambda": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["numerator_dec", "denominator_dec", "canonical_reduced"],
+          "properties": {
+            "numerator_dec": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+            "denominator_dec": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+            "canonical_reduced": {"const": true}
+          }
+        },
+        "predictable_algorithm_spec_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "history_input_policy_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "frozen_before_first_created": {"const": true}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"mode": {"const": "FIXED_HORIZON"}}, "required": ["mode"]},
+      "then": {
+        "required": ["declared_horizon"],
+        "properties": {
+          "fixed_horizon_product_bound_policy": {"const": "ONLY_FOR_DETERMINISTIC_OR_PREREGISTERED_CAP_SEQUENCE"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"mode": {"const": "ANYTIME_VALID"}}, "required": ["mode"]},
+      "then": {
+        "properties": {
+          "anytime_eprocess_policy": {
+            "properties": {"enabled": {"const": true}}
+          }
+        }
+      }
+    }
+  ],
+  "description": "For genuinely adaptive history-wise caps, AIFC v1 uses the preregistered anytime-valid e-process path. The fixed-horizon product formula is admitted only when the cap sequence is deterministic or preregistered under the stated theorem conditions."
+}

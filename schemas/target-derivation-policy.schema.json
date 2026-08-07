@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/target-derivation-policy.schema.json",
+  "title": "AIFC Target Derivation Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "allowed_extraction_methods",
+    "allowed_transformation_algorithms",
+    "allowed_input_tokens",
+    "framing",
+    "exactly_one_derivation_per_trial",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/target-derivation-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "allowed_extraction_methods": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["WHOLE_RAW_BYTES", "JSON_POINTER_UTF8_STRING", "JSON_POINTER_HEX_BYTES", "JSON_POINTER_BASE64_BYTES"]}
+    },
+    "allowed_transformation_algorithms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["IDENTITY", "SHA-256"]}
+    },
+    "allowed_input_tokens": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "EXTRACTED_BYTES",
+          "SOURCE_ID_UTF8",
+          "SOURCE_PROTOCOL_VERSION_UTF8",
+          "TARGET_EVENT_ID_UTF8",
+          "RUN_ID_UTF8",
+          "PRE_RETURN_CERTIFICATE_HASH_BYTES"
+        ]
+      }
+    },
+    "framing": {"const": "AIFC_TYPED_LENGTH_PREFIXED_V1"},
+    "exactly_one_derivation_per_trial": {"const": true},
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "Strongest-grade AIFC v1 forbids free-text extraction semantics and OTHER_FROZEN_ALGORITHM. Every input token has a frozen byte interpretation and typed length-prefix framing. New algorithms require a versioned policy/schema update rather than an opaque post-hoc spec hash."
+}

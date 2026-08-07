@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/entropy-policy.schema.json",
+  "title": "AIFC Entropy Admission Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "source_id",
+    "source_protocol_version",
+    "allowed_derivation_methods",
+    "conditioning_view_role",
+    "required_external_evidence_types",
+    "unresolved_assumptions_policy",
+    "post_target_method_selection_forbidden",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/entropy-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "allowed_derivation_methods": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "CERTIFIED_UNIFORM_BITS",
+          "PUBLIC_BEACON_SPECIFICATION",
+          "EXTERNAL_SECURITY_PROOF",
+          "CONSERVATIVE_ANALYTIC_BOUND",
+          "EMPIRICAL_MODEL_WITH_DECLARED_ASSUMPTIONS"
+        ]
+      }
+    },
+    "conditioning_view_role": {"const": "AIFC_PRE_TARGET_CONDITIONING_VIEW_AT_TARGET_ARMED"},
+    "required_external_evidence_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1, "maxLength": 128},
+      "uniqueItems": true
+    },
+    "derivation_spec_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "unresolved_assumptions_policy": {"const": "BLOCK_STRONGEST_GRADE"},
+    "post_target_method_selection_forbidden": {"const": true},
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "The policy freezes which entropy/security argument may justify p_i before any trial begins. A trial-specific AIFC/entropy-profile/v1 must match this source/version and an allowed derivation method, bind the frozen pre-target conditioning view, resolve the required evidence classes and contain no unresolved assumptions for strongest-grade admission."
+}

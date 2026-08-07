@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/eprocess-state.schema.json",
+  "title": "AIFC E-Process State v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "statistical_plan_hash",
+    "state_index",
+    "trial_index",
+    "previous_state_hash",
+    "a_i",
+    "lambda_i",
+    "hit",
+    "factor",
+    "cumulative_e",
+    "derivation_transcript_hash"
+  ],
+  "$defs": {
+    "rational": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator_dec", "denominator_dec", "canonical_reduced"],
+      "properties": {
+        "numerator_dec": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+        "denominator_dec": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "canonical_reduced": {"const": true}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "AIFC/eprocess-state/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "statistical_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state_index": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "previous_state_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "a_i": {"$ref": "#/$defs/rational"},
+    "lambda_i": {"$ref": "#/$defs/rational"},
+    "hit": {"type": "boolean"},
+    "factor": {"$ref": "#/$defs/rational"},
+    "cumulative_e": {"$ref": "#/$defs/rational"},
+    "derivation_transcript_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "description": "Verifier must recompute a_i from verified multiplicity and entropy bound, recompute predictable lambda_i from the frozen statistical plan/history, explicitly branch on a_i=0, derive the exact factor and cumulative e-value, and verify previous-state continuity. Producer-supplied factor/cumulative values are not trusted."
+}

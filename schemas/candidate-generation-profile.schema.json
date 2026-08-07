@@ -9,6 +9,7 @@
     "profile_id",
     "experiment_id",
     "trial_index",
+    "policy_hash",
     "created_slot_certificate_hash",
     "generation_mode",
     "generator_identity",
@@ -24,15 +25,15 @@
     "schema": {"const": "AIFC/candidate-generation-profile/v1"},
     "profile_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "trial_index": {"type": "integer", "minimum": 1},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "created_slot_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "generation_mode": {
       "enum": [
         "SINGLE_SHOT_AFTER_CERTIFIED_CREATED",
         "PRECOMMITTED_DETERMINISTIC_GENERATOR",
         "VERIFIABLE_EXTERNAL_GENERATOR",
-        "DECLARED_CANDIDATE_POOL",
-        "OTHER_DOCUMENTED_METHOD"
+        "DECLARED_CANDIDATE_POOL"
       ]
     },
     "generator_identity": {
@@ -48,21 +49,21 @@
     "pre_created_state_commitment": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["method", "content_hash"],
+      "required": ["method", "content_hash", "externally_certified"],
       "properties": {
         "method": {"type": "string", "minLength": 1, "maxLength": 256},
         "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "externally_certified": {"type": "boolean"}
       }
     },
-    "candidate_set_cardinality_upper_bound": {"type": "integer", "minimum": 1},
+    "candidate_set_cardinality_upper_bound": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "selection_freedom": {
       "type": "object",
       "additionalProperties": false,
       "required": ["operator_choice_after_created", "operator_choice_after_generation", "hidden_pool_exclusion_basis"],
       "properties": {
-        "operator_choice_after_created": {"type": "boolean"},
-        "operator_choice_after_generation": {"type": "boolean"},
+        "operator_choice_after_created": {"const": false},
+        "operator_choice_after_generation": {"const": false},
         "hidden_pool_exclusion_basis": {"type": "string", "minLength": 1, "maxLength": 2048}
       }
     },
@@ -91,5 +92,6 @@
         "BLOCKED_UNRESOLVED_ASSUMPTIONS"
       ]
     }
-  }
+  },
+  "description": "Strongest-grade v1 profile must resolve policy_hash to the experiment's frozen AIFC/candidate-generation-policy/v1 and contain no post-CREATED or post-generation operator choice."
 }
