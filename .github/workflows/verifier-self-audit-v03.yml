@@ -12,13 +12,13 @@ permissions:
   actions: read
 
 jobs:
-  verifier-self-audit:
+  verifier_self_audit:
     name: Verifier A environment self-audit
     runs-on: ubuntu-24.04
     outputs:
       tested_source_commit_sha: ${{ steps.attmeta.outputs.tested_source_commit_sha }}
       verifier_job_id: ${{ steps.jobmeta.outputs.job_id }}
-      attestation_artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      attestation_artifact_id: ${{ steps.upload.outputs['artifact-id'] }}
       attestation_raw_sha256: ${{ steps.attmeta.outputs.attestation_raw_sha256 }}
       attestation_protocol_hash: ${{ steps.attmeta.outputs.attestation_protocol_hash }}
     steps:
@@ -190,16 +190,16 @@ jobs:
               raise SystemExit(1)
           PY
 
-  platform-receipt:
+  platform_receipt:
     name: GitHub platform receipt replay
-    needs: verifier-self-audit
-    if: ${{ needs.verifier-self-audit.result == 'success' }}
+    needs: verifier_self_audit
+    if: needs.verifier_self_audit.result == 'success'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact tested source commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.verifier-self-audit.outputs.tested_source_commit_sha }}
+          ref: ${{ needs.verifier_self_audit.outputs.tested_source_commit_sha }}
           fetch-depth: 1
 
       - name: Set up exact Python runtime
@@ -217,11 +217,11 @@ jobs:
           mkdir -p platform-evidence
           python tools/build_ci_platform_receipt.py \
             --run-id '${{ github.run_id }}' \
-            --job-id '${{ needs.verifier-self-audit.outputs.verifier_job_id }}' \
-            --artifact-id '${{ needs.verifier-self-audit.outputs.attestation_artifact_id }}' \
-            --tested-source-commit '${{ needs.verifier-self-audit.outputs.tested_source_commit_sha }}' \
-            --attestation-raw-sha256 '${{ needs.verifier-self-audit.outputs.attestation_raw_sha256 }}' \
-            --attestation-protocol-hash '${{ needs.verifier-self-audit.outputs.attestation_protocol_hash }}' \
+            --job-id '${{ needs.verifier_self_audit.outputs.verifier_job_id }}' \
+            --artifact-id '${{ needs.verifier_self_audit.outputs.attestation_artifact_id }}' \
+            --tested-source-commit '${{ needs.verifier_self_audit.outputs.tested_source_commit_sha }}' \
+            --attestation-raw-sha256 '${{ needs.verifier_self_audit.outputs.attestation_raw_sha256 }}' \
+            --attestation-protocol-hash '${{ needs.verifier_self_audit.outputs.attestation_protocol_hash }}' \
             --output-dir platform-evidence
 
       - name: Re-query GitHub and verify uploaded artifact bytes
