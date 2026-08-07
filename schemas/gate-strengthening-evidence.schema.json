@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/gate-strengthening-evidence.schema.json",
+  "title": "AIFC Gate Strengthening Evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "proof_method",
+    "removed_gate_id",
+    "previous_gate_definition_hash",
+    "successor_gate_ids",
+    "successor_definition_hashes",
+    "claim",
+    "maximum_truth_table_atoms"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/gate-strengthening-evidence/v1"},
+    "proof_method": {"const": "BOOLEAN_TRUTH_TABLE_IMPLICATION_V1"},
+    "removed_gate_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "previous_gate_definition_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "successor_gate_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}
+    },
+    "successor_definition_hashes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "claim": {"const": "SUCCESSOR_CONJUNCTION_IMPLIES_PREDECESSOR"},
+    "maximum_truth_table_atoms": {"type": "integer", "minimum": 0, "maximum": 16}
+  },
+  "description": "Content-addressed proof request for gate replacement. The verifier independently resolves the bound gate definitions and exhaustively proves that passing every successor gate implies passing the removed predecessor gate over the shared Boolean atom space. A declared PASS field is intentionally absent."
+}
