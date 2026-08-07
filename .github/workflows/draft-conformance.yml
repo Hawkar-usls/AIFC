@@ -21,19 +21,19 @@ jobs:
       - name: Run repository-level conformance checks
         run: python tools/check_repo_conformance.py
 
-      - name: Run Verifier A frontier core tests
+      - name: Run Verifier A frontier and replay tests
         run: |
           python -m unittest discover -s reference/tests -v
           echo "VERIFIER_A_FRONTIER_CORE = PASS"
+          echo "VERIFIER_A_REPLAY_V0_2 = PASS"
           echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
+          echo "AIFC_V1_FROZEN = FALSE"
 
       - name: Block premature v1.0 frozen tags
         if: startsWith(github.ref, 'refs/tags/v1.0')
         run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          gate=json.loads(Path('conformance/AIFC-RELEASE-GATE-v1.json').read_text())
-          if gate.get('status') != 'FROZEN_PASS':
-              raise SystemExit('AIFC v1.0 tag blocked: frozen release gate is not FROZEN_PASS')
-          PY
+          echo "AIFC v1.0 frozen tag blocked."
+          echo "A future frozen-release workflow must resolve and verify the out-of-tree"
+          echo "AIFC/release-manifest/v1 and every required evidence hash; it must not trust"
+          echo "conformance/AIFC-RELEASE-GATE-v1.json status as an authorization field."
+          exit 1
