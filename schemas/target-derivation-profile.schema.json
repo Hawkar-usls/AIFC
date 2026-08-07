@@ -14,7 +14,7 @@
     "source_id",
     "source_protocol_version",
     "raw_source_object_schema",
-    "event_selector_hash",
+    "target_selector_profile_hash",
     "extraction",
     "transformation",
     "domain_separator",
@@ -31,7 +31,7 @@
     "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
     "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
     "raw_source_object_schema": {"type": "string", "minLength": 1, "maxLength": 512},
-    "event_selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_selector_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "extraction": {
       "type": "object",
       "additionalProperties": false,
@@ -107,5 +107,5 @@
       "then": {"properties": {"output_length_bits": {"const": 256}}}
     }
   ],
-  "description": "The profile is a replayable byte-level derivation program. Free-text extraction and OTHER algorithms are forbidden in strongest-grade v1. Profile identity is its external domain-separated canonical content hash; no self-hash field is permitted."
+  "description": "The per-trial derivation program is bound to one concrete target-selector-profile. It is replayable at byte level; free-text extraction and OTHER algorithms are forbidden in strongest-grade v1."
 }
