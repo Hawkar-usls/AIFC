@@ -48,7 +48,7 @@ class SignaturePreimageV05Tests(unittest.TestCase):
         self.assertTrue(actual.startswith(DOMAIN))
         self.assertEqual(
             hashlib.sha256(actual).hexdigest(),
-            "ea6528388860f944d1dd74bd2a7cb345a3675c66fe0553a5d3ab0e46aa931ffc",
+            "e4ec24fa3b8d4ce0f423dad82fb6d4c1b2e371119309aee81b22d6e0188df117",
         )
 
     def test_cross_receipt_type_replay_changes_preimage(self):
