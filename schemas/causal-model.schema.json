@@ -4,22 +4,40 @@
   "title": "AIFC Causal Model v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "model_id", "nodes", "edges", "conditioned_on", "required_d_separations", "assumptions"],
+  "required": [
+    "schema",
+    "model_id",
+    "experiment_id",
+    "nodes",
+    "edges",
+    "no_edge_claims",
+    "conditioned_on",
+    "required_d_separations",
+    "assumptions",
+    "unresolved_assumptions",
+    "model_completeness_status"
+  ],
   "properties": {
     "schema": {"const": "AIFC/causal-model/v1"},
     "model_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "nodes": {
       "type": "array",
       "minItems": 2,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "role", "observed", "available_pre_target"],
+        "required": ["id", "role", "observed", "available_pre_target", "evidence_hashes"],
         "properties": {
           "id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
           "role": {"enum": ["PRE_RETURN_HARD", "TARGET_HARD", "PUBLIC_METADATA", "LATENT_COMMON_CAUSE", "SHARED_STATE", "SIDE_CHANNEL", "ENTROPY_STATE", "WITNESS_STATE", "OPERATOR_STATE", "SELECTION_VARIABLE", "OTHER"]},
           "observed": {"type": "boolean"},
           "available_pre_target": {"type": "boolean"},
+          "evidence_hashes": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "uniqueItems": true
+          },
           "description": {"type": "string", "maxLength": 1024}
         }
       }
@@ -29,13 +47,45 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["source", "target", "mechanism_class"],
+        "required": ["source", "target", "mechanism_class", "evidence_hashes"],
         "properties": {
           "source": {"type": "string"},
           "target": {"type": "string"},
           "mechanism_class": {"enum": ["ALGORITHMIC", "SHARED_MEMORY", "RNG_STATE", "NETWORK", "FILESYSTEM", "HUMAN_OPERATOR", "WITNESS", "SELECTION", "PHYSICAL", "UNKNOWN"]},
+          "evidence_hashes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "uniqueItems": true
+          },
           "description": {"type": "string", "maxLength": 1024}
         }
+      }
+    },
+    "no_edge_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "target", "basis"],
+        "properties": {
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "basis": {"enum": ["EVIDENCE_BACKED", "UNRESOLVED_ASSUMPTION"]},
+          "evidence_hashes": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "uniqueItems": true
+          },
+          "unresolved_assumption": {"type": ["string", "null"], "maxLength": 2048}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"basis": {"const": "EVIDENCE_BACKED"}}, "required": ["basis"]},
+            "then": {"required": ["evidence_hashes"], "properties": {"evidence_hashes": {"minItems": 1}}},
+            "else": {"required": ["unresolved_assumption"], "properties": {"unresolved_assumption": {"type": "string", "minLength": 1}}}
+          }
+        ]
       }
     },
     "conditioned_on": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
@@ -55,6 +105,8 @@
     },
     "forbidden_conditioning": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
     "assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "unresolved_assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
     "model_completeness_status": {"enum": ["DECLARED_MODEL_ONLY", "EXTERNALLY_AUDITED_NOT_PROVEN_COMPLETE", "BLOCKED_INCOMPLETE"]}
-  }
+  },
+  "description": "A causal DAG is a declared model, not proof of causal independence. Every asserted edge must carry evidence references. Material no-edge claims must be evidence-backed or explicitly unresolved. Strongest-grade admission must fail or downgrade when unresolved no-edge assumptions are required for the d-separation conclusion."
 }
