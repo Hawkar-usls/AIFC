@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 VERIFIER = ROOT / "reference" / "verifier"
 sys.path.insert(0, str(VERIFIER))
 
-from canonical import canonical_json_bytes, loads_json_strict  # noqa: E402
+from canonical import canonical_json_bytes, loads_strict  # noqa: E402
 from schema_runtime import validate_protocol_object  # noqa: E402
 
 API_VERSION = "2022-11-28"
@@ -45,6 +45,16 @@ def request(url: str, token: str, accept: str = "application/vnd.github+json") -
 
 def api_json(url: str, token: str) -> dict:
     return json.loads(request(url, token).decode("utf-8", errors="strict"))
+
+
+def strict_json_bytes(raw: bytes):
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError("PLATFORM_ARTIFACT_JSON_UTF8_BOM_FORBIDDEN")
+    try:
+        text = raw.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"PLATFORM_ARTIFACT_JSON_INVALID_UTF8:{exc}") from exc
+    return loads_strict(text)
 
 
 def require(condition: bool, message: str) -> None:
@@ -76,8 +86,8 @@ def attestation_from_artifact(base: str, artifact_id: int, token: str) -> tuple[
     except zipfile.BadZipFile as exc:
         raise ValueError("PLATFORM_ARTIFACT_BAD_ZIP") from exc
 
-    attestation = loads_json_strict(attestation_raw)
-    sidecar = loads_json_strict(sidecar_raw)
+    attestation = strict_json_bytes(attestation_raw)
+    sidecar = strict_json_bytes(sidecar_raw)
     require(isinstance(attestation, dict), "PLATFORM_ARTIFACT_ATTESTATION_NOT_OBJECT")
     require(isinstance(sidecar, dict), "PLATFORM_ARTIFACT_ATTESTATION_SIDECAR_NOT_OBJECT")
     validate_protocol_object(attestation, "AIFC/verifier-ci-attestation/v2")
