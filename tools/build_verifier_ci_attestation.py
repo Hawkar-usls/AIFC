@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import hashlib
-import json
 import os
 from pathlib import Path
 import re
@@ -32,11 +31,12 @@ def git(*args: str) -> str:
 def source_set(paths: Iterable[Path]) -> dict:
     rows = []
     for path in sorted({p.resolve() for p in paths}):
-        rel = path.relative_to(ROOT.resolve()).as_posix()
-        rows.append({"path": rel, "raw_sha256": raw_sha(path)})
+        rows.append({"path": path.relative_to(ROOT.resolve()).as_posix(), "raw_sha256": raw_sha(path)})
     payload = canonical_json_bytes({"schema": "AIFC/source-set-manifest/v1", "files": rows})
-    digest = hashlib.sha256(b"AIFC:SOURCE_SET_MANIFEST:v1\x00" + payload).hexdigest()
-    return {"manifest_sha256": digest, "file_count": len(rows)}
+    return {
+        "manifest_sha256": hashlib.sha256(b"AIFC:SOURCE_SET_MANIFEST:v1\x00" + payload).hexdigest(),
+        "file_count": len(rows),
+    }
 
 
 def report(path: Path, exit_code: int) -> dict:
@@ -50,8 +50,7 @@ def report(path: Path, exit_code: int) -> dict:
 
 
 def read_exit_code(path: Path) -> int:
-    text = path.read_text(encoding="utf-8").strip()
-    value = int(text)
+    value = int(path.read_text(encoding="utf-8").strip())
     if value < 0 or value > 255:
         raise ValueError(f"invalid exit code in {path}: {value}")
     return value
@@ -70,6 +69,8 @@ def main() -> int:
     p.add_argument("--workflow-path", required=True)
     p.add_argument("--base-report", required=True)
     p.add_argument("--base-exit", required=True)
+    p.add_argument("--prereg-report", required=True)
+    p.add_argument("--prereg-exit", required=True)
     p.add_argument("--self-audit-report", required=True)
     p.add_argument("--self-audit-exit", required=True)
     p.add_argument("--unittest-report", required=True)
@@ -81,9 +82,11 @@ def main() -> int:
 
     workflow = ROOT / args.workflow_path
     base_report = Path(args.base_report)
+    prereg_report = Path(args.prereg_report)
     self_report = Path(args.self_audit_report)
     unittest_report = Path(args.unittest_report)
     base_exit = read_exit_code(Path(args.base_exit))
+    prereg_exit = read_exit_code(Path(args.prereg_exit))
     self_exit = read_exit_code(Path(args.self_audit_exit))
     unit_exit = read_exit_code(Path(args.unittest_exit))
 
@@ -98,7 +101,7 @@ def main() -> int:
         ROOT / "tools" / "verify_verifier_ci_attestation.py",
     ]
 
-    status = "PASS" if (base_exit, self_exit, unit_exit) == (0, 0, 0) else "FAIL"
+    status = "PASS" if (base_exit, prereg_exit, self_exit, unit_exit) == (0, 0, 0, 0) else "FAIL"
     attestation = {
         "schema": "AIFC/verifier-ci-attestation/v1",
         "verifier_id": "AIFC-Verifier-A",
@@ -125,6 +128,7 @@ def main() -> int:
         },
         "reports": {
             "base_conformance": report(base_report, base_exit),
+            "preregistration_conformance": report(prereg_report, prereg_exit),
             "self_audit_conformance": report(self_report, self_exit),
             "unittest": {**report(unittest_report, unit_exit), "test_count": test_count(unittest_report)},
         },
