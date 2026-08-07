@@ -4,7 +4,7 @@ Status: **corpus design frozen at the category level; machine-readable vectors n
 
 The test corpus exists to answer one question:
 
-> Can a malformed, misleading, stale, selectively reported, causally contaminated, or ambiguously serialized evidence package make the verifier issue a stronger grade than the specification allows?
+> Can a malformed, misleading, stale, selectively reported, causally contaminated, ambiguously serialized, or post-hoc derived evidence package make the verifier issue a stronger grade than the specification allows?
 
 ## Required vector families
 
@@ -25,6 +25,15 @@ The test corpus exists to answer one question:
 - `TERMINAL_STATE_RESURRECTION`
 - `SAME_EVENT_INDEX_FORK`
 - `RETRY_WITH_DIFFERENT_CONTENT_SAME_IDEMPOTENCY_POSITION`
+- `WRONG_EXPERIMENT_GENESIS_SENTINEL`
+
+### Candidate provenance / multiplicity attacks
+
+- `SHADOW_CANDIDATE_POOL`
+- `UNDECLARED_OPERATOR_CANDIDATE_SELECTION`
+- `CANDIDATE_GENERATION_PROFILE_REBINDING`
+- `HIDDEN_CANDIDATE_MULTIPLICITY`
+- `SEMANTIC_POST_HOC_MAPPING`
 
 ### Entropy / dependence attacks
 
@@ -38,6 +47,17 @@ The test corpus exists to answer one question:
 - `CONDITIONING_VIEW_OMISSION`
 - `SIGNED_ENTROPY_ASSERTION_WITHOUT_DERIVATION`
 - `RNG_ROLLBACK_REPEATS_PRIOR_KNOWN_TARGET`
+- `NONCANONICAL_RATIONAL_BOUND`
+- `RATIONAL_NUMERATOR_GT_DENOMINATOR`
+- `ZERO_CAP_HIT_DIVISION_BY_ZERO_TRAP`
+
+### Target selection / derivation attacks
+
+- `ADAPTIVE_FUTURE_ROUND_SELECTION`
+- `POST_HOC_TARGET_DERIVATION`
+- `TARGET_DERIVATION_PROFILE_REBINDING`
+- `RAW_SOURCE_OBJECT_SUBSTITUTION`
+- `MULTIPLE_UNCHARGED_TARGET_DERIVATIONS`
 
 ### Causal-model attacks
 
@@ -47,12 +67,6 @@ The test corpus exists to answer one question:
 - `FORBIDDEN_SELECTION_CONDITIONING`
 - `CYCLIC_FORWARD_NULL_DAG`
 - `UNKNOWN_EDGE_ENDPOINT`
-
-### Selection / multiplicity attacks
-
-- `HIDDEN_CANDIDATE_MULTIPLICITY`
-- `SEMANTIC_POST_HOC_MAPPING`
-- `ADAPTIVE_FUTURE_ROUND_SELECTION`
 
 ### Sequential-statistics attacks
 
@@ -71,7 +85,7 @@ The test corpus exists to answer one question:
 - `WALL_CLOCK_USED_AS_SOLE_CAUSAL_ROOT`
 - `REGISTRY_ROLLBACK_WITH_EXPERIMENT`
 
-### Witness / key-lifecycle attacks
+### Witness / key-lifecycle / reconfiguration attacks
 
 - `UNSAFE_SIMPLE_MAJORITY`
 - `BYZANTINE_OVERLAP_EQUIVOCATION`
@@ -82,6 +96,12 @@ The test corpus exists to answer one question:
 - `DUPLICATE_KEYS_COUNTED_AS_DISTINCT_WITNESSES`
 - `MULTIPLE_PROCESSES_SAME_FAILURE_DOMAIN_COUNTED_SEPARATELY`
 - `COMPROMISED_KEY_INTERVAL_IGNORED`
+- `UNAUTHORIZED_REGISTRY_RECONFIGURATION`
+- `DISJOINT_CONFIG_FORK`
+- `OLD_QUORUM_ONLY_WITHOUT_NEW_ACCEPTANCE`
+- `NEW_QUORUM_ONLY_WITHOUT_OLD_AUTHORIZATION`
+- `REGISTRY_SEQUENCE_JUMP`
+- `REGISTRY_TRANSITION_REPLAY`
 
 ### Canonicalization attacks
 
@@ -93,8 +113,10 @@ The test corpus exists to answer one question:
 - `WRONG_DOMAIN_SEPARATOR`
 - `RAW_SHA256_WITHOUT_DOMAIN_SEPARATOR`
 - `PLATFORM_ENDIAN_BINARY_ENCODING`
+- `NONCANONICAL_RATIONAL_BOUND`
+- `WRONG_GENESIS_PREDECESSOR`
 
-### Verifier attacks
+### Verifier / release attacks
 
 - `SELF_ASSERTED_INDEPENDENCE_BOOLEAN`
 - `REPAIRED_DIGEST_AFTER_SEMANTIC_TAMPER`
@@ -103,6 +125,26 @@ The test corpus exists to answer one question:
 - `MISSING_REQUIRED_EVIDENCE`
 - `FALSE_GRADE_PROMOTION`
 - `RETROCAUSALITY_PROVED_OUTPUT_ATTEMPT`
+- `UNTYPED_QUORUM_RECEIPT`
+- `FROZEN_PASS_WITH_MISSING_GATE_EVIDENCE`
+- `RELEASE_MANIFEST_DUPLICATE_GATE`
+- `RELEASE_MANIFEST_EVIDENCE_HASH_MISMATCH`
+
+## First standalone-verifier red-team order
+
+The first executable verifier MUST prioritize these four attack surfaces before broader corpus freeze:
+
+```text
+SHADOW_CANDIDATE_POOL
+        ↓
+REGISTRY_RECONFIGURATION_FORK
+        ↓
+POST_HOC_TARGET_DERIVATION
+        ↓
+NONCANONICAL_RATIONAL_BOUND
+```
+
+These attacks target hidden choice, cross-configuration continuity, post-target degrees of freedom, and byte-level uniqueness respectively.
 
 ## Vector contract
 
