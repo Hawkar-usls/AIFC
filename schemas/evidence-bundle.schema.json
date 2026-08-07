@@ -23,8 +23,7 @@
     "statistical_plan_hash",
     "witness_registry_hash",
     "witness_registry_transition_hash",
-    "target_evidence_hash",
-    "publication_manifest_hash"
+    "target_evidence_hash"
   ],
   "properties": {
     "schema": {"const": "AIFC/evidence-bundle/v1"},
@@ -47,12 +46,11 @@
     "witness_registry_transition_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "target_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "eprocess_state_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
-    "publication_manifest_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "additional_evidence_hashes": {
       "type": "array",
       "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
       "uniqueItems": true
     }
   },
-  "description": "The bundle is a hash-binding object, not an evidence oracle. Standalone verifier must resolve and recompute every required object identity. For completed trials trial_ledger_head_hash binds the VERIFIED event; the subsequent TERMINAL event binds the completed evidence-bundle hash, avoiding a circular bundle/terminal hash dependency."
+  "description": "Per-trial bundle binds evidence available through VERIFIED. The subsequent TERMINAL event binds the bundle hash. The experiment-level publication manifest is created only after trial termination and references bundle/terminal hashes; it is intentionally NOT referenced from the bundle, avoiding a publication fixed-point."
 }
