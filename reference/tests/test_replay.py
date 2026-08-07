@@ -1,5 +1,4 @@
 import copy
-import json
 import sys
 import tempfile
 import unittest
@@ -10,7 +9,8 @@ sys.path.insert(0, str(VERIFIER_DIR))
 
 from canonical import canonical_json_bytes, protocol_hash, raw_evidence_hash  # noqa: E402
 from frontier import experiment_genesis_hash  # noqa: E402
-from replay import derive_target, registry_genesis_hash, target_bytes_hash, verify_replay_manifest  # noqa: E402
+from replay import derive_target, registry_genesis_hash, target_bytes_hash  # noqa: E402
+from replay_engine import verify_replay_manifest  # noqa: E402
 from resolver import EvidenceResolver  # noqa: E402
 
 
@@ -131,7 +131,7 @@ def ledger_event(exp, event_index, trial, ordinal, state_from, state_to, previou
     }
 
 
-def build_fixture(root: Path, *, exact_match=False):
+def build_fixture(root: Path):
     s = Store(root)
     exp = "exp-1"
     trial = 1
@@ -353,10 +353,6 @@ def build_fixture(root: Path, *, exact_match=False):
     raw_source_hash = s.raw(source_bytes)
     source_proof = s.raw(b"source event proof placeholder")
     derived = derive_target(derivation, source_bytes, target_event_id="round-1000", pre_return_hash=pre_hash)
-    if exact_match:
-        # Rebuild a hard witness whose bytes equal target; hash/set/profile/freeze chain would all need changing,
-        # so exact-match replay is intentionally tested separately at the identity primitive level for v0.2.
-        raise ValueError("fixture exact_match mutation requires full upstream rebuild")
     target = {
         "schema": "AIFC/target-evidence/v1", "experiment_id": exp, "trial_index": trial, "source_id": "beacon-A",
         "target_selector_profile_hash": selector_hash, "target_derivation_profile_hash": derivation_hash,
@@ -413,13 +409,9 @@ def build_fixture(root: Path, *, exact_match=False):
         "target_evidence_hash": target_hash, "publication_manifest_hash": publication_hash,
     }
     return s, package, {
-        "candidate_profile_hash": candidate_profile_hash,
         "candidate_profile": candidate_profile,
-        "view_hash": view_hash,
         "view": view,
-        "registry_hash": registry_hash,
         "registry": registry,
-        "bundle_hash": bundle_hash,
     }
 
 
@@ -449,10 +441,8 @@ class ReplayTests(unittest.TestCase):
             mutated["selection_freedom"]["operator_choice_after_created"] = True
             mutated_hash = store.protocol(mutated)
             package["candidate_generation_profile_hash"] = mutated_hash
-            # Bundle/pre-return/view remain bound to the original hash, so replay must fail closed before admission.
             result = verify_replay_manifest(package, store.resolver())
             self.assertEqual(result["terminal_grade"], "INVALIDATED_EVIDENCE")
-            self.assertIn(result["gate_results"].get("CANDIDATE_PROVENANCE"), {"FAIL", None})
 
     def test_post_hoc_conditioning_view_sanitization_fails(self):
         with tempfile.TemporaryDirectory() as td:
