@@ -69,18 +69,7 @@
       "properties": {
         "base_conformance": {"$ref": "#/$defs/report"},
         "self_audit_conformance": {"$ref": "#/$defs/report"},
-        "unittest": {
-          "allOf": [
-            {"$ref": "#/$defs/report"},
-            {
-              "type": "object",
-              "required": ["test_count"],
-              "properties": {
-                "test_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
-              }
-            }
-          ]
-        }
+        "unittest": {"$ref": "#/$defs/unittestReport"}
       }
     },
     "overall_status": {"enum": ["PASS", "FAIL"]},
@@ -115,6 +104,18 @@
         "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "aifc_raw_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "exit_code": {"type": "integer", "minimum": 0, "maximum": 255}
+      }
+    },
+    "unittestReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "raw_sha256", "aifc_raw_evidence_hash", "exit_code", "test_count"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 256},
+        "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "aifc_raw_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "exit_code": {"type": "integer", "minimum": 0, "maximum": 255},
+        "test_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
       }
     }
   },
