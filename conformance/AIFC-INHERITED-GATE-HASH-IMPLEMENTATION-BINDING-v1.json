@@ -13,6 +13,6 @@
     "path": "reference/verifier/inherited_gate_hash_v1.py",
     "git_blob_sha1": "fc351b2e64cf8647ac7f282bc804b5bebf29efa9"
   },
-  "source_observed_at_commit": "7e58b47398fe585b24db6304ee6122871095d668",
+  "source_observed_at_commit": "7f3f3662dd99bfb2baec7f91d2c39ec61631898c",
   "status": "EXACT_SOURCE_BINDING_SUCCESSOR_CANDIDATE"
 }
