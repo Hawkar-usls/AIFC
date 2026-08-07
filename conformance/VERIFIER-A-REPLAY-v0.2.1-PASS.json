@@ -1,0 +1,56 @@
+{
+  "schema": "AIFC/verifier-replay-status/v1",
+  "verifier_id": "AIFC-Verifier-A",
+  "version": "0.2.1-preregistration-draft",
+  "status": "PREREGISTRATION_AWARE_CONTENT_ADDRESSED_REPLAY_CI_PASS_NOT_FULL_IMPLEMENTATION",
+  "supersedes_status": "conformance/VERIFIER-A-REPLAY-v0.2.1-PENDING.json",
+  "fresh_replay_evidence": {
+    "github_workflow": "AIFC Replay v0.2 Conformance",
+    "github_workflow_conclusion": "SUCCESS",
+    "fresh_public_branch_snapshot": "PASS",
+    "unit_tests": "PASS_37_OF_37",
+    "base_repository_conformance": "PASS",
+    "preregistration_supplemental_conformance": "PASS"
+  },
+  "established_development_gates": [
+    "EXPERIMENT_PLAN_PREREGISTRATION_STRUCTURE",
+    "EXPERIMENT_SCOPED_PLAN_FREEZE_QUORUM_STRUCTURE",
+    "FIRST_CREATED_PREREQUISITE_BINDING",
+    "CONTENT_ADDRESSED_EVIDENCE_RESOLUTION",
+    "FIXED_HORIZON_LEDGER_REPLAY",
+    "CANDIDATE_SET_AND_MULTIPLICITY_REPLAY",
+    "POST_CREATED_OPERATOR_CHOICE_REJECTION",
+    "PRE_TARGET_CONDITIONING_VIEW_BINDING",
+    "ENTROPY_POLICY_REPLAY",
+    "POST_TARGET_ENTROPY_METHOD_SUBSTITUTION_REJECTION",
+    "TARGET_SELECTOR_FIXED_EVENT_REPLAY",
+    "TARGET_DERIVATION_BYTE_REPLAY",
+    "WITNESS_FAULT_MODEL_AND_FAILURE_DOMAIN_STRUCTURE",
+    "PUBLICATION_MANIFEST_STRUCTURE",
+    "PLAN_TO_PUBLICATION_END_TO_END_HONEST_CONTROL"
+  ],
+  "still_blocked": [
+    "ED25519_SIGNATURE_CRYPTO",
+    "CAUSAL_D_SEPARATION",
+    "TARGET_SOURCE_CRYPTOGRAPHIC_PROOF",
+    "FULL_EXPERIMENT_STATISTICAL_REPLAY",
+    "ANYTIME_EPROCESS_REPLAY",
+    "BYTE_IDENTICAL_CANONICALIZATION_WITH_IMPLEMENTATION_B",
+    "FROZEN_MACHINE_READABLE_CORPUS",
+    "INDEPENDENT_IMPLEMENTATION_B",
+    "FULL_RELEASE_MANIFEST_EVIDENCE_RESOLUTION",
+    "EXTERNAL_PUBLIC_BEACON_BENCH"
+  ],
+  "release_gate_effect": {
+    "VERIFIER_A_REPLAY_V0_2_1": "PASS_AS_DEVELOPMENT_REPLAY",
+    "IMPLEMENTATION_A_PASS": "NOT_ESTABLISHED",
+    "IMPLEMENTATION_B_PASS": "NOT_ESTABLISHED",
+    "AIFC_V1_FROZEN": false
+  },
+  "scientific_boundary": {
+    "physical_retrocausality": "NOT_OBSERVED",
+    "future_information_effect": "NOT_ESTABLISHED",
+    "global_novelty": "NOT_ESTABLISHED",
+    "replay_or_simulation_is_physical_evidence": false
+  }
+}
