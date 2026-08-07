@@ -125,6 +125,7 @@ def ledger_event(exp, event_index, trial, ordinal, state_from, state_to, previou
         "state_to": state_to,
         "terminal_subtype": terminal_subtype,
         "previous_event_hash": previous_hash,
+        "prerequisite_certificate_hash": "f" * 64 if state_to == "CREATED" else None,
         "payload_hash": payload_hash,
         "evidence_bundle_hash": evidence_bundle_hash,
         "reason_code": reason,
@@ -182,6 +183,18 @@ def build_fixture(root: Path):
         "frozen_before_first_created": True,
     }
     derivation_policy_hash = s.protocol(derivation_policy)
+    entropy_policy = {
+        "schema": "AIFC/entropy-policy/v1", "policy_id": "entropy-policy-1", "experiment_id": exp,
+        "source_id": "beacon-A", "source_protocol_version": "v1",
+        "allowed_derivation_methods": ["PUBLIC_BEACON_SPECIFICATION"],
+        "conditioning_view_role": "AIFC_PRE_TARGET_CONDITIONING_VIEW_AT_TARGET_ARMED",
+        "required_external_evidence_types": ["SOURCE_SECURITY_EVIDENCE"],
+        "derivation_spec_hash": entropy_evidence,
+        "unresolved_assumptions_policy": "BLOCK_STRONGEST_GRADE",
+        "post_target_method_selection_forbidden": True,
+        "frozen_before_first_created": True,
+    }
+    entropy_policy_hash = s.protocol(entropy_policy)
     causal = {
         "schema": "AIFC/causal-model/v1", "model_id": "cm-1", "experiment_id": exp,
         "nodes": [
@@ -244,6 +257,7 @@ def build_fixture(root: Path):
         "mode": "FIXED_HORIZON", "trial_creation_policy_hash": trial_creation_hash, "declared_trial_count": 1,
         "initial_witness_registry_hash": registry_hash, "candidate_generation_policy_hash": candidate_policy_hash,
         "target_selector_policy_hash": selector_policy_hash, "target_derivation_policy_hash": derivation_policy_hash,
+        "entropy_policy_hash": entropy_policy_hash,
         "causal_model_hash": causal_hash, "statistical_plan_hash": statistical_hash,
         "publication_policy_hash": publication_policy_hash, "external_freshness_policy_hash": freshness_hash,
         "conditioning_view_policy_hash": conditioning_hash, "allowed_registry_reconfiguration": False,
@@ -420,7 +434,7 @@ class ReplayTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             store, package, _ = build_fixture(Path(td))
             result = verify_replay_manifest(package, store.resolver())
-            self.assertEqual(result["terminal_grade"], "NOT_ADMITTED")
+            self.assertEqual(result["terminal_grade"], "NOT_ADMITTED", msg=f"HONEST_REPLAY_RESULT={result!r}")
             self.assertFalse(result["fail_open"])
             self.assertEqual(result["gate_results"].get("LEDGER_REPLAY"), "PASS")
             self.assertEqual(result["gate_results"].get("TARGET_DERIVATION_REPLAY"), "PASS")
