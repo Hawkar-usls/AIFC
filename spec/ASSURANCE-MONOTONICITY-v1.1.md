@@ -10,11 +10,17 @@ The governing principles remain:
 
 > **Assurance must be monotone unless the weakening itself carries proof.**
 
-v1.1 adds a third trust-boundary law:
+v1.1 adds trust-boundary laws:
 
 > **The monotonicity checker must not trust the successor to define what was inherited.**
 
+> **Proof of strengthening must be replayed by the checker, not asserted to it.**
+
+> **A successor assurance object MUST NOT acquire identity by retroactively extending a predecessor content-hash domain.**
+
 A successor verifier, wrapper, test harness, release script, or claimant MUST NOT provide an authoritative free-form list of predecessor obligations. The inherited obligation set is derived from frozen predecessor/successor release-gate documents plus independently proof-replayed lineage transitions.
+
+Likewise, a caller MUST NOT provide a pre-blessed transition result carrying a claimed `STRENGTHENING_CONFIRMED` status. It may provide only content hashes of proposed transitions plus the resolver domain needed to reproduce them. The monotonicity comparator itself resolves the transition graph and executes the normative strengthening verifier.
 
 ## 1. Admission authority is a partial order
 
@@ -62,7 +68,7 @@ For every `g in G_n`:
 - if `g` is absent from `G_{n+1}`, there MUST be exactly one independently verified strengthening transition mapping `g` to mandatory successor gate IDs;
 - otherwise derivation fails closed.
 
-The resulting obligation map is content-bound together with both release-gate documents and hashed as:
+The resulting obligation map is content-bound together with both release-gate documents and the transition content hashes and is hashed as:
 
 ```text
 inherited_gate_set_hash = SHA256(canonical derived obligation material)
@@ -78,9 +84,9 @@ INHERITED_GATE_SET_OMISSION
 
 ## 3. Gate replacement requires executed proof replay
 
-A structurally plausible `AIFC/gate-lineage-transition/v1` is not sufficient.
+A structurally plausible `AIFC/gate-lineage-transition/v1` is not sufficient. A pre-blessed in-memory structure is also not sufficient.
 
-The verifier MUST resolve:
+The release-gate comparator accepts transition **content hashes**, not claimed verified transition objects. For every removal candidate, it invokes the transition verifier itself. The verifier MUST resolve:
 
 ```text
 transition hash
@@ -107,11 +113,13 @@ By contraposition:
 predecessor FAIL => at least one successor replacement FAIL
 ```
 
-Only after this execution may the transition emit the internal status:
+Only after this execution may the internal verifier result contain:
 
 ```text
 STRENGTHENING_CONFIRMED
 ```
+
+That internal result is not an authoritative caller input to the comparator.
 
 There is deliberately no trusted `PASS` field in `AIFC/gate-strengthening-evidence/v1`.
 
@@ -123,7 +131,37 @@ FAKE_GATE_STRENGTHENING_RECEIPT
 
 If a gate cannot be represented by the v1 Boolean definition language, that gate is not removable under this proof profile. A future proof method requires a new versioned evidence profile; unsupported proof methods fail closed.
 
-## 4. Validator semantics are content-addressed
+## 4. Assurance evidence has a new content-hash domain
+
+The first bootstrap run exposed an evolution boundary: the new gate-definition and strengthening objects are not members of the historical v0.2 protocol hash domain. That is intentional and MUST remain true.
+
+The historical `protocol_hash_v02()` domain map is not extended to recognize v1.1 assurance objects.
+
+New assurance-only protocol metadata is content-addressed under:
+
+```text
+AIFC/assurance-evidence-hash/v1
+```
+
+with the dedicated domain prefix:
+
+```text
+AIFC:ASSURANCE-EVIDENCE:v1 || 0x00
+```
+
+and explicit schema-ID separation before canonical object bytes. `AssuranceEvidenceResolverV1` independently recomputes this identity and then performs strict runtime schema admission.
+
+Current members are exactly:
+
+```text
+AIFC/gate-definition/v1
+AIFC/gate-strengthening-evidence/v1
+AIFC/gate-lineage-transition/v1
+```
+
+A conformance test requires the old v0.2 hash profile to continue rejecting these objects. Adding them to the old domain map would be a historical-semantics mutation rather than a valid successor extension.
+
+## 5. Validator semantics are content-addressed
 
 A human-readable semantics label is not a cryptographic identity.
 
@@ -153,7 +191,7 @@ is rejected as:
 VALIDATOR_IMPLEMENTATION_CHANGED_WITH_SAME_SEMANTICS_ID
 ```
 
-## 5. Dual schema content identity
+## 6. Dual schema content identity
 
 For registered schema source bytes:
 
@@ -171,7 +209,9 @@ is the protocol cryptographic source identity.
 
 Neither replaces the other.
 
-## 6. Registration point is not historical first appearance
+The v2 registry preserves the same 11 critical registered schema IDs as the convergence v1 registry and binds the exact runner-recomputed raw SHA-256 for each current source file.
+
+## 7. Registration point is not historical first appearance
 
 `registered_immutable_at_commit` means:
 
@@ -189,7 +229,15 @@ HISTORICAL_PRE_CONVERGENCE_ONLY
 
 and MUST NOT be silently substituted into strongest-grade current admission.
 
-## 7. Real successor test remains mandatory
+The current v2 registry deliberately records:
+
+```text
+first_historical_appearance_status = NOT_ESTABLISHED
+```
+
+for all 11 registered identities.
+
+## 8. Real successor test remains mandatory
 
 This hardening layer does not establish successor monotonicity merely by testing synthetic result dictionaries.
 
@@ -216,7 +264,7 @@ AIFC/key-lifecycle-replay-envelope/v1
 
 is currently **REQUIRED ARCHITECTURE / NOT YET IMPLEMENTED**. It is not established by this convergence hardening layer.
 
-## 8. Release frontier
+## 9. Release frontier
 
 v1.1 extends the mandatory draft release-gate set by ID from 61 to 65 with exactly:
 
@@ -228,6 +276,8 @@ VALIDATOR_SEMANTICS_CONTENT_BINDING
 ```
 
 No predecessor mandatory gate is removed.
+
+The dedicated assurance hash domain is an implementation requirement of resolver-backed gate-lineage proof replay, not a fifth independent release-gate class.
 
 ## Claim ceiling
 
