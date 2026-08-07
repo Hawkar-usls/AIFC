@@ -10,6 +10,7 @@
     "source_id",
     "source_protocol_version",
     "target_selector",
+    "target_derivation_profile_hash",
     "conditioning_view_hash",
     "point_probability_upper_bound",
     "derivation_method",
@@ -33,6 +34,7 @@
         "target_round_or_event": {"type": ["string", "null"], "maxLength": 256}
       }
     },
+    "target_derivation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "conditioning_view_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "point_probability_upper_bound": {
       "type": "object",
