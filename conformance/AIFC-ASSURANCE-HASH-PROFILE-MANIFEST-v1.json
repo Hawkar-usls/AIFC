@@ -1,0 +1,24 @@
+{
+  "schema": "AIFC/assurance-hash-profile-manifest/v1",
+  "profile_id": "AIFC/assurance-evidence-hash/v1",
+  "domain_ascii": "AIFC:ASSURANCE-EVIDENCE:v1",
+  "domain_terminator_hex": "00",
+  "member_schema_ids": [
+    "AIFC/gate-definition/v1",
+    "AIFC/gate-strengthening-evidence/v1",
+    "AIFC/gate-lineage-transition/v1"
+  ],
+  "canonicalization_profile": "AIFC_VERIFIER_A_CANONICAL_JSON_TESTED_PROFILE",
+  "canonicalization_source": {
+    "path": "reference/verifier/canonical.py",
+    "git_blob_sha1": "b5c1244df48adc89f256bb47c3a25df9b0d6dfe4"
+  },
+  "hash_implementation_source": {
+    "path": "reference/verifier/assurance_evidence_v1.py",
+    "git_blob_sha1": "8fb330d4f9b405eebcef556940488308cdaff1c1"
+  },
+  "historical_source_commit": "908de7afddcf9f72c98c2b3fb696a41be1e438e0",
+  "historical_extension_policy": "FORBIDDEN",
+  "semantic_change_policy": "NEW_PROFILE_ID_REQUIRED",
+  "status": "HISTORICAL_V1_SEMANTICS_BOUND_IN_TESTED_SOURCE_SCOPE"
+}
