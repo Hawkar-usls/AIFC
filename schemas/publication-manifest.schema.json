@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/publication-manifest.schema.json",
+  "title": "AIFC Publication Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "manifest_id",
+    "experiment_id",
+    "experiment_plan_hash",
+    "publication_policy_hash",
+    "declared_trial_count",
+    "final_ledger_head_hash",
+    "trial_records",
+    "external_publication_root_hash"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/publication-manifest/v1"},
+    "manifest_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "publication_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "declared_trial_count": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "final_ledger_head_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "trial_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["trial_index", "terminal_event_hash", "terminal_subtype", "evidence_bundle_hash"],
+        "properties": {
+          "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+          "terminal_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "terminal_subtype": {
+            "enum": [
+              "COMPLETED_HIT",
+              "COMPLETED_MISS",
+              "INVALIDATED_EVIDENCE",
+              "ABORTED_PRE_FREEZE",
+              "ABORTED_POST_FREEZE_PRE_TARGET",
+              "ABORTED_POST_TARGET_PRE_VERIFY",
+              "ABORTED_RECOVERY_FAILURE"
+            ]
+          },
+          "evidence_bundle_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "external_publication_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "external_publication_receipt_hashes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "uniqueItems": true
+    }
+  },
+  "description": "Verifier must require exactly one trial_record for each trial index 1..declared_trial_count, no duplicates/gaps, exact terminal-event hashes from the replayed ledger, matching terminal subtype/evidence-bundle identity, and a resolvable external publication root outside the experiment rollback domain."
+}
