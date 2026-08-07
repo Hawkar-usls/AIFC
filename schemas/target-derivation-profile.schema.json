@@ -15,7 +15,7 @@
     "transformation_rule",
     "domain_separator",
     "output_length_bits",
-    "profile_hash"
+    "frozen_before_target"
   ],
   "properties": {
     "schema": {"const": "AIFC/target-derivation-profile/v1"},
@@ -31,13 +31,13 @@
       "required": ["algorithm", "input_order"],
       "properties": {
         "algorithm": {"enum": ["IDENTITY", "SHA-256", "OTHER_FROZEN_ALGORITHM"]},
-        "input_order": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "input_order": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
         "other_algorithm_spec_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
       }
     },
     "domain_separator": {"type": "string", "minLength": 1, "maxLength": 256},
     "output_length_bits": {"type": "integer", "minimum": 1, "maximum": 65536},
-    "profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "frozen_before_target": {"const": true}
-  }
+  },
+  "description": "The profile's identity is its external domain-separated canonical content hash. No self-hash field is permitted."
 }
