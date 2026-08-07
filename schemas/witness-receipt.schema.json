@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/witness-receipt.schema.json",
+  "title": "AIFC Witness Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "experiment_id", "trial_index", "logical_position", "content_hash", "registry_hash", "witness_id", "key_id", "signature_algorithm", "signature"],
+  "properties": {
+    "schema": {"const": "AIFC/witness-receipt/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "logical_position": {"type": "string", "minLength": 1, "maxLength": 128},
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+    "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
+    "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
+  }
+}
