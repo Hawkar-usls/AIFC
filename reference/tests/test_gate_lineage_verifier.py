@@ -127,18 +127,22 @@ class GateLineageVerifierTests(unittest.TestCase):
                 {"op": "AND", "args": [atom("A"), atom("B")]},
                 [("NEW_GATE_A", atom("A")), ("NEW_GATE_B", atom("B"))],
             )
+            resolver = store.resolver()
             verified = verify_gate_lineage_transition(
                 transition_hash,
                 {"NEW_GATE_A", "NEW_GATE_B"},
-                store.resolver(),
+                resolver,
             )
             self.assertEqual(verified["verification_status"], "STRENGTHENING_CONFIRMED")
             self.assertEqual(verified["atom_count"], 2)
             self.assertEqual(verified["assignments_checked"], 4)
+            # The release-gate comparator receives only the transition hash and
+            # resolver, and independently executes the same proof itself.
             comparison = compare_release_gate_sets(
                 gate_doc("OLD_GATE"),
                 gate_doc("NEW_GATE_A", "NEW_GATE_B"),
-                [verified],
+                [transition_hash],
+                resolver,
             )
             self.assertEqual(comparison.status, "PASS", comparison.failure_codes)
 
@@ -157,9 +161,18 @@ class GateLineageVerifierTests(unittest.TestCase):
                 "migration_reason": "fake evidence pointer",
                 "approved_protocol_version": "test-v2",
             })
+            resolver = store.resolver()
             with self.assertRaises(GateLineageVerificationError) as ctx:
-                verify_gate_lineage_transition(transition_hash, {"NEW_GATE"}, store.resolver())
+                verify_gate_lineage_transition(transition_hash, {"NEW_GATE"}, resolver)
             self.assertIn("GATE_LINEAGE_EVIDENCE_RESOLUTION_FAILED", str(ctx.exception))
+            comparison = compare_release_gate_sets(
+                gate_doc("OLD_GATE"),
+                gate_doc("NEW_GATE"),
+                [transition_hash],
+                resolver,
+            )
+            self.assertEqual(comparison.status, "FAIL")
+            self.assertTrue(any("FAKE_GATE_STRENGTHENING_RECEIPT" in code for code in comparison.failure_codes))
 
     def test_false_strengthening_claim_yields_truth_table_counterexample(self):
         with tempfile.TemporaryDirectory() as td:
@@ -169,9 +182,18 @@ class GateLineageVerifierTests(unittest.TestCase):
                 atom("A"),
                 [("NEW_GATE", atom("B"))],
             )
+            resolver = store.resolver()
             with self.assertRaises(GateLineageVerificationError) as ctx:
-                verify_gate_lineage_transition(transition_hash, {"NEW_GATE"}, store.resolver())
+                verify_gate_lineage_transition(transition_hash, {"NEW_GATE"}, resolver)
             self.assertIn("GATE_STRENGTHENING_COUNTEREXAMPLE:OLD_GATE", str(ctx.exception))
+            comparison = compare_release_gate_sets(
+                gate_doc("OLD_GATE"),
+                gate_doc("NEW_GATE"),
+                [transition_hash],
+                resolver,
+            )
+            self.assertEqual(comparison.status, "FAIL")
+            self.assertTrue(any("GATE_STRENGTHENING_COUNTEREXAMPLE" in code for code in comparison.failure_codes))
 
     def test_successor_definition_gate_id_rebinding_is_rejected(self):
         with tempfile.TemporaryDirectory() as td:
