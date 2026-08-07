@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/assurance-monotonicity-record-v2.schema.json",
+  "title": "AIFC Assurance Monotonicity Record v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "predecessor_verifier",
+    "successor_verifier",
+    "fixture_hash",
+    "wrapped_fixture_hash",
+    "predecessor_release_gate_hash",
+    "successor_release_gate_hash",
+    "predecessor_outcome",
+    "successor_outcome",
+    "admission_order_id",
+    "inherited_gate_set_hash",
+    "monotonicity_result"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/assurance-monotonicity-record/v2"},
+    "predecessor_verifier": {"type": "string", "minLength": 1, "maxLength": 256},
+    "successor_verifier": {"type": "string", "minLength": 1, "maxLength": 256},
+    "fixture_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "wrapped_fixture_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_release_gate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "successor_release_gate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_outcome": {"type": "string", "minLength": 1, "maxLength": 128},
+    "successor_outcome": {"type": "string", "minLength": 1, "maxLength": 128},
+    "admission_order_id": {"const": "AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1"},
+    "inherited_gate_set_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verified_transition_hashes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "monotonicity_result": {"enum": ["PASS", "FAIL"]},
+    "failure_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z0-9_:;=.,-]+$"}
+    }
+  },
+  "description": "Proof-carrying predecessor/successor monotonicity record. v2 binds both release-gate documents, the explicit admission partial-order identity, and the independently derived inherited-gate-set hash; the successor cannot supply its own inherited obligation set."
+}
