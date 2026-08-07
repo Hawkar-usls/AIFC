@@ -11,8 +11,7 @@
     "repository_commit",
     "release_gate_profile_hash",
     "gate_results",
-    "overall_status",
-    "manifest_hash"
+    "overall_status"
   ],
   "properties": {
     "schema": {"const": "AIFC/release-manifest/v1"},
@@ -38,7 +37,7 @@
         }
       }
     },
-    "overall_status": {"enum": ["DRAFT_NOT_SATISFIED", "FROZEN_PASS", "REJECTED"]},
-    "manifest_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
-  }
+    "overall_status": {"enum": ["DRAFT_NOT_SATISFIED", "FROZEN_PASS", "REJECTED"]}
+  },
+  "description": "The release manifest is identified by its external domain-separated canonical content hash. A self-hash field is intentionally forbidden. Verifier must enforce exact gate-set coverage, unique gate_id values, evidence resolution and all-PASS semantics for FROZEN_PASS."
 }
