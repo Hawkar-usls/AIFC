@@ -1,0 +1,16 @@
+{
+  "schema": "AIFC/normative-profile-lineage/v1",
+  "profile_family": "AIFC_SIGNATURE_PREIMAGE",
+  "records": [
+    {
+      "profile_id": "AIFC-ED25519-DIRECT-TYPED-V1",
+      "policy_schema_id": "AIFC/signature-preimage-policy/v1",
+      "framing_id": "TAG_U8_LENGTH_U64BE_V1",
+      "issued_at_source_commit": "cbafc78b4adbfab1654d745c13905de63ce2716a",
+      "tested_scope": "Historically established in the tested v0.5 signature-preimage path and subsequently consumed by the tested v0.6 Ed25519 crypto path. This is not AIFC v1.0 FROZEN status and does not prove historical key safety or freshness.",
+      "status": "HISTORICALLY_ISSUED_TESTED_SCOPE",
+      "successor_profile_id": null,
+      "lineage_evidence_hash": null
+    }
+  ]
+}

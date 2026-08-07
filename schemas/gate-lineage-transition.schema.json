@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/gate-lineage-transition.schema.json",
+  "title": "AIFC Gate Lineage Transition v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "removed_gate_id",
+    "successor_gate_ids",
+    "previous_gate_definition_hash",
+    "successor_definition_hashes",
+    "equivalence_or_strengthening_evidence_hash",
+    "migration_reason",
+    "approved_protocol_version"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/gate-lineage-transition/v1"},
+    "removed_gate_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "successor_gate_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}
+    },
+    "previous_gate_definition_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "successor_definition_hashes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "equivalence_or_strengthening_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "migration_reason": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "approved_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128}
+  },
+  "description": "The only normative mechanism by which a mandatory AIFC release gate may be removed/replaced. A transition is not valid merely because it exists; the verifier must resolve and validate the equivalence-or-strengthening evidence and the successor definitions."
+}
