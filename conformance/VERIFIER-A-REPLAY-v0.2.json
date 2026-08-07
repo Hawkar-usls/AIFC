@@ -2,15 +2,27 @@
   "schema": "AIFC/verifier-replay-status/v1",
   "verifier_id": "AIFC-Verifier-A",
   "version": "0.2.0-replay",
-  "status": "CONTENT_ADDRESSED_REPLAY_CORE_CI_PASS_NOT_FULL_IMPLEMENTATION",
-  "ci_evidence": {
+  "status": "HISTORICAL_CI_RECORD_NOT_CURRENT_TREE_ATTESTATION",
+  "historical_ci_record": {
     "workflow": "AIFC Draft Conformance",
     "run_id": 31167840374,
     "job_id": 92832665490,
     "runner_os": "Ubuntu 24.04.4 LTS",
     "python": "3.12.13",
     "repository_conformance": "PASS",
-    "unit_tests": "PASS_25_OF_25"
+    "unit_tests": "PASS_25_OF_25",
+    "tested_source_commit_sha": null,
+    "tested_tree_sha": null,
+    "workflow_hash": null,
+    "test_corpus_hash": null,
+    "checker_hash": null,
+    "saved_test_report_hash": null,
+    "current_tree_claim": "NOT_ESTABLISHED"
+  },
+  "self_audit_finding": {
+    "attack_class": "DETACHED_CI_PASS_ATTESTATION",
+    "finding": "A historical green CI record without an exact source/tree/workflow/corpus/checker/report binding MUST NOT establish PASS for a later visible repository snapshot.",
+    "disposition": "PRESERVED_AS_HISTORICAL_EVIDENCE_ONLY"
   },
   "trust_model_shift": "PROTOCOL_OBJECTS_ARE_RESOLVED_FROM_EXACT_BYTES_AND_REHASHED_BEFORE_USE",
   "implemented_or_candidate_checks": [
@@ -44,9 +56,11 @@
     "DISCONNECTED_REGISTRY_CHAIN",
     "AMBIGUOUS_DERIVATION_ENCODING",
     "FAKE_FROZEN_PASS_WITH_DANGLING_EVIDENCE",
-    "NONCANONICAL_STORED_PROTOCOL_BYTES"
+    "NONCANONICAL_STORED_PROTOCOL_BYTES",
+    "DETACHED_CI_PASS_ATTESTATION"
   ],
   "explicitly_blocked": [
+    "CURRENT_TREE_CI_PASS_WITHOUT_PROOF_CARRYING_ATTESTATION",
     "ED25519_SIGNATURE_CRYPTO",
     "CAUSAL_D_SEPARATION",
     "TARGET_SOURCE_CRYPTOGRAPHIC_PROOF",
@@ -59,7 +73,7 @@
     "FULL_RELEASE_MANIFEST_EVIDENCE_RESOLUTION"
   ],
   "release_gate_effect": {
-    "VERIFIER_A_REPLAY_V0_2": "PASS",
+    "VERIFIER_A_REPLAY_V0_2_CURRENT_TREE": "NOT_ESTABLISHED",
     "IMPLEMENTATION_A_PASS": "NOT_ESTABLISHED",
     "AIFC_V1_FROZEN": false
   },
