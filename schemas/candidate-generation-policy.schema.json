@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/candidate-generation-policy.schema.json",
+  "title": "AIFC Candidate Generation Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "allowed_generation_modes",
+    "maximum_candidate_set_cardinality",
+    "operator_choice_after_created_policy",
+    "operator_choice_after_generation_policy",
+    "hidden_pool_policy",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/candidate-generation-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "allowed_generation_modes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "SINGLE_SHOT_AFTER_CERTIFIED_CREATED",
+          "PRECOMMITTED_DETERMINISTIC_GENERATOR",
+          "VERIFIABLE_EXTERNAL_GENERATOR",
+          "DECLARED_CANDIDATE_POOL"
+        ]
+      }
+    },
+    "maximum_candidate_set_cardinality": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "operator_choice_after_created_policy": {"enum": ["FORBIDDEN", "ALLOWED_ONLY_IF_CHARGED_AS_MULTIPLICITY"]},
+    "operator_choice_after_generation_policy": {"const": "FORBIDDEN_FOR_STRONGEST_GRADE"},
+    "hidden_pool_policy": {"const": "EXCLUDE_WITH_EXTERNAL_EVIDENCE_OR_CHARGE_BOUND"},
+    "required_external_evidence_types": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 128},
+      "uniqueItems": true
+    },
+    "frozen_before_first_created": {"const": true}
+  }
+}
