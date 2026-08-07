@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 import zipfile
 
@@ -33,18 +34,46 @@ VERIFIER_JOB_NAME = "Verifier A environment self-audit"
 ARTIFACT_PREFIX = "verifier-a-v04-ci-attestation-"
 
 
-def request(url: str, token: str, accept: str = "application/vnd.github+json") -> bytes:
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: D401
+        return None
+
+
+def github_request(url: str, token: str) -> bytes:
     req = urllib.request.Request(url, headers={
         "Authorization": f"Bearer {token}",
-        "Accept": accept,
+        "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": API_VERSION,
     })
     with urllib.request.urlopen(req, timeout=60) as response:
         return response.read()
 
 
+def download_github_archive(url: str, token: str) -> bytes:
+    """Resolve GitHub's authenticated 302, then fetch temporary archive URL without GitHub auth."""
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": API_VERSION,
+    })
+    opener = urllib.request.build_opener(NoRedirect)
+    try:
+        with opener.open(req, timeout=60) as response:
+            if response.status != 302:
+                raise ValueError(f"PLATFORM_ARTIFACT_DOWNLOAD_EXPECTED_302_GOT_{response.status}")
+            location = response.headers.get("Location")
+    except urllib.error.HTTPError as exc:
+        if exc.code != 302:
+            raise
+        location = exc.headers.get("Location")
+    require(isinstance(location, str) and location.startswith("https://"), "PLATFORM_ARTIFACT_REDIRECT_LOCATION_MISSING")
+    blob_req = urllib.request.Request(location, headers={"User-Agent": "AIFC-Verifier-A/0.4"})
+    with urllib.request.urlopen(blob_req, timeout=60) as response:
+        return response.read()
+
+
 def api_json(url: str, token: str) -> dict:
-    return json.loads(request(url, token).decode("utf-8", errors="strict"))
+    return json.loads(github_request(url, token).decode("utf-8", errors="strict"))
 
 
 def strict_json_bytes(raw: bytes):
@@ -73,7 +102,7 @@ def unique_named(rows: list[dict], predicate, code: str) -> dict:
 
 
 def attestation_from_artifact(base: str, artifact_id: int, token: str) -> tuple[dict, str, str]:
-    zip_raw = request(f"{base}/actions/artifacts/{artifact_id}/zip", token, accept="application/octet-stream")
+    zip_raw = download_github_archive(f"{base}/actions/artifacts/{artifact_id}/zip", token)
     try:
         with zipfile.ZipFile(io.BytesIO(zip_raw), "r") as zf:
             names = set(zf.namelist())
