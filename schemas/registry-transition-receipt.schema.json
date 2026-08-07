@@ -4,21 +4,7 @@
   "title": "AIFC Registry Transition Witness Receipt v1",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema",
-    "signature_profile_id",
-    "experiment_id",
-    "transition_body_hash",
-    "content_schema",
-    "signing_registry_hash",
-    "registry_sequence",
-    "role",
-    "witness_id",
-    "key_id",
-    "signature_algorithm",
-    "signature",
-    "wall_clock_timestamp"
-  ],
+  "required": ["schema", "experiment_id", "transition_body_hash", "signing_registry_hash", "role", "witness_id", "key_id", "signature_algorithm", "signature"],
   "properties": {
     "schema": {"const": "AIFC/registry-transition-receipt/v1"},
     "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
@@ -31,8 +17,19 @@
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
   },
-  "description": "Experiment-scoped receipt over a registry-transition body. role, signing registry hash, registry sequence and receipt schema are included in the frozen typed binary signature preimage, preventing cross-role, stale-registry and cross-receipt replay. A signed timestamp provides integrity only, not freshness."
+  "allOf": [
+    {
+      "if": {"required": ["signature_profile_id"]},
+      "then": {
+        "required": ["content_schema", "registry_sequence", "wall_clock_timestamp"],
+        "properties": {
+          "signature": {"pattern": "^[0-9a-f]{128}$"}
+        }
+      }
+    }
+  ],
+  "description": "Historical registry-transition receipts without signature_profile_id remain schema-readable for old replay corpus. Strongest-grade v0.5 receipts declare the normative typed preimage profile, sign content_schema, signing registry sequence and role, use explicit timestamp/null, and encode exactly 64 signature bytes as lowercase hex."
 }
