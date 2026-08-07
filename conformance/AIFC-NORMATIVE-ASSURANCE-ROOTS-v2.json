@@ -70,7 +70,7 @@
       "kind": "HASH_IMPLEMENTATION_BINDING",
       "expected_schema": "AIFC/inherited-gate-hash-implementation-binding/v1",
       "relative_path": "conformance/AIFC-INHERITED-GATE-HASH-IMPLEMENTATION-BINDING-v1.json",
-      "git_blob_sha1": "9ce0c3973e7c8c91cce6b3b89fc1c8dd6a9e701e",
+      "git_blob_sha1": "8750ced18dfb2c6c86605ce9a801701a9fbd595f",
       "authority_status": "SUCCESSOR_CANDIDATE_REQUIRES_EXACT_COMMIT_ATTESTATION",
       "authority_commit": null,
       "authority_receipt_id": null
