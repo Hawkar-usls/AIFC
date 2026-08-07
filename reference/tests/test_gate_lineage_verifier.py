@@ -7,12 +7,47 @@ ROOT = Path(__file__).resolve().parents[2]
 VERIFIER_DIR = ROOT / "reference" / "verifier"
 sys.path.insert(0, str(VERIFIER_DIR))
 
+from assurance_evidence_v1 import (  # noqa: E402
+    ASSURANCE_EVIDENCE_HASH_PROFILE,
+    AssuranceEvidenceResolverV1,
+    assurance_protocol_hash_v1,
+)
 from assurance_monotonicity import compare_release_gate_sets  # noqa: E402
+from canonical import CanonicalizationError, canonical_json_bytes  # noqa: E402
+from canonical_v02 import protocol_hash_v02  # noqa: E402
 from gate_lineage_verifier import (  # noqa: E402
     GateLineageVerificationError,
     verify_gate_lineage_transition,
 )
-from test_protocol_semantics_v03 import Store  # noqa: E402
+
+
+class AssuranceStore:
+    """Test evidence store using only the new assurance hash profile."""
+
+    def __init__(self, root: Path):
+        self.root = root
+        self.entries = []
+        (root / "objects").mkdir(parents=True, exist_ok=True)
+
+    def protocol(self, obj):
+        h = assurance_protocol_hash_v1(obj)
+        rel = f"objects/{h}.json"
+        (self.root / rel).write_bytes(canonical_json_bytes(obj))
+        self.entries.append({
+            "content_hash": h,
+            "relative_path": rel,
+            "content_kind": "AIFC_PROTOCOL_JSON",
+            "declared_schema": obj["schema"],
+            "media_type": "application/json",
+        })
+        return h
+
+    def resolver(self):
+        return AssuranceEvidenceResolverV1(self.root, {
+            "schema": "AIFC/evidence-store-index/v1",
+            "store_id": "assurance-lineage-test",
+            "entries": self.entries,
+        })
 
 
 def gate_doc(*gate_ids):
@@ -68,9 +103,25 @@ class GateLineageVerifierTests(unittest.TestCase):
         })
         return transition_hash
 
+    def test_assurance_hash_profile_is_separate_from_historical_v02_domain(self):
+        obj = gate_definition("OLD_GATE", atom("A"))
+        assurance_hash = assurance_protocol_hash_v1(obj)
+        self.assertEqual(len(assurance_hash), 64)
+        self.assertEqual(ASSURANCE_EVIDENCE_HASH_PROFILE, "AIFC/assurance-evidence-hash/v1")
+        with self.assertRaises(CanonicalizationError) as ctx:
+            protocol_hash_v02(obj)
+        self.assertIn("no AIFC v0.2 domain separator", str(ctx.exception))
+
+    def test_assurance_hash_is_schema_domain_separated_and_deterministic(self):
+        first = gate_definition("OLD_GATE", atom("A"))
+        self.assertEqual(assurance_protocol_hash_v1(first), assurance_protocol_hash_v1(first))
+        changed = dict(first)
+        changed["gate_id"] = "NEW_GATE"
+        self.assertNotEqual(assurance_protocol_hash_v1(first), assurance_protocol_hash_v1(changed))
+
     def test_resolver_backed_truth_table_proof_confirms_strict_split(self):
         with tempfile.TemporaryDirectory() as td:
-            store = Store(Path(td))
+            store = AssuranceStore(Path(td))
             transition_hash = self.build_transition(
                 store,
                 {"op": "AND", "args": [atom("A"), atom("B")]},
@@ -93,7 +144,7 @@ class GateLineageVerifierTests(unittest.TestCase):
 
     def test_fake_gate_strengthening_receipt_hash_is_rejected_by_resolution(self):
         with tempfile.TemporaryDirectory() as td:
-            store = Store(Path(td))
+            store = AssuranceStore(Path(td))
             previous_hash = store.protocol(gate_definition("OLD_GATE", atom("A")))
             successor_hash = store.protocol(gate_definition("NEW_GATE", atom("A")))
             transition_hash = store.protocol({
@@ -112,7 +163,7 @@ class GateLineageVerifierTests(unittest.TestCase):
 
     def test_false_strengthening_claim_yields_truth_table_counterexample(self):
         with tempfile.TemporaryDirectory() as td:
-            store = Store(Path(td))
+            store = AssuranceStore(Path(td))
             transition_hash = self.build_transition(
                 store,
                 atom("A"),
@@ -124,7 +175,7 @@ class GateLineageVerifierTests(unittest.TestCase):
 
     def test_successor_definition_gate_id_rebinding_is_rejected(self):
         with tempfile.TemporaryDirectory() as td:
-            store = Store(Path(td))
+            store = AssuranceStore(Path(td))
             previous_hash = store.protocol(gate_definition("OLD_GATE", atom("A")))
             wrong_hash = store.protocol(gate_definition("DIFFERENT_GATE", atom("A")))
             evidence_hash = store.protocol({
