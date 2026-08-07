@@ -31,6 +31,7 @@ DOMAIN_BY_SCHEMA = {
     "AIFC/trial-ledger-event/v1": "AIFC:TRIAL_LEDGER_EVENT:v1",
     "AIFC/trial-creation-policy/v1": "AIFC:TRIAL_CREATION_POLICY:v1",
     "AIFC/experiment-plan/v1": "AIFC:EXPERIMENT_PLAN:v1",
+    "AIFC/signature-preimage-policy/v1": "AIFC:SIGNATURE_PREIMAGE_POLICY:v1",
     "AIFC/candidate-generation-policy/v1": "AIFC:CANDIDATE_GENERATION_POLICY:v1",
     "AIFC/candidate-generation-profile/v1": "AIFC:CANDIDATE_GENERATION_PROFILE:v1",
     "AIFC/target-selector-policy/v1": "AIFC:TARGET_SELECTOR_POLICY:v1",
