@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/causal-model.schema.json",
+  "title": "AIFC Causal Model v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "model_id", "nodes", "edges", "conditioned_on", "required_d_separations", "assumptions"],
+  "properties": {
+    "schema": {"const": "AIFC/causal-model/v1"},
+    "model_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role", "observed", "available_pre_target"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
+          "role": {"enum": ["PRE_RETURN_HARD", "TARGET_HARD", "PUBLIC_METADATA", "LATENT_COMMON_CAUSE", "SHARED_STATE", "SIDE_CHANNEL", "ENTROPY_STATE", "WITNESS_STATE", "OPERATOR_STATE", "SELECTION_VARIABLE", "OTHER"]},
+          "observed": {"type": "boolean"},
+          "available_pre_target": {"type": "boolean"},
+          "description": {"type": "string", "maxLength": 1024}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "target", "mechanism_class"],
+        "properties": {
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "mechanism_class": {"enum": ["ALGORITHMIC", "SHARED_MEMORY", "RNG_STATE", "NETWORK", "FILESYSTEM", "HUMAN_OPERATOR", "WITNESS", "SELECTION", "PHYSICAL", "UNKNOWN"]},
+          "description": {"type": "string", "maxLength": 1024}
+        }
+      }
+    },
+    "conditioned_on": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "required_d_separations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["left", "right", "given"],
+        "properties": {
+          "left": {"type": "string"},
+          "right": {"type": "string"},
+          "given": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "forbidden_conditioning": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "model_completeness_status": {"enum": ["DECLARED_MODEL_ONLY", "EXTERNALLY_AUDITED_NOT_PROVEN_COMPLETE", "BLOCKED_INCOMPLETE"]}
+  }
+}
