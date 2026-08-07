@@ -1,5 +1,5 @@
 # DIAGNOSTIC ONLY — NOT A VERIFIER PASS WORKFLOW.
-name: AIFC Verifier v0.4 Environment Probe
+name: AIFC Verifier v0.4 Report Probe
 
 on:
   push:
@@ -11,8 +11,8 @@ permissions:
   actions: read
 
 jobs:
-  environment_probe:
-    name: v0.4 environment parser and runtime probe
+  report_probe:
+    name: v0.4 environment and report parser probe
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact probe source
@@ -44,9 +44,49 @@ jobs:
             --action actions/checkout=11d5960a326750d5838078e36cf38b85af677262 \
             --action actions/setup-python=a26af69be951a213d495a4c3e4e4022e16d87065 \
             --action actions/upload-artifact=ea165f8d65b6e75b540449e92b4886f43607fa02
+      - name: Capture base repository conformance
+        shell: bash
+        run: |
+          set +e
+          python tools/check_repo_conformance.py > ci-evidence/base-conformance.txt 2>&1
+          code=$?
+          set -e
+          cat ci-evidence/base-conformance.txt
+          printf '%s\n' "$code" > ci-evidence/base-conformance.exit
+          exit 0
+      - name: Capture preregistration conformance
+        shell: bash
+        run: |
+          set +e
+          python tools/check_preregistration_conformance.py > ci-evidence/preregistration-conformance.txt 2>&1
+          code=$?
+          set -e
+          cat ci-evidence/preregistration-conformance.txt
+          printf '%s\n' "$code" > ci-evidence/preregistration-conformance.exit
+          exit 0
+      - name: Capture environment self-audit conformance
+        shell: bash
+        run: |
+          set +e
+          python tools/check_self_audit_conformance.py > ci-evidence/self-audit-conformance.txt 2>&1
+          code=$?
+          set -e
+          cat ci-evidence/self-audit-conformance.txt
+          printf '%s\n' "$code" > ci-evidence/self-audit-conformance.exit
+          exit 0
+      - name: Capture complete Verifier A unit-test report
+        shell: bash
+        run: |
+          set +e
+          python -m unittest discover -s reference/tests -v > ci-evidence/unittest.txt 2>&1
+          code=$?
+          set -e
+          cat ci-evidence/unittest.txt
+          printf '%s\n' "$code" > ci-evidence/unittest.exit
+          exit 0
       - name: Preserve diagnostic ceiling
         run: |
-          echo "EXECUTION_ENVIRONMENT_PROBE_ONLY = TRUE"
-          echo "VERIFIER_V04_PASS = NOT_EVALUATED"
+          echo "REPORT_PROBE_ONLY = TRUE"
+          echo "CI_PLATFORM_PROVENANCE_BINDING = NOT_EVALUATED"
           echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
           echo "AIFC_V1_FROZEN = FALSE"
