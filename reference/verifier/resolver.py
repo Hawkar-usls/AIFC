@@ -13,7 +13,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
-from canonical import CanonicalizationError, load_json_strict, loads_strict, protocol_hash, raw_evidence_hash
+from canonical import (
+    CanonicalizationError,
+    canonical_json_bytes,
+    load_json_strict,
+    loads_strict,
+    protocol_hash,
+    raw_evidence_hash,
+)
 
 
 class EvidenceResolutionError(ValueError):
@@ -97,6 +104,9 @@ class EvidenceResolver:
             raise EvidenceResolutionError(f"PROTOCOL_JSON_PARSE_REJECTED:{content_hash}:{exc}") from exc
         if not isinstance(parsed, Mapping):
             raise EvidenceResolutionError("PROTOCOL_JSON_NOT_OBJECT")
+        canonical = canonical_json_bytes(parsed)
+        if raw != canonical:
+            raise EvidenceResolutionError(f"NONCANONICAL_STORED_PROTOCOL_BYTES:{content_hash}")
         schema = parsed.get("schema")
         if declared_schema is not None and schema != declared_schema:
             raise EvidenceResolutionError(f"DECLARED_SCHEMA_REBINDING:{declared_schema}:{schema}")
