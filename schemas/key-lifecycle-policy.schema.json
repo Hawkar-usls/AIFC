@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/key-lifecycle-policy.schema.json",
+  "title": "AIFC Historical Key Lifecycle Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "boundary_unit",
+    "compromise_semantics",
+    "prospective_revocation_semantics",
+    "event_chain_semantics",
+    "unknown_compromise_boundary_semantics",
+    "quorum_reevaluation_semantics",
+    "external_completeness_required",
+    "wall_clock_not_sufficient",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/key-lifecycle-policy/v1"},
+    "policy_id": {"const": "AIFC-KEY-LIFECYCLE-POLICY-V1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "boundary_unit": {"const": "REGISTRY_SEQUENCE"},
+    "compromise_semantics": {"const": "INVALIDATE_SIGNATURES_AT_OR_AFTER_EARLIEST_UNTRUSTED_SEQUENCE"},
+    "prospective_revocation_semantics": {"const": "INVALIDATE_NEW_SIGNATURES_AT_OR_AFTER_EFFECTIVE_SEQUENCE"},
+    "event_chain_semantics": {"const": "GLOBAL_APPEND_ONLY_HASH_CHAIN"},
+    "unknown_compromise_boundary_semantics": {"const": "INVALIDATE_FROM_REGISTRY_SEQUENCE_ZERO"},
+    "quorum_reevaluation_semantics": {"const": "REMOVE_HISTORICALLY_UNTRUSTED_SIGNATURES_AND_RECOMPUTE_Q_AND_FAILURE_DOMAINS"},
+    "external_completeness_required": {"const": true},
+    "wall_clock_not_sufficient": {"const": true},
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "Frozen policy for retroactive key invalidation. Registry-local ACTIVE status is not historical safety. A compromise event invalidates signatures at or after its earliest untrusted registry sequence; an unknown compromise boundary conservatively invalidates from sequence zero. Revocation/retirement declarations are prospective unless represented as compromise. After removing historically untrusted signatures, every affected certificate quorum and failure-domain count must be recomputed. The local lifecycle ledger does not prove completeness/freshness; external completeness remains mandatory."
+}
