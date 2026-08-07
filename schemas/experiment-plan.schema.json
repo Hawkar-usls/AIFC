@@ -12,6 +12,7 @@
     "trial_creation_policy_hash",
     "declared_trial_count",
     "initial_witness_registry_hash",
+    "signature_preimage_policy_hash",
     "candidate_generation_policy_hash",
     "target_selector_policy_hash",
     "target_derivation_policy_hash",
@@ -33,6 +34,7 @@
     "trial_creation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "declared_trial_count": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
     "initial_witness_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signature_preimage_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "candidate_generation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_selector_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_derivation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -52,5 +54,5 @@
       "then": {"properties": {"declared_trial_count": {"type": "integer", "minimum": 1}}}
     }
   ],
-  "description": "The pre-experiment contract. Every referenced hash, including the entropy-admission policy controlling how p_i may be justified, must resolve through the evidence resolver before first CREATED. The plan itself is externally certified before trial creation."
+  "description": "The pre-experiment contract. Every referenced hash, including the signature-preimage policy that fixes the exact message bytes covered by witness signatures and the entropy-admission policy controlling how p_i may be justified, must resolve through the evidence resolver before first CREATED. The plan itself is externally certified before trial creation."
 }
