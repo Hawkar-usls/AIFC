@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 from canonical import CanonicalizationError, canonical_json_bytes, load_json_strict
-from replay import verify_replay_manifest
+from replay_engine import verify_replay_manifest
 from resolver import EvidenceResolutionError, EvidenceResolver
 
 
