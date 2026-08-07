@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/normative-profile-lineage.schema.json",
+  "title": "AIFC Normative Profile Lineage v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "profile_family", "records"],
+  "properties": {
+    "schema": {"const": "AIFC/normative-profile-lineage/v1"},
+    "profile_family": {"type": "string", "minLength": 1, "maxLength": 256},
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profile_id",
+          "policy_schema_id",
+          "framing_id",
+          "issued_at_source_commit",
+          "tested_scope",
+          "status"
+        ],
+        "properties": {
+          "profile_id": {"type": "string", "minLength": 1, "maxLength": 256},
+          "policy_schema_id": {"type": "string", "minLength": 1, "maxLength": 256},
+          "framing_id": {"type": "string", "minLength": 1, "maxLength": 256},
+          "issued_at_source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "tested_scope": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "status": {"enum": ["HISTORICALLY_ISSUED_TESTED_SCOPE", "CURRENT_NORMATIVE_DRAFT", "SUPERSEDED_WITH_LINEAGE"]},
+          "successor_profile_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 256},
+          "lineage_evidence_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    }
+  },
+  "description": "A normative profile identifier cannot be reused for incompatible framing or semantic mapping. Better designs require new IDs and explicit lineage."
+}
