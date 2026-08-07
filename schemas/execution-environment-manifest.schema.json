@@ -25,13 +25,15 @@
     "runner": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["os", "arch", "image_os", "image_version", "os_release_raw_sha256"],
+      "required": ["os", "arch", "image_os", "image_version", "os_release", "uname", "system_packages"],
       "properties": {
         "os": {"type": "string", "minLength": 1, "maxLength": 128},
         "arch": {"type": "string", "minLength": 1, "maxLength": 128},
         "image_os": {"type": "string", "minLength": 1, "maxLength": 128},
         "image_version": {"type": "string", "minLength": 1, "maxLength": 128},
-        "os_release_raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        "os_release": {"$ref": "#/$defs/evidenceFile"},
+        "uname": {"$ref": "#/$defs/evidenceFile"},
+        "system_packages": {"$ref": "#/$defs/evidenceFile"}
       }
     },
     "python": {
@@ -46,9 +48,10 @@
     "installer": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["pip_version"],
+      "required": ["pip_version", "pip_freeze"],
       "properties": {
-        "pip_version": {"type": "string", "minLength": 1, "maxLength": 64}
+        "pip_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "pip_freeze": {"$ref": "#/$defs/evidenceFile"}
       }
     },
     "dependency_lock": {
@@ -92,5 +95,17 @@
     },
     "generated_at": {"type": "string", "format": "date-time"}
   },
-  "description": "Observed verifier execution environment. Binding this manifest makes two runs on the same source tree distinguishable when runner image, Python, action commits, dependency lock, or installed distribution versions differ. It does not by itself prove the runner platform trustworthy."
+  "$defs": {
+    "evidenceFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "raw_sha256", "aifc_raw_evidence_hash"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$", "maxLength": 128},
+        "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "aifc_raw_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  },
+  "description": "Observed verifier execution environment. Binding this manifest makes two runs on the same source tree distinguishable when runner image metadata, OS bytes, kernel, system package inventory, Python, action commits, dependency lock, or installed Python distributions differ. It does not by itself prove the runner platform trustworthy or make the hosted image immutable."
 }
