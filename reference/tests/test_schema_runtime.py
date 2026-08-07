@@ -8,6 +8,7 @@ sys.path.insert(0, str(VERIFIER_DIR))
 
 from canonical import canonical_json_bytes, protocol_hash  # noqa: E402
 from resolver import EvidenceResolutionError, EvidenceResolver  # noqa: E402
+from schema_runtime import RuntimeSchemaError, load_schema_source_strict  # noqa: E402
 
 
 class RuntimeSchemaAdmissionTests(unittest.TestCase):
@@ -75,6 +76,28 @@ class RuntimeSchemaAdmissionTests(unittest.TestCase):
             with self.assertRaises(EvidenceResolutionError) as ctx:
                 EvidenceResolver(td, bad_index)
             self.assertIn("EVIDENCE_STORE_INDEX_SCHEMA_REJECTED", str(ctx.exception))
+
+    def test_schema_duplicate_key_is_rejected_before_meta_schema_validation(self):
+        raw = (
+            '{"$schema":"https://json-schema.org/draft/2020-12/schema",'
+            '"$id":"https://example.invalid/test",'
+            '"type":"object","type":"array"}'
+        ).encode("utf-8")
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "duplicate.schema.json"
+            path.write_bytes(raw)
+            with self.assertRaises(RuntimeSchemaError) as ctx:
+                load_schema_source_strict(path)
+            self.assertIn("AMBIGUOUS_SCHEMA_SOURCE", str(ctx.exception))
+            self.assertIn("SCHEMA_DUPLICATE_KEY:type", str(ctx.exception))
+
+    def test_schema_utf8_bom_is_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "bom.schema.json"
+            path.write_bytes(b'\xef\xbb\xbf{"type":"object"}')
+            with self.assertRaises(RuntimeSchemaError) as ctx:
+                load_schema_source_strict(path)
+            self.assertIn("UTF8_BOM_FORBIDDEN", str(ctx.exception))
 
 
 if __name__ == "__main__":
