@@ -1,0 +1,36 @@
+{
+  "schema": "AIFC/admission-authority-order/v1",
+  "order_id": "AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1",
+  "allowed_successor_outcomes": {
+    "INVALIDATED_EVIDENCE": [
+      "INVALIDATED_EVIDENCE"
+    ],
+    "NOT_ADMITTED": [
+      "INVALIDATED_EVIDENCE",
+      "NOT_ADMITTED"
+    ],
+    "STRUCTURAL_MATCH_ONLY": [
+      "INVALIDATED_EVIDENCE",
+      "NOT_ADMITTED",
+      "STRUCTURAL_MATCH_ONLY"
+    ],
+    "FORWARD_NULL_CONSISTENT_MISS": [
+      "INVALIDATED_EVIDENCE",
+      "NOT_ADMITTED",
+      "STRUCTURAL_MATCH_ONLY",
+      "FORWARD_NULL_CONSISTENT_MISS"
+    ],
+    "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE": [
+      "INVALIDATED_EVIDENCE",
+      "NOT_ADMITTED",
+      "STRUCTURAL_MATCH_ONLY",
+      "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE"
+    ]
+  },
+  "incomparable_outcome_pairs": [
+    [
+      "FORWARD_NULL_CONSISTENT_MISS",
+      "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE"
+    ]
+  ]
+}
