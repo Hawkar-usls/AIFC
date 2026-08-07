@@ -33,6 +33,7 @@
     "trial_creation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "declared_trial_count": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
     "initial_witness_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signature_preimage_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "candidate_generation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_selector_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_derivation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -52,5 +53,5 @@
       "then": {"properties": {"declared_trial_count": {"type": "integer", "minimum": 1}}}
     }
   ],
-  "description": "The pre-experiment contract. Every referenced hash, including the entropy-admission policy controlling how p_i may be justified, must resolve through the evidence resolver before first CREATED. The plan itself is externally certified before trial creation."
+  "description": "Backward-readable Experiment Plan v1 schema. signature_preimage_policy_hash is recognized but not retroactively required for historical pre-v0.5 evidence. Strongest-grade v0.5 preregistration separately requires it to resolve to the single normative AIFC signature-preimage policy before first CREATED; a legacy plan without it can never satisfy the v0.5 signature-preimage gate."
 }
