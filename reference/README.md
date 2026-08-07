@@ -1,29 +1,55 @@
 # AIFC Reference Implementation
 
-Status: **planned / not yet frozen**.
+Status: **Verifier A frontier core v0.1 executable / full Implementation A not yet established**.
 
-This directory will contain the standalone AIFC verifier and supporting implementation code. The normative draft schemas live at repository root under [`../schemas/`](../schemas/).
+This directory contains the first standalone AIFC evidence-admission code. The normative draft schemas live at repository root under [`../schemas/`](../schemas/).
 
-The reference implementation must not depend on Genesis for scientific admission.
+The reference implementation does not depend on Genesis for scientific admission.
 
-## Design requirements
+## Current executable frontier
 
-The verifier must independently:
+`reference/verifier/frontier.py` implements deterministic checks for the first four verifier-grade attack surfaces:
+
+```text
+SHADOW_CANDIDATE_POOL
+        ↓
+REGISTRY_RECONFIGURATION_FORK
+        ↓
+POST_HOC_TARGET_DERIVATION
+        ↓
+NONCANONICAL_RATIONAL_BOUND
+```
+
+It also implements the deterministic experiment-genesis hash, multiplicity-scaled exact-hit cap, explicit zero-cap branch, structural proof-carrying release-manifest checks, and joint old/new registry-transition structural admission.
+
+Executable tests live in [`tests/test_frontier.py`](tests/test_frontier.py). Machine-readable scope/status is recorded in [`../conformance/VERIFIER-A-FRONTIER-v0.1.json`](../conformance/VERIFIER-A-FRONTIER-v0.1.json).
+
+A green frontier test run means only:
+
+```text
+VERIFIER_A_FRONTIER_CORE = PASS
+IMPLEMENTATION_A_PASS = NOT_ESTABLISHED
+AIFC_V1_FROZEN = FALSE
+```
+
+## Design requirements for full Implementation A
+
+The frozen verifier must independently:
 
 - parse only versioned machine-readable evidence;
-- enforce the frozen canonicalization profile;
-- recompute domain-separated hashes and the deterministic experiment-genesis predecessor;
-- validate the experiment-wide trial ledger and reject gaps/forks/selective deletion;
+- enforce RFC 8785/JCS plus the AIFC canonicalization profile;
+- recompute all domain-separated hashes and the deterministic experiment-genesis predecessor;
+- validate the complete experiment-wide trial ledger and reject gaps/forks/selective deletion;
 - enforce the trial state machine and abort semantics;
 - validate candidate-generation provenance and fail closed on unbounded shadow-candidate selection freedom;
 - enumerate/charge candidate multiplicity rather than trust a declared count;
 - validate the proof-carrying entropy profile and canonical exact-rational `p_i` bound;
 - explicitly handle `a_i = 0` without division-by-zero behavior;
 - bind the entropy claim to the complete conditioning-view hash and target-derivation profile;
-- freeze and recompute target derivation from the raw source object, not from producer-supplied final bytes alone;
+- recompute target derivation from the preserved raw source object;
 - parse the causal DAG and independently evaluate required d-separation queries;
 - reject forbidden collider/post-selection conditioning;
-- verify witness registry state, key validity, rotation/revocation/compromise handling;
+- verify witness registry state, Ed25519 signatures, key validity, rotation/revocation/compromise handling;
 - verify typed individual witness receipts and quorum safety under the declared `(n,f,q)` model;
 - validate every witness-registry reconfiguration by joint old-quorum authorization and new-quorum acceptance;
 - verify freshness/continuity bindings outside the experiment rollback domain;
@@ -37,8 +63,6 @@ The verifier must independently:
 
 ## Draft protocol objects
 
-Current draft schemas include:
-
 ```text
 schemas/
 ├── hard-witness.schema.json
@@ -51,6 +75,9 @@ schemas/
 ├── witness-registry.schema.json
 ├── witness-receipt.schema.json
 ├── quorum-certificate.schema.json
+├── registry-transition-body.schema.json
+├── registry-transition-receipt.schema.json
+├── registry-transition-quorum.schema.json
 ├── registry-transition-certificate.schema.json
 ├── target-evidence.schema.json
 ├── evidence-bundle.schema.json
@@ -58,48 +85,29 @@ schemas/
 └── release-manifest.schema.json
 ```
 
-These schemas are draft interfaces. Their existence is not evidence that the standalone verifier has already implemented them correctly.
+These schemas are draft interfaces. Their existence or partial implementation is not evidence that full standalone verification has already been achieved.
 
-## First red-team frontier
+## Current v0.1 limitations
 
-The first executable verifier should be attacked in this order:
+Verifier A frontier v0.1 intentionally does **not** yet claim:
 
-```text
-SHADOW_CANDIDATE_POOL
-        ↓
-REGISTRY_RECONFIGURATION_FORK
-        ↓
-POST_HOC_TARGET_DERIVATION
-        ↓
-NONCANONICAL_RATIONAL_BOUND
-```
+- full JSON Schema validation;
+- full RFC 8785 cross-implementation canonicalization;
+- Ed25519 signature verification;
+- registry key-interval/revocation replay;
+- complete trial-ledger replay;
+- d-separation computation;
+- cryptographic verification of the future randomness source;
+- the full e-process/statistical engine;
+- a frozen machine-readable adversarial corpus;
+- independent Implementation B agreement.
 
-A verifier that cannot reject these four classes is not ready to claim end-to-end evidence admission.
-
-## Planned implementation layout
-
-```text
-reference/
-├── README.md
-└── verifier/
-    ├── aifc_verify.py
-    ├── canonicalization.py
-    ├── ledger.py
-    ├── candidate_provenance.py
-    ├── entropy.py
-    ├── target_derivation.py
-    ├── causal.py
-    ├── witnesses.py
-    ├── release_manifest.py
-    └── statistics.py
-```
+In particular, registry-transition v0.1 checks structural joint quorum/fork semantics but does not yet treat placeholder signatures in unit tests as cryptographically valid evidence.
 
 ## Independence requirement
 
-A second implementation should be written without importing the reference verifier's decision logic. Agreement between independently implemented verifiers is a stronger result than replay by copies of the same code.
-
-Before `AIFC v1.0 FROZEN`, two implementations must agree on schema admission, byte-identical canonicalization, ledger/genesis verdicts, candidate-provenance/multiplicity decisions, entropy bounds, target derivation, d-separation, witness/registry transitions, honest/attack corpus grades, and terminal verifier results.
+Implementation B must be written without importing Verifier A decision logic. Before `AIFC v1.0 FROZEN`, two independent implementations must agree on schema admission, byte-identical canonicalization, ledger/genesis verdicts, candidate provenance/multiplicity, entropy bounds, target derivation, d-separation, witness/registry transitions, honest/attack corpus grades, and terminal results.
 
 ## Current scientific boundary
 
-The absence of a frozen standalone verifier means the repository remains a **protocol/specification project**, not yet a complete turnkey external bench.
+AIFC remains a **draft executable evidence-admission project**, not a complete frozen external bench. No physical retrocausal effect is reported or inferred by Verifier A v0.1.
