@@ -2,7 +2,16 @@
   "schema": "AIFC/verifier-replay-status/v1",
   "verifier_id": "AIFC-Verifier-A",
   "version": "0.2.0-replay",
-  "status": "CONTENT_ADDRESSED_REPLAY_CORE_CI_PENDING_NOT_FULL_IMPLEMENTATION",
+  "status": "CONTENT_ADDRESSED_REPLAY_CORE_CI_PASS_NOT_FULL_IMPLEMENTATION",
+  "ci_evidence": {
+    "workflow": "AIFC Draft Conformance",
+    "run_id": 31167840374,
+    "job_id": 92832665490,
+    "runner_os": "Ubuntu 24.04.4 LTS",
+    "python": "3.12.13",
+    "repository_conformance": "PASS",
+    "unit_tests": "PASS_25_OF_25"
+  },
   "trust_model_shift": "PROTOCOL_OBJECTS_ARE_RESOLVED_FROM_EXACT_BYTES_AND_REHASHED_BEFORE_USE",
   "implemented_or_candidate_checks": [
     "EXPERIMENT_PLAN_AND_POLICY_BINDING",
@@ -50,7 +59,7 @@
     "FULL_RELEASE_MANIFEST_EVIDENCE_RESOLUTION"
   ],
   "release_gate_effect": {
-    "VERIFIER_A_REPLAY_V0_2": "CANDIDATE_PASS_ONLY_AFTER_GITHUB_ACTIONS_CLEAN",
+    "VERIFIER_A_REPLAY_V0_2": "PASS",
     "IMPLEMENTATION_A_PASS": "NOT_ESTABLISHED",
     "AIFC_V1_FROZEN": false
   },
