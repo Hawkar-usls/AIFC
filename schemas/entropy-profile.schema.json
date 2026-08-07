@@ -7,9 +7,11 @@
   "required": [
     "schema",
     "profile_id",
+    "experiment_id",
+    "trial_index",
     "source_id",
     "source_protocol_version",
-    "target_selector",
+    "target_selector_profile_hash",
     "target_derivation_profile_hash",
     "conditioning_view_hash",
     "point_probability_upper_bound",
@@ -22,18 +24,11 @@
   "properties": {
     "schema": {"const": "AIFC/entropy-profile/v1"},
     "profile_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
     "source_protocol_version": {"type": "string", "minLength": 1, "maxLength": 128},
-    "target_selector": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["method", "selector_hash"],
-      "properties": {
-        "method": {"type": "string", "minLength": 1, "maxLength": 256},
-        "selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "target_round_or_event": {"type": ["string", "null"], "maxLength": 256}
-      }
-    },
+    "target_selector_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_derivation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "conditioning_view_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "point_probability_upper_bound": {
@@ -45,7 +40,7 @@
         "denominator_dec": {"type": "string", "pattern": "^[1-9][0-9]*$"},
         "canonical_reduced": {"const": true}
       },
-      "description": "Verifier MUST parse exact integers, require 0 <= numerator <= denominator, gcd(numerator,denominator)=1, denominator>0, and use only the unique reduced decimal representation without leading zeroes. 0 MUST be 0/1 and 1 MUST be 1/1."
+      "description": "Verifier must parse exact integers, require 0 <= numerator <= denominator, gcd=1, denominator>0, no leading zeroes, zero=0/1 and one=1/1."
     },
     "min_entropy_bits_lower_bound": {"type": ["string", "null"], "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"},
     "derivation_method": {
@@ -75,6 +70,7 @@
         }
       }
     },
-    "admission_status": {"enum": ["ADMITTED", "BLOCKED_UNRESOLVED_ASSUMPTIONS", "BLOCKED_MISSING_EVIDENCE", "BLOCKED_INVALID_BOUND"]}
-  }
+    "admission_status": {"enum": ["ADMITTED", "BLOCKED_UNRESOLVED_ASSUMPTIONS", "BLOCKED_MISSING_EVIDENCE", "BLOCKED_INVALID_BOUND", "BLOCKED_CONDITIONING_VIEW_NOT_FROZEN"]}
+  },
+  "description": "The claimed p_i is conditional on the exact AIFC/pre-target-conditioning-view/v1 content hash. A reconstructed or sanitized post-target view cannot support strongest-grade entropy admission."
 }
