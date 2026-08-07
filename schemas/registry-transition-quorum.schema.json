@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/registry-transition-quorum.schema.json",
+  "title": "AIFC Registry Transition Quorum v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "role",
+    "transition_body_hash",
+    "signing_registry_hash",
+    "n",
+    "f",
+    "q",
+    "receipts"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/registry-transition-quorum/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "role": {"enum": ["OLD_REGISTRY_AUTHORIZATION", "NEW_REGISTRY_ACCEPTANCE"]},
+    "transition_body_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signing_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "n": {"type": "integer", "minimum": 1},
+    "f": {"type": "integer", "minimum": 0},
+    "q": {"type": "integer", "minimum": 1},
+    "receipts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "registry-transition-receipt.schema.json"}
+    }
+  }
+}
