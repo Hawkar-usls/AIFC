@@ -1,0 +1,31 @@
+{
+  "title": "AIFC — Auditable Independent-Future Challenge",
+  "description": "A proof-carrying, adversarial scientific protocol for testing claims that exact information about independently generated future random events existed before target generation, with causal isolation, certified randomness, rollback-resistant provenance, Byzantine witness continuity, and anytime-valid statistics.",
+  "creators": [
+    {
+      "name": "Agapov, Alexander"
+    }
+  ],
+  "license": "Apache-2.0",
+  "upload_type": "software",
+  "access_right": "open",
+  "keywords": [
+    "reproducible research",
+    "causal inference",
+    "randomness",
+    "e-process",
+    "sequential inference",
+    "cryptographic provenance",
+    "scientific methodology",
+    "retrocausality testing",
+    "proof-carrying evidence"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Hawkar-usls/AIFC",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "notes": "AIFC does not report evidence of physical retrocausality, FTL communication, or closed timelike curves. Composition-level scientific novelty remains under review."
+}
