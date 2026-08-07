@@ -14,16 +14,17 @@
     "state_from",
     "state_to",
     "previous_event_hash",
+    "prerequisite_certificate_hash",
     "payload_hash",
     "reason_code"
   ],
   "properties": {
     "schema": {"const": "AIFC/trial-ledger-event/v1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "event_index": {"type": "integer", "minimum": 0},
-    "trial_index": {"type": "integer", "minimum": 1},
+    "event_index": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "transition_ordinal": {"type": "integer", "minimum": 0},
+    "transition_ordinal": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
     "state_from": {
       "enum": [null, "CREATED", "PRE_RETURN_FROZEN", "QUORUM_CERTIFIED", "TARGET_ARMED", "TARGET_OBSERVED", "VERIFIED", "TERMINAL"]
     },
@@ -34,11 +35,28 @@
       "enum": [null, "COMPLETED_HIT", "COMPLETED_MISS", "INVALIDATED_EVIDENCE", "ABORTED_PRE_FREEZE", "ABORTED_POST_FREEZE_PRE_TARGET", "ABORTED_POST_TARGET_PRE_VERIFY", "ABORTED_RECOVERY_FAILURE"]
     },
     "previous_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prerequisite_certificate_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "payload_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "evidence_bundle_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "reason_code": {"type": "string", "minLength": 1, "maxLength": 96},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"},
     "wall_clock_role": {"const": "METADATA_ONLY_UNLESS_EXTERNAL_TIMING_PROFILE_DECLARED"},
     "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
-  }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state_to": {"const": "CREATED"}}, "required": ["state_to"]},
+      "then": {
+        "properties": {
+          "prerequisite_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      },
+      "else": {
+        "properties": {
+          "prerequisite_certificate_hash": {"type": "null"}
+        }
+      }
+    }
+  ],
+  "description": "For CREATED, payload_hash binds the frozen experiment-plan hash and prerequisite_certificate_hash binds the externally verified quorum certificate over that plan. All later v1 state events use prerequisite_certificate_hash=null; their causal prerequisites are carried by the preceding hash chain and state-specific payload bindings."
 }
