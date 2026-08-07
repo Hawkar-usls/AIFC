@@ -77,7 +77,7 @@ class FullAdmissionV07Tests(unittest.TestCase):
         self.assertFalse(result["key_lifecycle_summary"]["external_completeness_proven"])
         self.assertEqual(result["verifier_version"], "0.7.0-key-lifecycle")
 
-    def test_known_historical_quorum_collapse_invalidates_before_downstream(self):
+    def test_known_historical_quorum_collapse_invalidates_evidence_but_passes_replay_mechanism(self):
         with patch("full_admission_v07.replay_signature_preimages", return_value=preimage_summary()), \
              patch("full_admission_v07.replay_ed25519_signatures", return_value=crypto_summary()), \
              patch(
@@ -89,7 +89,9 @@ class FullAdmissionV07Tests(unittest.TestCase):
         self.assertEqual(result["terminal_grade"], "INVALIDATED_EVIDENCE")
         self.assertEqual(result["gate_results"]["ED25519_SIGNATURE_CRYPTO"], "PASS")
         self.assertEqual(result["gate_results"]["KEY_LIFECYCLE_POLICY_VALID"], "PASS")
-        self.assertEqual(result["gate_results"]["KEY_LIFECYCLE_LEDGER_REPLAY"], "FAIL")
+        self.assertEqual(result["gate_results"]["KEY_LIFECYCLE_LEDGER_REPLAY"], "PASS")
+        self.assertEqual(result["gate_results"]["RETROACTIVE_KEY_QUORUM_REEVALUATION"], "PASS")
+        self.assertEqual(result["gate_results"]["HISTORICAL_KEY_LIFECYCLE"], "FAIL")
         self.assertTrue(any("HISTORICAL_QUORUM_COLLAPSE" in x for x in result["failure_codes"]))
 
     def test_empty_or_surviving_local_ledger_cannot_admit_forward_null_incompatibility(self):
