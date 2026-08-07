@@ -28,17 +28,7 @@
     "workflow": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "path",
-        "raw_sha256",
-        "run_id",
-        "run_attempt",
-        "job_id",
-        "job_name",
-        "event_name",
-        "runner_os",
-        "python_version"
-      ],
+      "required": ["path", "raw_sha256", "run_id", "run_attempt", "job_id", "job_name", "event_name", "runner_os", "python_version"],
       "properties": {
         "path": {"type": "string", "minLength": 1, "maxLength": 256},
         "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -65,9 +55,10 @@
     "reports": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["base_conformance", "self_audit_conformance", "unittest"],
+      "required": ["base_conformance", "preregistration_conformance", "self_audit_conformance", "unittest"],
       "properties": {
         "base_conformance": {"$ref": "#/$defs/report"},
+        "preregistration_conformance": {"$ref": "#/$defs/report"},
         "self_audit_conformance": {"$ref": "#/$defs/report"},
         "unittest": {"$ref": "#/$defs/unittestReport"}
       }
