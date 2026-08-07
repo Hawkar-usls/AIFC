@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/publication-policy.schema.json",
+  "title": "AIFC Publication Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "publish_every_certified_created_slot",
+    "publish_terminal_state_for_every_slot",
+    "publish_aborts_and_invalidations",
+    "publish_ledger_continuity_proof",
+    "external_publication_root_required",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/publication-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "publish_every_certified_created_slot": {"const": true},
+    "publish_terminal_state_for_every_slot": {"const": true},
+    "publish_aborts_and_invalidations": {"const": true},
+    "publish_ledger_continuity_proof": {"const": true},
+    "external_publication_root_required": {"const": true},
+    "maximum_publication_delay_policy_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "frozen_before_first_created": {"const": true}
+  }
+}
