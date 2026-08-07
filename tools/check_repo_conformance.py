@@ -30,6 +30,7 @@ SCHEMA_FILES = [
     "schemas/target-derivation-profile.schema.json",
     "schemas/conditioning-view-policy.schema.json",
     "schemas/pre-target-conditioning-view.schema.json",
+    "schemas/entropy-policy.schema.json",
     "schemas/entropy-profile.schema.json",
     "schemas/causal-model.schema.json",
     "schemas/statistical-plan.schema.json",
@@ -73,6 +74,7 @@ REQUIRED_FILES = [
     "conformance/state-machine-v1.json",
     "conformance/AIFC-RELEASE-GATE-v1.json",
     "conformance/VERIFIER-A-FRONTIER-v0.1.json",
+    "conformance/VERIFIER-A-REPLAY-v0.2.json",
     "reference/verifier/canonical.py",
     "reference/verifier/frontier.py",
     "reference/verifier/bindings.py",
@@ -100,6 +102,7 @@ EXPECTED_RELEASE_GATES = {
     "TARGET_SELECTOR_PROFILE_VALID",
     "TARGET_DERIVATION_PROFILE_VALID",
     "TARGET_DERIVATION_BYTE_REPLAY",
+    "ENTROPY_POLICY_VALID",
     "ENTROPY_PROFILE_VALID",
     "CANONICAL_RATIONAL_VALID",
     "EVIDENCE_RESOLVER_PASS",
@@ -192,6 +195,7 @@ def check_hardening_contracts() -> None:
         "candidate_generation_policy_hash",
         "target_selector_policy_hash",
         "target_derivation_policy_hash",
+        "entropy_policy_hash",
         "causal_model_hash",
         "statistical_plan_hash",
         "publication_policy_hash",
@@ -232,6 +236,17 @@ def check_hardening_contracts() -> None:
     ), "pre-target conditioning view")
     if "certification_quorum_hash" in view.get("properties", {}):
         die("pre-target conditioning view must not contain its own quorum hash")
+
+    entropy_policy = load_json("schemas/entropy-policy.schema.json")
+    require_keys(entropy_policy, (
+        "source_id",
+        "source_protocol_version",
+        "allowed_derivation_methods",
+        "required_external_evidence_types",
+        "post_target_method_selection_forbidden",
+    ), "entropy policy")
+    if entropy_policy["properties"]["post_target_method_selection_forbidden"].get("const") is not True:
+        die("entropy policy must forbid post-target method selection")
 
     entropy = load_json("schemas/entropy-profile.schema.json")
     rat = entropy["properties"]["point_probability_upper_bound"]["properties"]
@@ -322,7 +337,10 @@ def check_hardening_contracts() -> None:
         if token not in resolver_source:
             die(f"evidence resolver missing fail-closed path: {token}")
 
-    engine_source = (ROOT / "reference/verifier/replay_engine.py").read_text(encoding="utf-8")
+    replay_sources = (
+        (ROOT / "reference/verifier/replay.py").read_text(encoding="utf-8")
+        + (ROOT / "reference/verifier/replay_engine.py").read_text(encoding="utf-8")
+    )
     for token in (
         "POST_HOC_CONDITIONING_VIEW_SANITIZATION",
         "FAULT_MODEL_REBINDING",
@@ -330,7 +348,7 @@ def check_hardening_contracts() -> None:
         "TARGET_DERIVATION_REPLAY",
         "PUBLICATION_MANIFEST_REPLAY",
     ):
-        if token not in engine_source and token not in (ROOT / "reference/verifier/replay.py").read_text(encoding="utf-8"):
+        if token not in replay_sources:
             die(f"replay engine missing frontier failure path: {token}")
 
     ledger_doc = (ROOT / "docs/TRIAL_LEDGER.md").read_text(encoding="utf-8")
