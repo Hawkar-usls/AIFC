@@ -9,8 +9,9 @@
     "experiment_id",
     "trial_index",
     "source_id",
-    "target_selector_hash",
+    "target_selector_profile_hash",
     "target_derivation_profile_hash",
+    "conditioning_view_hash",
     "target_event_id",
     "raw_source_object_hash",
     "target_canonical_hash",
@@ -20,10 +21,11 @@
   "properties": {
     "schema": {"const": "AIFC/target-evidence/v1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "trial_index": {"type": "integer", "minimum": 1},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "source_id": {"type": "string", "minLength": 1, "maxLength": 256},
-    "target_selector_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_selector_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_derivation_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "conditioning_view_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_event_id": {"type": "string", "minLength": 1, "maxLength": 256},
     "raw_source_object_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_canonical_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -36,5 +38,6 @@
       "uniqueItems": true
     },
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
-  }
+  },
+  "description": "Verifier must resolve raw_source_object_hash, verify the source proof, recompute the selected event from target-selector-profile, execute target-derivation-profile on exact raw bytes, and require the derived bytes/hash to match this evidence. Producer-supplied target bytes alone are insufficient."
 }
