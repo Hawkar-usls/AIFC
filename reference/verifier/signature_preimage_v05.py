@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AIFC v0.5 normative signature-preimage construction.
+"""AIFC v0.5 normative signature-preimage construction and evidence replay.
 
 This module deliberately does NOT verify Ed25519 signatures. It freezes and replays
 only the exact message bytes that a future Ed25519 verifier will consume.
@@ -11,6 +11,10 @@ Wire grammar:
 Tags and order are frozen below. Hash fields are 32 decoded bytes. Unsigned integer
 fields are 8-byte big-endian. Optional trial/timestamp fields carry an explicit
 presence octet, preventing absence from being confused with an empty value.
+
+Strongest-grade replay does not trust caller-supplied protocol_version,
+content_schema, or registry_sequence. It derives them from the frozen experiment
+plan and exact content-addressed registry/content objects through the resolver.
 """
 from __future__ import annotations
 
@@ -18,6 +22,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from canonical import CanonicalizationError, validate_value
+from resolver import EvidenceResolutionError
 
 DOMAIN = b"AIFC:SIGNATURE_PREIMAGE:v1\x00"
 PROFILE_ID = "AIFC-SIGNATURE-PREIMAGE-V1"
@@ -27,7 +32,6 @@ SUPPORTED_RECEIPTS = (
     "AIFC/witness-receipt/v1",
 )
 
-# Fixed field order / semantic tags. Never reuse a tag for a different meaning.
 TAG_RECEIPT_SCHEMA = 0x01
 TAG_PROTOCOL_VERSION = 0x02
 TAG_SIGNATURE_PROFILE_ID = 0x03
@@ -138,54 +142,33 @@ def receipt_binding(receipt: Mapping[str, Any]) -> ReceiptBinding:
     schema = receipt.get("schema")
     if schema == "AIFC/witness-receipt/v1":
         return ReceiptBinding(
-            schema,
-            "TRIAL",
-            receipt["experiment_id"],
-            receipt["trial_index"],
-            receipt["logical_position"],
-            receipt["content_hash"],
-            receipt["registry_hash"],
-            receipt["witness_id"],
-            receipt["key_id"],
+            schema, "TRIAL", receipt["experiment_id"], receipt["trial_index"], receipt["logical_position"],
+            receipt["content_hash"], receipt["registry_hash"], receipt["witness_id"], receipt["key_id"],
             receipt.get("wall_clock_timestamp"),
         )
     if schema == "AIFC/experiment-plan-receipt/v1":
         return ReceiptBinding(
-            schema,
-            "EXPERIMENT",
-            receipt["experiment_id"],
-            None,
-            receipt["logical_position"],
-            receipt["content_hash"],
-            receipt["registry_hash"],
-            receipt["witness_id"],
-            receipt["key_id"],
+            schema, "EXPERIMENT", receipt["experiment_id"], None, receipt["logical_position"],
+            receipt["content_hash"], receipt["registry_hash"], receipt["witness_id"], receipt["key_id"],
             receipt.get("wall_clock_timestamp"),
         )
     if schema == "AIFC/registry-transition-receipt/v1":
         return ReceiptBinding(
-            schema,
-            "REGISTRY_TRANSITION",
-            receipt["experiment_id"],
-            None,
-            receipt["role"],
-            receipt["transition_body_hash"],
-            receipt["signing_registry_hash"],
-            receipt["witness_id"],
-            receipt["key_id"],
+            schema, "REGISTRY_TRANSITION", receipt["experiment_id"], None, receipt["role"],
+            receipt["transition_body_hash"], receipt["signing_registry_hash"], receipt["witness_id"], receipt["key_id"],
             receipt.get("wall_clock_timestamp"),
         )
     raise SignaturePreimageError(f"UNSUPPORTED_RECEIPT_SCHEMA:{schema}")
 
 
 def build_signature_preimage(
-    receipt: Mapping[str, Any],
-    *,
-    policy: Mapping[str, Any],
-    protocol_version: str,
-    content_schema: str,
-    registry_sequence: int,
+    receipt: Mapping[str, Any], *, policy: Mapping[str, Any], protocol_version: str,
+    content_schema: str, registry_sequence: int,
 ) -> bytes:
+    """Low-level deterministic builder for frozen vectors/independent implementations.
+
+    Strongest-grade verification must call replay_signature_preimage() instead.
+    """
     binding = receipt_binding(receipt)
     assert_normative_policy(policy, binding.experiment_id)
     if policy["experiment_id"] != binding.experiment_id:
@@ -210,6 +193,70 @@ def build_signature_preimage(
         _field(TAG_TIMESTAMP_OPTIONAL, _optional_utf8(binding.timestamp, "wall_clock_timestamp")),
     )
     return DOMAIN + b"".join(fields)
+
+
+def _resolved_protocol(resolver, content_hash: str, expected_schema: str | None = None) -> Mapping[str, Any]:
+    try:
+        resolved = resolver.resolve(content_hash, expected_schema=expected_schema)
+    except EvidenceResolutionError as exc:
+        raise SignaturePreimageError(f"SIGNATURE_PREIMAGE_EVIDENCE_RESOLUTION:{exc}") from exc
+    if resolved.parsed_json is None:
+        raise SignaturePreimageError(f"SIGNATURE_PREIMAGE_EXPECTED_PROTOCOL_JSON:{content_hash}")
+    return resolved.parsed_json
+
+
+def replay_signature_preimage(receipt: Mapping[str, Any], *, experiment_plan_hash: str, resolver) -> bytes:
+    """Derive all semantic preimage metadata from exact resolved evidence.
+
+    No Ed25519 verification occurs here. The result is only the exact byte string a
+    later pure-Ed25519 gate is required to verify.
+    """
+    binding = receipt_binding(receipt)
+    plan = _resolved_protocol(resolver, experiment_plan_hash, "AIFC/experiment-plan/v1")
+    if plan.get("experiment_id") != binding.experiment_id:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_PLAN_EXPERIMENT_REBINDING")
+    if plan.get("frozen_before_first_created") is not True:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_PLAN_NOT_FROZEN")
+    protocol_version = plan.get("protocol_version")
+    if not isinstance(protocol_version, str) or not protocol_version:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_PROTOCOL_VERSION_INVALID")
+
+    policy_hash = plan.get("signature_preimage_policy_hash")
+    if not isinstance(policy_hash, str) or len(policy_hash) != 64:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_POLICY_HASH_INVALID")
+    policy = _resolved_protocol(resolver, policy_hash, "AIFC/signature-preimage-policy/v1")
+    if policy.get("experiment_id") != binding.experiment_id:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_POLICY_EXPERIMENT_REBINDING")
+    assert_normative_policy(policy, binding.experiment_id)
+
+    registry = _resolved_protocol(resolver, binding.registry_hash, "AIFC/witness-registry/v1")
+    if registry.get("experiment_id") != binding.experiment_id:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_REGISTRY_EXPERIMENT_REBINDING")
+    registry_sequence = registry.get("registry_sequence")
+    if not isinstance(registry_sequence, int) or isinstance(registry_sequence, bool) or registry_sequence < 0:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_REGISTRY_SEQUENCE_INVALID")
+
+    content = _resolved_protocol(resolver, binding.content_hash)
+    content_schema = content.get("schema")
+    if not isinstance(content_schema, str) or not content_schema:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_CONTENT_SCHEMA_INVALID")
+    if content.get("experiment_id") != binding.experiment_id:
+        raise SignaturePreimageError("SIGNATURE_PREIMAGE_CONTENT_EXPERIMENT_REBINDING")
+
+    if binding.receipt_schema == "AIFC/experiment-plan-receipt/v1":
+        if binding.content_hash != experiment_plan_hash or content_schema != "AIFC/experiment-plan/v1":
+            raise SignaturePreimageError("SIGNATURE_PREIMAGE_EXPERIMENT_PLAN_CONTENT_REBINDING")
+    elif binding.receipt_schema == "AIFC/registry-transition-receipt/v1":
+        if content_schema != "AIFC/registry-transition-body/v1":
+            raise SignaturePreimageError("SIGNATURE_PREIMAGE_REGISTRY_TRANSITION_CONTENT_SCHEMA_REBINDING")
+
+    return build_signature_preimage(
+        receipt,
+        policy=policy,
+        protocol_version=protocol_version,
+        content_schema=content_schema,
+        registry_sequence=registry_sequence,
+    )
 
 
 def preimage_hex(*args, **kwargs) -> str:
