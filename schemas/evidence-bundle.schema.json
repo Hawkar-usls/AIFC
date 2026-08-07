@@ -44,6 +44,7 @@
     "statistical_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "witness_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "witness_registry_transition_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "key_lifecycle_ledger_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "eprocess_state_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "additional_evidence_hashes": {
@@ -52,5 +53,5 @@
       "uniqueItems": true
     }
   },
-  "description": "Per-trial bundle binds evidence available through VERIFIED. The subsequent TERMINAL event binds the bundle hash. The experiment-level publication manifest is created only after trial termination and references bundle/terminal hashes; it is intentionally NOT referenced from the bundle, avoiding a publication fixed-point."
+  "description": "Per-trial bundle binds evidence available through VERIFIED. v0.7 may additionally bind key_lifecycle_ledger_hash so later compromise/revocation re-evaluation is tied to the trial evidence package. The field remains optional at this draft compatibility layer; strongest v0.7 admission requires a matching lifecycle ledger. External lifecycle completeness/freshness is a later gate."
 }
