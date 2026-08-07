@@ -54,11 +54,6 @@ def experiment_genesis_hash(experiment_id: str) -> str:
 
 
 def validate_canonical_rational(bound: Mapping[str, Any]) -> tuple[CheckResult, Fraction | None]:
-    """Validate the v1 exact-rational representation.
-
-    Schema regex is only the first line of defense. Semantic reduction and range
-    checks are verifier duties.
-    """
     try:
         n_s = bound["numerator_dec"]
         d_s = bound["denominator_dec"]
@@ -93,12 +88,10 @@ def exact_hit_cap(candidate_count: int, p: Fraction) -> Fraction:
         raise ValueError("candidate_count must be a positive integer")
     if p < 0 or p > 1:
         raise ValueError("p must be in [0,1]")
-    value = candidate_count * p
-    return min(Fraction(1, 1), value)
+    return min(Fraction(1, 1), candidate_count * p)
 
 
 def zero_cap_outcome(a_i: Fraction, hit: bool) -> CheckResult:
-    """Explicit zero-cap branch; never evaluates X_i / a_i when a_i == 0."""
     if a_i != 0:
         return ok("POSITIVE_CAP_USE_STATISTICAL_PROFILE")
     if hit:
@@ -227,8 +220,6 @@ def _validate_transition_quorum(
     if len(seen) < q:
         return fail("REGISTRY_TRANSITION_DISTINCT_WITNESS_QUORUM_NOT_MET", expected_role)
 
-    # v0.1 frontier limitation: signatures and key-registry intervals are not yet
-    # cryptographically verified here. Full Implementation A remains blocked.
     return ok("REGISTRY_TRANSITION_STRUCTURAL_QUORUM_PASS", expected_role)
 
 
@@ -275,6 +266,26 @@ def validate_registry_transition(certificate: Mapping[str, Any]) -> CheckResult:
         "REGISTRY_TRANSITION_STRUCTURAL_PASS",
         "Signature/key-interval verification remains pending in Verifier A v0.1.",
     )
+
+
+def validate_registry_transition_set(certificates: Sequence[Mapping[str, Any]]) -> CheckResult:
+    seen: dict[tuple[str, int, str], str] = {}
+    for cert in certificates:
+        res = validate_registry_transition(cert)
+        if not res.ok:
+            return res
+        body = cert["transition_body"]
+        key = (
+            str(body.get("experiment_id")),
+            int(body["previous_registry_sequence"]),
+            str(body["previous_registry_hash"]),
+        )
+        nxt = str(body["next_registry_hash"])
+        prior = seen.get(key)
+        if prior is not None and prior != nxt:
+            return fail("REGISTRY_RECONFIGURATION_FORK", f"{prior} vs {nxt}")
+        seen[key] = nxt
+    return ok("REGISTRY_TRANSITION_SET_NO_FORK_PASS")
 
 
 def validate_release_manifest_structure(manifest: Mapping[str, Any], required_gate_ids: Sequence[str]) -> CheckResult:
