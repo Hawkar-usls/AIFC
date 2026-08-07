@@ -15,12 +15,6 @@ jobs:
   verifier_self_audit:
     name: Verifier A environment self-audit
     runs-on: ubuntu-24.04
-    outputs:
-      tested_source_commit_sha: ${{ steps.attmeta.outputs.tested_source_commit_sha }}
-      verifier_job_id: ${{ steps.jobmeta.outputs.job_id }}
-      attestation_artifact_id: ${{ steps.upload.outputs['artifact-id'] }}
-      attestation_raw_sha256: ${{ steps.attmeta.outputs.attestation_raw_sha256 }}
-      attestation_protocol_hash: ${{ steps.attmeta.outputs.attestation_protocol_hash }}
     steps:
       - name: Checkout exact tested source commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -143,21 +137,6 @@ jobs:
             --job-name 'Verifier A environment self-audit' \
             --output-dir ci-evidence
 
-      - name: Expose attestation bindings to post-upload job
-        id: attmeta
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          att = json.loads(Path("ci-evidence/verifier-ci-attestation-v2.json").read_text())
-          side = json.loads(Path("ci-evidence/verifier-ci-attestation-v2.sha256.json").read_text())
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
-              f.write(f"tested_source_commit_sha={att['tested_source_commit_sha']}\n")
-              f.write(f"attestation_raw_sha256={side['raw_sha256']}\n")
-              f.write(f"attestation_protocol_hash={side['protocol_content_hash']}\n")
-          PY
-
       - name: Independently replay CI attestation semantics
         run: |
           python tools/verify_verifier_ci_attestation_v04.py \
@@ -193,13 +172,12 @@ jobs:
   platform_receipt:
     name: GitHub platform receipt replay
     needs: verifier_self_audit
-    if: needs.verifier_self_audit.result == 'success'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact tested source commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.verifier_self_audit.outputs.tested_source_commit_sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
 
       - name: Set up exact Python runtime
@@ -210,18 +188,13 @@ jobs:
       - name: Install hash-locked verifier runtime
         run: python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
 
-      - name: Build post-upload CI platform receipt
+      - name: Build post-upload CI platform receipt from authoritative GitHub state
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p platform-evidence
           python tools/build_ci_platform_receipt.py \
             --run-id '${{ github.run_id }}' \
-            --job-id '${{ needs.verifier_self_audit.outputs.verifier_job_id }}' \
-            --artifact-id '${{ needs.verifier_self_audit.outputs.attestation_artifact_id }}' \
-            --tested-source-commit '${{ needs.verifier_self_audit.outputs.tested_source_commit_sha }}' \
-            --attestation-raw-sha256 '${{ needs.verifier_self_audit.outputs.attestation_raw_sha256 }}' \
-            --attestation-protocol-hash '${{ needs.verifier_self_audit.outputs.attestation_protocol_hash }}' \
             --output-dir platform-evidence
 
       - name: Re-query GitHub and verify uploaded artifact bytes
