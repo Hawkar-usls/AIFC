@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/signature-preimage-policy.schema.json",
+  "title": "AIFC Signature Preimage Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "signature_profile_id",
+    "signature_algorithm",
+    "ed25519_variant",
+    "domain_separator_ascii",
+    "framing",
+    "field_tag_encoding",
+    "field_length_encoding",
+    "integer_encoding",
+    "hash_encoding",
+    "string_encoding",
+    "string_normalization",
+    "supported_receipt_schemas",
+    "public_key_external_encoding",
+    "signature_external_encoding",
+    "timestamp_integrity_semantics",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/signature-preimage-policy/v1"},
+    "policy_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "signature_profile_id": {"const": "AIFC-SIGNATURE-PREIMAGE-V1"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "ed25519_variant": {"const": "PURE_ED25519_RFC8032_NO_PROTOCOL_PREHASH"},
+    "domain_separator_ascii": {"const": "AIFC:SIGNATURE_PREIMAGE:v1"},
+    "framing": {"const": "FIELD_TAG_U8_LENGTH_U32BE_VALUE"},
+    "field_tag_encoding": {"const": "UNSIGNED_8_BIT_FIXED_BY_PROFILE"},
+    "field_length_encoding": {"const": "UNSIGNED_32_BIT_BIG_ENDIAN"},
+    "integer_encoding": {"const": "UNSIGNED_64_BIT_BIG_ENDIAN"},
+    "hash_encoding": {"const": "LOWERCASE_HEX_IN_JSON_DECODED_TO_EXACT_32_BYTES_IN_PREIMAGE"},
+    "string_encoding": {"const": "UTF8"},
+    "string_normalization": {"const": "NFC_REQUIRED_BY_AIFC_CANONICALIZATION_NO_ADDITIONAL_SIGNATURE_NORMALIZATION"},
+    "supported_receipt_schemas": {
+      "const": [
+        "AIFC/experiment-plan-receipt/v1",
+        "AIFC/registry-transition-receipt/v1",
+        "AIFC/witness-receipt/v1"
+      ]
+    },
+    "public_key_external_encoding": {"const": "LOWERCASE_HEX_32_BYTES_EXACT"},
+    "signature_external_encoding": {"const": "LOWERCASE_HEX_64_BYTES_EXACT"},
+    "timestamp_integrity_semantics": {"const": "IF_PRESENT_TIMESTAMP_UTF8_IS_SIGNED_FOR_INTEGRITY_BUT_IS_NOT_FRESHNESS_PROOF"},
+    "frozen_before_first_created": {"const": true}
+  },
+  "description": "Experiment-bound selector for the single normative AIFC v1 signature-preimage profile. Strongest-grade verification rejects claimant-defined field orders, framing variants, signature-prehash variants, unsupported receipt schemas, alternate key/signature encodings, or post-CREATED policy substitution."
+}
