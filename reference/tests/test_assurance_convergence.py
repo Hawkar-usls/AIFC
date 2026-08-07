@@ -65,6 +65,11 @@ def raw_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+class DanglingTransitionResolver:
+    def resolve(self, content_hash, expected_schema=None):
+        raise ValueError(f"DANGLING_TEST_TRANSITION:{content_hash}:{expected_schema}")
+
+
 class AssuranceConvergenceTests(unittest.TestCase):
     def test_machine_partial_order_table_matches_frozen_conformance_object(self):
         order = load_json_strict(ROOT / "conformance" / "AIFC-ADMISSION-AUTHORITY-ORDER-v1.json")
@@ -115,9 +120,16 @@ class AssuranceConvergenceTests(unittest.TestCase):
             comparison.failure_codes,
         )
 
-    def test_inherited_gate_set_is_not_a_caller_argument(self):
+    def test_successor_cannot_supply_inherited_set_or_preblessed_transition_result(self):
         parameters = inspect.signature(compare_verifier_results).parameters
         self.assertNotIn("inherited_gate_ids", parameters)
+        self.assertNotIn("verified_transitions", parameters)
+        self.assertIn("transition_hashes", parameters)
+        self.assertIn("transition_resolver", parameters)
+        release_parameters = inspect.signature(compare_release_gate_sets).parameters
+        self.assertNotIn("verified_transitions", release_parameters)
+        self.assertIn("transition_hashes", release_parameters)
+        self.assertIn("transition_resolver", release_parameters)
 
     def test_inherited_gate_set_omission_attack_is_detected_by_derivation(self):
         predecessor_gate = gate_doc("TERMINAL_SUBTYPE_SEMANTICS", "TRIAL_CREATION_POLICY_REPLAY")
@@ -190,23 +202,26 @@ class AssuranceConvergenceTests(unittest.TestCase):
         self.assertEqual(comparison.status, "FAIL")
         self.assertIn("RELEASE_GATE_REGRESSION:ED25519_SIGNATURE_CRYPTO", comparison.failure_codes)
 
-    def test_structurally_plausible_unverified_transition_is_rejected(self):
-        previous = gate_doc("OLD_GATE")
-        successor = gate_doc("NEW_GATE")
-        fake_transition = {
-            "schema": "AIFC/gate-lineage-transition/v1",
-            "removed_gate_id": "OLD_GATE",
-            "successor_gate_ids": ["NEW_GATE"],
-            "previous_gate_definition_hash": "11" * 32,
-            "successor_definition_hashes": ["22" * 32],
-            "equivalence_or_strengthening_evidence_hash": "33" * 32,
-            "migration_reason": "looks plausible but was never proof-replayed",
-            "approved_protocol_version": "test-v2",
-            "transition_hash": "44" * 32,
-        }
-        comparison = compare_release_gate_sets(previous, successor, [fake_transition])
+    def test_transition_hash_without_resolver_is_not_preblessed(self):
+        comparison = compare_release_gate_sets(
+            gate_doc("OLD_GATE"),
+            gate_doc("NEW_GATE"),
+            ["44" * 32],
+        )
         self.assertEqual(comparison.status, "FAIL")
-        self.assertIn("FAKE_GATE_STRENGTHENING_RECEIPT:OLD_GATE", comparison.failure_codes)
+        self.assertIn("GATE_LINEAGE_EVIDENCE_RESOLVER_REQUIRED", comparison.failure_codes)
+        self.assertIn("RELEASE_GATE_REGRESSION:OLD_GATE", comparison.failure_codes)
+
+    def test_dangling_transition_hash_is_rejected_inside_comparator(self):
+        comparison = compare_release_gate_sets(
+            gate_doc("OLD_GATE"),
+            gate_doc("NEW_GATE"),
+            ["44" * 32],
+            DanglingTransitionResolver(),
+        )
+        self.assertEqual(comparison.status, "FAIL")
+        self.assertTrue(any(code.startswith("FAKE_GATE_STRENGTHENING_RECEIPT:") for code in comparison.failure_codes))
+        self.assertIn("RELEASE_GATE_REGRESSION:OLD_GATE", comparison.failure_codes)
 
     def test_validator_semantics_manifest_binds_exact_runtime_and_dependency_lock(self):
         manifest_path = ROOT / "conformance" / "AIFC-VALIDATOR-SEMANTICS-MANIFEST-v1.json"
