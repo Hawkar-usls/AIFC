@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/external-freshness-policy.schema.json",
+  "title": "AIFC External Freshness Policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "experiment_id",
+    "rollback_domain_definition_hash",
+    "required_external_roots",
+    "freshness_semantics",
+    "wall_clock_not_sufficient",
+    "frozen_before_first_created"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/external-freshness-policy/v1"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "rollback_domain_definition_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "required_external_roots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["EXPERIMENT_PLAN", "CREATED", "PRE_RETURN_FROZEN", "TARGET_ARMED", "TERMINAL"]}
+    },
+    "freshness_semantics": {"const": "APPEND_ONLY_HEAD_OUTSIDE_ROLLBACK_DOMAIN"},
+    "wall_clock_not_sufficient": {"const": true},
+    "minimum_independent_failure_domains": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "frozen_before_first_created": {"const": true}
+  }
+}
