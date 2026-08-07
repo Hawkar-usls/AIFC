@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/schema-identity-registry-v2.schema.json",
+  "title": "AIFC Schema Identity Registry v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "registry_version",
+    "supersedes_registry",
+    "admission_semantics_id",
+    "admission_semantics_manifest_path",
+    "admission_semantics_content_hash",
+    "records",
+    "historical_scope_note"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/schema-identity-registry/v2"},
+    "registry_version": {"const": 2},
+    "supersedes_registry": {"const": "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v1.json"},
+    "admission_semantics_id": {"type": "string", "minLength": 1, "maxLength": 192},
+    "admission_semantics_manifest_path": {"type": "string", "minLength": 1, "maxLength": 512},
+    "admission_semantics_content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "schema-identity-record-v2.schema.json"}
+    },
+    "historical_scope_note": {"type": "string", "minLength": 1, "maxLength": 4096}
+  },
+  "description": "Forward-immutability registry for the registered issued graph. It does not assert that registered_immutable_at_commit is the first historical appearance of a schema ID; pre-convergence variants require separate historical records and are not strongest-grade current identities."
+}

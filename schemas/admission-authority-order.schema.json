@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/admission-authority-order.schema.json",
+  "title": "AIFC Admission Authority Partial Order v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "order_id", "allowed_successor_outcomes", "incomparable_outcome_pairs"],
+  "properties": {
+    "schema": {"const": "AIFC/admission-authority-order/v1"},
+    "order_id": {"const": "AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1"},
+    "allowed_successor_outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "INVALIDATED_EVIDENCE",
+        "NOT_ADMITTED",
+        "STRUCTURAL_MATCH_ONLY",
+        "FORWARD_NULL_CONSISTENT_MISS",
+        "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE"
+      ],
+      "properties": {
+        "INVALIDATED_EVIDENCE": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "NOT_ADMITTED": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "STRUCTURAL_MATCH_ONLY": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "FORWARD_NULL_CONSISTENT_MISS": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "incomparable_outcome_pairs": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {"type": "string"}
+      }
+    }
+  },
+  "description": "Machine table for the AIFC admission-authority partial order. A successor outcome is monotone only when it is explicitly listed for the predecessor outcome. Equal historical scalar ranks are not evidence of semantic equivalence."
+}

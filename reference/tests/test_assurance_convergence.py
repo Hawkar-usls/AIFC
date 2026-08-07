@@ -1,5 +1,6 @@
 import copy
 import hashlib
+import inspect
 import sys
 import tempfile
 import unittest
@@ -10,9 +11,11 @@ VERIFIER_DIR = ROOT / "reference" / "verifier"
 sys.path.insert(0, str(VERIFIER_DIR))
 
 from assurance_monotonicity import (  # noqa: E402
+    ADMISSION_ALLOWED_SUCCESSORS,
     compare_release_gate_sets,
     compare_schema_identity,
     compare_verifier_results,
+    derive_inherited_gate_obligations,
     required_gate_ids,
 )
 from canonical import load_json_strict  # noqa: E402
@@ -20,12 +23,19 @@ from protocol_semantics_v03 import ProtocolSemanticsError, replay_terminal_seman
 from test_protocol_semantics_v03 import Store as SemanticsStore, event as semantics_event, H  # noqa: E402
 
 
-NEW_CONVERGENCE_GATES = {
+V10_CONVERGENCE_GATES = {
     "VERIFIER_ADMISSION_MONOTONICITY",
     "RELEASE_GATE_MONOTONICITY",
     "SCHEMA_IDENTIFIER_IMMUTABILITY",
     "NORMATIVE_PROFILE_LINEAGE_VALID",
     "SIGNATURE_PREIMAGE_RESOLVER_DERIVED_REPLAY",
+}
+
+V11_HARDENING_GATES = {
+    "ADMISSION_AUTHORITY_PARTIAL_ORDER_VALID",
+    "INHERITED_GATE_SET_DERIVATION",
+    "GATE_LINEAGE_EVIDENCE_RESOLUTION",
+    "VALIDATOR_SEMANTICS_CONTENT_BINDING",
 }
 
 
@@ -36,128 +46,256 @@ def result(grade, gates=None):
     }
 
 
+def gate_doc(*gate_ids):
+    return {
+        "schema": "AIFC/conformance-release-gate/v1",
+        "profile": "test",
+        "status": "DRAFT_NOT_SATISFIED",
+        "required_checks": [{"id": gate_id, "required": True} for gate_id in gate_ids],
+    }
+
+
 def git_blob_sha1(path: Path) -> str:
     data = path.read_bytes()
     header = b"blob " + str(len(data)).encode("ascii") + b"\x00"
     return hashlib.sha1(header + data).hexdigest()
 
 
+def raw_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+class DanglingTransitionResolver:
+    def resolve(self, content_hash, expected_schema=None):
+        raise ValueError(f"DANGLING_TEST_TRANSITION:{content_hash}:{expected_schema}")
+
+
 class AssuranceConvergenceTests(unittest.TestCase):
+    def test_machine_partial_order_table_matches_frozen_conformance_object(self):
+        order = load_json_strict(ROOT / "conformance" / "AIFC-ADMISSION-AUTHORITY-ORDER-v1.json")
+        self.assertEqual(order["order_id"], "AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1")
+        frozen = {key: frozenset(value) for key, value in order["allowed_successor_outcomes"].items()}
+        self.assertEqual(frozen, ADMISSION_ALLOWED_SUCCESSORS)
+        self.assertIn(
+            ["FORWARD_NULL_CONSISTENT_MISS", "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE"],
+            order["incomparable_outcome_pairs"],
+        )
+
     def test_successor_outcome_cannot_be_stronger(self):
+        gates = gate_doc("TERMINAL_SUBTYPE_SEMANTICS")
         comparison = compare_verifier_results(
             result("INVALIDATED_EVIDENCE", {"TERMINAL_SUBTYPE_SEMANTICS": "FAIL"}),
             result("NOT_ADMITTED", {"TERMINAL_SUBTYPE_SEMANTICS": "FAIL"}),
-            {"TERMINAL_SUBTYPE_SEMANTICS"},
+            gates,
+            gates,
         )
         self.assertEqual(comparison.status, "FAIL")
         self.assertTrue(any("SUCCESSOR_OUTCOME_STRONGER_THAN_PREDECESSOR" in x for x in comparison.failure_codes))
 
-    def test_inherited_fail_gate_cannot_disappear_even_if_terminal_rank_does_not_increase(self):
+    def test_same_rank_authority_escalation_is_rejected(self):
+        gates = gate_doc("STATISTICAL_ENGINE_REPLAY")
         comparison = compare_verifier_results(
-            result("INVALIDATED_EVIDENCE", {"TRIAL_CREATION_POLICY_REPLAY": "FAIL"}),
-            result("INVALIDATED_EVIDENCE", {"TRIAL_CREATION_POLICY_REPLAY": "PASS"}),
-            {"TRIAL_CREATION_POLICY_REPLAY"},
+            result("FORWARD_NULL_CONSISTENT_MISS", {"STATISTICAL_ENGINE_REPLAY": "PASS"}),
+            result("FORWARD_NULL_INCOMPATIBILITY_CANDIDATE", {"STATISTICAL_ENGINE_REPLAY": "PASS"}),
+            gates,
+            gates,
         )
         self.assertEqual(comparison.status, "FAIL")
-        self.assertTrue(any("INHERITED_HARDENING_LAYER_OMISSION" in x for x in comparison.failure_codes))
+        self.assertIn(
+            "SAME_RANK_AUTHORITY_ESCALATION:FORWARD_NULL_CONSISTENT_MISS:FORWARD_NULL_INCOMPATIBILITY_CANDIDATE",
+            comparison.failure_codes,
+        )
+
+    def test_reverse_forward_null_semantic_rewrite_is_incomparable_not_silently_allowed(self):
+        gates = gate_doc("STATISTICAL_ENGINE_REPLAY")
+        comparison = compare_verifier_results(
+            result("FORWARD_NULL_INCOMPATIBILITY_CANDIDATE", {"STATISTICAL_ENGINE_REPLAY": "PASS"}),
+            result("FORWARD_NULL_CONSISTENT_MISS", {"STATISTICAL_ENGINE_REPLAY": "PASS"}),
+            gates,
+            gates,
+        )
+        self.assertEqual(comparison.status, "FAIL")
+        self.assertIn(
+            "INCOMPARABLE_ADMISSION_OUTCOME_REWRITE:FORWARD_NULL_INCOMPATIBILITY_CANDIDATE:FORWARD_NULL_CONSISTENT_MISS",
+            comparison.failure_codes,
+        )
+
+    def test_successor_cannot_supply_inherited_set_or_preblessed_transition_result(self):
+        parameters = inspect.signature(compare_verifier_results).parameters
+        self.assertNotIn("inherited_gate_ids", parameters)
+        self.assertNotIn("verified_transitions", parameters)
+        self.assertIn("transition_hashes", parameters)
+        self.assertIn("transition_resolver", parameters)
+        release_parameters = inspect.signature(compare_release_gate_sets).parameters
+        self.assertNotIn("verified_transitions", release_parameters)
+        self.assertIn("transition_hashes", release_parameters)
+        self.assertIn("transition_resolver", release_parameters)
+
+    def test_inherited_gate_set_omission_attack_is_detected_by_derivation(self):
+        predecessor_gate = gate_doc("TERMINAL_SUBTYPE_SEMANTICS", "TRIAL_CREATION_POLICY_REPLAY")
+        successor_gate = copy.deepcopy(predecessor_gate)
+        comparison = compare_verifier_results(
+            result("INVALIDATED_EVIDENCE", {
+                "TERMINAL_SUBTYPE_SEMANTICS": "FAIL",
+                "TRIAL_CREATION_POLICY_REPLAY": "FAIL",
+            }),
+            result("INVALIDATED_EVIDENCE", {
+                "TERMINAL_SUBTYPE_SEMANTICS": "FAIL",
+                "TRIAL_CREATION_POLICY_REPLAY": "PASS",
+            }),
+            predecessor_gate,
+            successor_gate,
+        )
+        self.assertEqual(comparison.status, "FAIL")
+        self.assertTrue(any("INHERITED_HARDENING_LAYER_OMISSION:TRIAL_CREATION_POLICY_REPLAY" in x for x in comparison.failure_codes))
+        self.assertIsNotNone(comparison.inherited_gate_set_hash)
+
+    def test_inherited_gate_set_hash_binds_release_gate_documents(self):
+        g1 = gate_doc("A", "B")
+        g2 = gate_doc("A", "B")
+        _, h1 = derive_inherited_gate_obligations(g1, g2)
+        g3 = gate_doc("A", "B", "C")
+        _, h2 = derive_inherited_gate_obligations(g1, g3)
+        self.assertNotEqual(h1, h2)
 
     def test_blocked_gate_may_be_implemented_by_successor(self):
+        gates = gate_doc("ED25519_SIGNATURE_CRYPTO")
         comparison = compare_verifier_results(
             result("NOT_ADMITTED", {"ED25519_SIGNATURE_CRYPTO": "BLOCKED"}),
             result("NOT_ADMITTED", {"ED25519_SIGNATURE_CRYPTO": "PASS"}),
-            {"ED25519_SIGNATURE_CRYPTO"},
+            gates,
+            gates,
         )
         self.assertEqual(comparison.status, "PASS")
 
-    def test_release_gate_is_exact_56_to_61_extension_by_id_set(self):
+    def test_historical_release_gate_is_exact_56_to_61_extension_by_id_set(self):
         previous = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.6-draft.json")
         current = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.7-draft.json")
         pred_ids = required_gate_ids(previous)
         current_ids = required_gate_ids(current)
         self.assertEqual(len(pred_ids), 56)
         self.assertEqual(len(current_ids), 61)
-        self.assertEqual(current_ids - pred_ids, NEW_CONVERGENCE_GATES)
+        self.assertEqual(current_ids - pred_ids, V10_CONVERGENCE_GATES)
+        self.assertEqual(pred_ids - current_ids, set())
+        self.assertEqual(compare_release_gate_sets(previous, current).status, "PASS")
+
+    def test_v11_release_gate_is_exact_61_to_65_extension_by_id_set(self):
+        previous = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.7-draft.json")
+        current = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.8-draft.json")
+        pred_ids = required_gate_ids(previous)
+        current_ids = required_gate_ids(current)
+        self.assertEqual(len(pred_ids), 61)
+        self.assertEqual(len(current_ids), 65)
+        self.assertEqual(current_ids - pred_ids, V11_HARDENING_GATES)
         self.assertEqual(pred_ids - current_ids, set())
         self.assertEqual(compare_release_gate_sets(previous, current).status, "PASS")
         self.assertEqual(current["status"], "DRAFT_NOT_SATISFIED")
 
     def test_release_gate_regression_is_detected_semantically_not_by_count(self):
-        previous = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.6-draft.json")
+        previous = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.7-draft.json")
         regressed = copy.deepcopy(previous)
         regressed["required_checks"] = [
             row for row in regressed["required_checks"] if row["id"] != "ED25519_SIGNATURE_CRYPTO"
         ]
-        # Add an unrelated new gate so total count does not reveal the removal.
         regressed["required_checks"].append({"id": "UNRELATED_NEW_GATE", "required": True})
         comparison = compare_release_gate_sets(previous, regressed)
         self.assertEqual(comparison.status, "FAIL")
         self.assertIn("RELEASE_GATE_REGRESSION:ED25519_SIGNATURE_CRYPTO", comparison.failure_codes)
 
-    def test_gate_removal_requires_explicit_successor_mapping(self):
-        previous = load_json_strict(ROOT / "conformance" / "AIFC-RELEASE-GATE-v1.0.6-draft.json")
-        successor = copy.deepcopy(previous)
-        successor["required_checks"] = [
-            row for row in successor["required_checks"] if row["id"] != "ED25519_SIGNATURE_CRYPTO"
-        ]
-        successor["required_checks"].append({"id": "ED25519_CRYPTO_STRICTER_V2", "required": True})
-        transition = {
-            "schema": "AIFC/gate-lineage-transition/v1",
-            "removed_gate_id": "ED25519_SIGNATURE_CRYPTO",
-            "successor_gate_ids": ["ED25519_CRYPTO_STRICTER_V2"],
-            "previous_gate_definition_hash": "11" * 32,
-            "successor_definition_hashes": ["22" * 32],
-            "equivalence_or_strengthening_evidence_hash": "33" * 32,
-            "migration_reason": "test-only strengthening transition",
-            "approved_protocol_version": "test-v2",
-        }
-        self.assertEqual(compare_release_gate_sets(previous, successor, [transition]).status, "PASS")
+    def test_transition_hash_without_resolver_is_not_preblessed(self):
+        comparison = compare_release_gate_sets(
+            gate_doc("OLD_GATE"),
+            gate_doc("NEW_GATE"),
+            ["44" * 32],
+        )
+        self.assertEqual(comparison.status, "FAIL")
+        self.assertIn("GATE_LINEAGE_EVIDENCE_RESOLVER_REQUIRED", comparison.failure_codes)
+        self.assertIn("RELEASE_GATE_REGRESSION:OLD_GATE", comparison.failure_codes)
 
-    def test_issued_schema_registry_matches_exact_current_source_blobs(self):
-        registry = load_json_strict(ROOT / "conformance" / "AIFC-SCHEMA-IDENTITY-REGISTRY-v1.json")
-        self.assertEqual(registry["validation_semantics_id"], "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03")
+    def test_dangling_transition_hash_is_rejected_inside_comparator(self):
+        comparison = compare_release_gate_sets(
+            gate_doc("OLD_GATE"),
+            gate_doc("NEW_GATE"),
+            ["44" * 32],
+            DanglingTransitionResolver(),
+        )
+        self.assertEqual(comparison.status, "FAIL")
+        self.assertTrue(any(code.startswith("FAKE_GATE_STRENGTHENING_RECEIPT:") for code in comparison.failure_codes))
+        self.assertIn("RELEASE_GATE_REGRESSION:OLD_GATE", comparison.failure_codes)
+
+    def test_validator_semantics_manifest_binds_exact_runtime_and_dependency_lock(self):
+        manifest_path = ROOT / "conformance" / "AIFC-VALIDATOR-SEMANTICS-MANIFEST-v1.json"
+        manifest = load_json_strict(manifest_path)
+        self.assertEqual(
+            raw_sha256(manifest_path),
+            "cfea30ba2ce6e8fac366718e5d23d581789eafd037cff17b3f61aacc1455a14e",
+        )
+        for source in manifest["source_files"]:
+            path = ROOT / source["path"]
+            self.assertEqual(git_blob_sha1(path), source["git_blob_sha1"])
+            self.assertEqual(raw_sha256(path), source["raw_sha256"])
+        lock = manifest["dependency_lock"]
+        lock_path = ROOT / lock["path"]
+        self.assertEqual(git_blob_sha1(lock_path), lock["git_blob_sha1"])
+        self.assertEqual(raw_sha256(lock_path), lock["raw_sha256"])
+        self.assertEqual(manifest["runtime"]["ref_resolution_policy"], "LOCAL_REPOSITORY_REGISTRY_ONLY_NO_NETWORK")
+        self.assertEqual(manifest["runtime"]["duplicate_key_policy"], "REJECT")
+
+    def test_schema_registry_v2_matches_git_and_raw_sha256_and_validator_manifest(self):
+        registry = load_json_strict(ROOT / "conformance" / "AIFC-SCHEMA-IDENTITY-REGISTRY-v2.json")
+        manifest_path = ROOT / registry["admission_semantics_manifest_path"]
+        semantics_hash = raw_sha256(manifest_path)
+        self.assertEqual(registry["admission_semantics_content_hash"], semantics_hash)
         seen = set()
         for record in registry["records"]:
             with self.subTest(schema_id=record["schema_id"]):
                 self.assertNotIn(record["schema_id"], seen)
                 seen.add(record["schema_id"])
-                self.assertEqual(record["source_content_algorithm"], "GIT_BLOB_SHA1")
                 path = ROOT / record["source_path"]
-                self.assertTrue(path.is_file())
-                actual = git_blob_sha1(path)
                 comparison = compare_schema_identity(
                     record,
                     current_schema_id=record["schema_id"],
                     current_dialect="https://json-schema.org/draft/2020-12/schema",
-                    current_source_content_id=actual,
-                    current_admission_semantics_version=registry["validation_semantics_id"],
+                    current_git_blob_sha1=git_blob_sha1(path),
+                    current_raw_schema_sha256=raw_sha256(path),
+                    current_admission_semantics_id=registry["admission_semantics_id"],
+                    current_admission_semantics_content_hash=semantics_hash,
                 )
                 self.assertEqual(comparison.status, "PASS", msg=comparison.failure_codes)
+                self.assertEqual(record["registered_immutable_at_commit"], "ba1cc627ec06355bb1054431b32e9f91fdd885a4")
+                self.assertEqual(record["first_historical_appearance_status"], "NOT_ESTABLISHED")
+                self.assertIsNone(record["first_historical_appearance_commit"])
+        self.assertEqual(len(seen), 11)
 
-    def test_same_schema_id_source_mutation_is_rejected(self):
-        registry = load_json_strict(ROOT / "conformance" / "AIFC-SCHEMA-IDENTITY-REGISTRY-v1.json")
+    def test_same_semantics_label_with_changed_validator_content_is_rejected(self):
+        registry = load_json_strict(ROOT / "conformance" / "AIFC-SCHEMA-IDENTITY-REGISTRY-v2.json")
         record = registry["records"][0]
         comparison = compare_schema_identity(
             record,
             current_schema_id=record["schema_id"],
             current_dialect=record["dialect"],
-            current_source_content_id="0" * 40,
-            current_admission_semantics_version=record["admission_semantics_version"],
+            current_git_blob_sha1=record["git_blob_sha1"],
+            current_raw_schema_sha256=record["raw_schema_sha256"],
+            current_admission_semantics_id=record["admission_semantics_id"],
+            current_admission_semantics_content_hash="f" * 64,
         )
         self.assertEqual(comparison.status, "FAIL")
-        self.assertIn("SAME_SCHEMA_ID_LANGUAGE_MUTATION:SOURCE_CHANGED", comparison.failure_codes)
+        self.assertIn("VALIDATOR_IMPLEMENTATION_CHANGED_WITH_SAME_SEMANTICS_ID", comparison.failure_codes)
 
-    def test_same_schema_id_validator_semantics_mutation_is_rejected(self):
-        registry = load_json_strict(ROOT / "conformance" / "AIFC-SCHEMA-IDENTITY-REGISTRY-v1.json")
+    def test_same_schema_id_raw_source_mutation_is_rejected_even_if_git_locator_is_claimed_unchanged(self):
+        registry = load_json_strict(ROOT / "conformance" / "AIFC-SCHEMA-IDENTITY-REGISTRY-v2.json")
         record = registry["records"][0]
         comparison = compare_schema_identity(
             record,
             current_schema_id=record["schema_id"],
             current_dialect=record["dialect"],
-            current_source_content_id=record["source_content_id"],
-            current_admission_semantics_version="DIFFERENT_VALIDATOR_SEMANTICS",
+            current_git_blob_sha1=record["git_blob_sha1"],
+            current_raw_schema_sha256="f" * 64,
+            current_admission_semantics_id=record["admission_semantics_id"],
+            current_admission_semantics_content_hash=record["admission_semantics_content_hash"],
         )
         self.assertEqual(comparison.status, "FAIL")
-        self.assertIn("SAME_SCHEMA_ID_LANGUAGE_MUTATION:VALIDATOR_SEMANTICS_CHANGED", comparison.failure_codes)
+        self.assertIn("SAME_SCHEMA_ID_LANGUAGE_MUTATION:RAW_SHA256_CHANGED", comparison.failure_codes)
 
     def test_current_v06_authoritative_path_still_composes_v03(self):
         text = (VERIFIER_DIR / "full_admission_v06.py").read_text(encoding="utf-8")
