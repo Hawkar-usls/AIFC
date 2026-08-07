@@ -2,8 +2,9 @@
 """AIFC assurance-convergence utilities.
 
 This module checks verifier/protocol evolution invariants. It does not decide
-scientific truth and does not allow a successor to define its own inherited
-assurance obligations.
+scientific truth. A successor cannot define its own inherited assurance domain,
+and callers cannot pre-bless gate-replacement proofs: transition hashes are
+resolved and executed by the comparator itself.
 """
 from __future__ import annotations
 
@@ -11,6 +12,8 @@ from dataclasses import dataclass
 import hashlib
 import json
 from typing import Any, Iterable, Mapping
+
+from gate_lineage_verifier import GateLineageVerificationError, verify_gate_lineage_transition
 
 
 ADMISSION_ALLOWED_SUCCESSORS: dict[str, frozenset[str]] = {
@@ -90,41 +93,69 @@ def required_gate_ids(gate_doc: Mapping[str, Any]) -> set[str]:
     return set(ids)
 
 
-def _verified_transition_index(
-    verified_transitions: Iterable[Mapping[str, Any]],
+def _resolve_transition_index(
+    transition_hashes: Iterable[str],
+    successor_required_gate_ids: set[str],
+    transition_resolver,
 ) -> tuple[dict[str, Mapping[str, Any]], list[str]]:
+    """Resolve and execute transitions; no caller-supplied verified result is trusted."""
+    hashes = list(transition_hashes)
+    if not hashes:
+        return {}, []
+    if transition_resolver is None:
+        return {}, ["GATE_LINEAGE_EVIDENCE_RESOLVER_REQUIRED"]
+
     index: dict[str, Mapping[str, Any]] = {}
     failures: list[str] = []
-    for transition in verified_transitions:
-        removed_gate = transition.get("removed_gate_id")
-        if not isinstance(removed_gate, str) or not removed_gate:
-            raise AssuranceMonotonicityError("GATE_LINEAGE_REMOVED_ID_INVALID")
-        if transition.get("verification_status") != "STRENGTHENING_CONFIRMED":
-            failures.append(f"FAKE_GATE_STRENGTHENING_RECEIPT:{removed_gate}")
-            continue
-        successors = transition.get("successor_gate_ids")
-        transition_hash = transition.get("transition_hash")
-        if not isinstance(successors, list) or not successors or not all(isinstance(x, str) and x for x in successors):
-            raise AssuranceMonotonicityError("GATE_LINEAGE_SUCCESSORS_INVALID")
+    seen_hashes: set[str] = set()
+    for transition_hash in hashes:
         if not isinstance(transition_hash, str) or len(transition_hash) != 64:
-            raise AssuranceMonotonicityError("GATE_LINEAGE_VERIFIED_TRANSITION_HASH_INVALID")
+            failures.append(f"GATE_LINEAGE_TRANSITION_HASH_INVALID:{transition_hash}")
+            continue
+        if transition_hash in seen_hashes:
+            failures.append(f"DUPLICATE_GATE_LINEAGE_TRANSITION_HASH:{transition_hash}")
+            continue
+        seen_hashes.add(transition_hash)
+        try:
+            verified = verify_gate_lineage_transition(
+                transition_hash,
+                successor_required_gate_ids,
+                transition_resolver,
+            )
+        except GateLineageVerificationError as exc:
+            failures.append(f"FAKE_GATE_STRENGTHENING_RECEIPT:{transition_hash}:{exc}")
+            continue
+        removed_gate = verified.get("removed_gate_id")
+        if not isinstance(removed_gate, str) or not removed_gate:
+            failures.append(f"GATE_LINEAGE_VERIFIER_RESULT_INVALID:{transition_hash}")
+            continue
         if removed_gate in index:
-            raise AssuranceMonotonicityError(f"DUPLICATE_VERIFIED_GATE_TRANSITION:{removed_gate}")
-        index[removed_gate] = transition
+            failures.append(f"DUPLICATE_VERIFIED_GATE_TRANSITION:{removed_gate}")
+            continue
+        index[removed_gate] = verified
     return index, failures
 
 
 def compare_release_gate_sets(
     predecessor_gate: Mapping[str, Any],
     successor_gate: Mapping[str, Any],
-    verified_transitions: Iterable[Mapping[str, Any]] = (),
+    transition_hashes: Iterable[str] = (),
+    transition_resolver=None,
 ) -> MonotonicityComparison:
-    """Require G_n subseteq G_n+1 unless a proof-replayed transition covers removal."""
+    """Require G_n subseteq G_n+1 unless the comparator proof-replays replacement."""
     pred = required_gate_ids(predecessor_gate)
     succ = required_gate_ids(successor_gate)
-    transition_index, failures = _verified_transition_index(verified_transitions)
+    transition_index, failures = _resolve_transition_index(
+        transition_hashes,
+        succ,
+        transition_resolver,
+    )
 
-    for removed_gate in sorted(pred - succ):
+    removed = pred - succ
+    for transitioned_gate in sorted(set(transition_index) - removed):
+        failures.append(f"GATE_LINEAGE_TRANSITION_NOT_BOUND_TO_REMOVAL:{transitioned_gate}")
+
+    for removed_gate in sorted(removed):
         transition = transition_index.get(removed_gate)
         if transition is None:
             failures.append(f"RELEASE_GATE_REGRESSION:{removed_gate}")
@@ -142,15 +173,22 @@ def compare_release_gate_sets(
 def derive_inherited_gate_obligations(
     predecessor_gate: Mapping[str, Any],
     successor_gate: Mapping[str, Any],
-    verified_transitions: Iterable[Mapping[str, Any]] = (),
+    transition_hashes: Iterable[str] = (),
+    transition_resolver=None,
 ) -> tuple[tuple[dict[str, Any], ...], str]:
-    """Derive inherited obligations from release gates; callers cannot supply the set.
+    """Derive inherited obligations from frozen release gates and proof replay.
 
     For an unchanged gate, its successor obligation is the same gate ID. For a
-    removed gate, only a proof-replayed strengthening transition may map the
-    predecessor obligation onto one or more mandatory successor gates.
+    removed gate, only a transition hash independently resolved and executed by
+    this module may map the predecessor obligation onto successor gates.
     """
-    gate_comparison = compare_release_gate_sets(predecessor_gate, successor_gate, verified_transitions)
+    hashes = tuple(transition_hashes)
+    gate_comparison = compare_release_gate_sets(
+        predecessor_gate,
+        successor_gate,
+        hashes,
+        transition_resolver,
+    )
     if gate_comparison.status != "PASS":
         raise AssuranceMonotonicityError(
             "INHERITED_GATE_SET_DERIVATION_FAILED:" + ",".join(gate_comparison.failure_codes)
@@ -158,7 +196,7 @@ def derive_inherited_gate_obligations(
 
     pred = required_gate_ids(predecessor_gate)
     succ = required_gate_ids(successor_gate)
-    transition_index, failures = _verified_transition_index(verified_transitions)
+    transition_index, failures = _resolve_transition_index(hashes, succ, transition_resolver)
     if failures:
         raise AssuranceMonotonicityError("INHERITED_GATE_SET_DERIVATION_FAILED:" + ",".join(failures))
 
@@ -181,6 +219,7 @@ def derive_inherited_gate_obligations(
         "schema": "AIFC/inherited-gate-obligation-set/v1",
         "predecessor_release_gate_sha256": document_sha256(predecessor_gate),
         "successor_release_gate_sha256": document_sha256(successor_gate),
+        "transition_hashes": sorted(hashes),
         "obligations": obligations,
     }
     inherited_hash = hashlib.sha256(_canonical_json_bytes(material)).hexdigest()
@@ -192,13 +231,14 @@ def compare_verifier_results(
     successor: Mapping[str, Any],
     predecessor_release_gate: Mapping[str, Any],
     successor_release_gate: Mapping[str, Any],
-    verified_transitions: Iterable[Mapping[str, Any]] = (),
+    transition_hashes: Iterable[str] = (),
+    transition_resolver=None,
 ) -> MonotonicityComparison:
-    """Check exact admission partial order and derived inherited FAIL preservation.
+    """Check partial-order monotonicity and derived inherited FAIL preservation.
 
-    The inherited gate domain is derived from the predecessor release gate and
-    proof-replayed lineage transitions. There is intentionally no caller-supplied
-    inherited_gate_ids argument.
+    There is intentionally no caller-supplied inherited gate set and no
+    caller-supplied pre-verified transition result. Only transition content hashes
+    may be supplied; the comparator itself resolves and executes their proofs.
     """
     pred_grade = _grade(predecessor)
     succ_grade = _grade(successor)
@@ -215,7 +255,8 @@ def compare_verifier_results(
     obligations, inherited_hash = derive_inherited_gate_obligations(
         predecessor_release_gate,
         successor_release_gate,
-        verified_transitions,
+        transition_hashes,
+        transition_resolver,
     )
 
     pred_gates = predecessor.get("gate_results", {})
