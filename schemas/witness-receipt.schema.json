@@ -4,18 +4,37 @@
   "title": "AIFC Witness Receipt v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "experiment_id", "trial_index", "logical_position", "content_hash", "registry_hash", "witness_id", "key_id", "signature_algorithm", "signature"],
+  "required": [
+    "schema",
+    "signature_profile_id",
+    "experiment_id",
+    "trial_index",
+    "logical_position",
+    "content_schema",
+    "content_hash",
+    "registry_hash",
+    "registry_sequence",
+    "witness_id",
+    "key_id",
+    "signature_algorithm",
+    "signature",
+    "wall_clock_timestamp"
+  ],
   "properties": {
     "schema": {"const": "AIFC/witness-receipt/v1"},
+    "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "trial_index": {"type": "integer", "minimum": 1},
+    "trial_index": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "logical_position": {"type": "string", "minLength": 1, "maxLength": 128},
+    "content_schema": {"type": "string", "pattern": "^AIFC/[A-Za-z0-9._/-]+/v[0-9]+$", "maxLength": 256},
     "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "registry_sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
-  }
+  },
+  "description": "Trial-scoped strongest-grade witness receipt. The signature preimage is not JCS JSON; it is the frozen AIFC typed binary profile selected by the experiment plan. content_schema and registry_sequence are signed to prevent cross-type and stale-registry replay. wall_clock_timestamp is signed for integrity when present but is never freshness proof."
 }
