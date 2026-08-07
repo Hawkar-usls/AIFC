@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Content-addressed evidence resolver for AIFC Verifier A v0.2.
+"""Content-addressed evidence resolver for AIFC Verifier A v0.3.
 
-The resolver is deliberately local-first: it accepts a frozen evidence-store index
-and a store root, opens exact bytes, recomputes identity and only then returns
-content to the replay engine. URLs/locators are metadata, not evidence.
+Admission order for protocol evidence:
+    exact stored bytes
+      -> strict parse/canonical-byte equality
+      -> domain-separated content-hash recomputation
+      -> Draft 2020-12 runtime JSON Schema validation
+      -> semantic replay by the caller
 
-This is not yet a network fetcher and does not establish external-source trust.
+URLs/locators are metadata, not evidence. Network acquisition and source-specific
+cryptographic proof remain separate gates.
 """
 from __future__ import annotations
 
@@ -21,6 +25,7 @@ from canonical import (
     protocol_hash,
     raw_evidence_hash,
 )
+from schema_runtime import RuntimeSchemaError, validate_protocol_object, validate_store_index
 
 
 class EvidenceResolutionError(ValueError):
@@ -41,21 +46,17 @@ class ResolvedEvidence:
 class EvidenceResolver:
     def __init__(self, store_root: str | Path, index: Mapping[str, Any]):
         self.root = Path(store_root).resolve()
-        if index.get("schema") != "AIFC/evidence-store-index/v1":
-            raise EvidenceResolutionError("EVIDENCE_STORE_INDEX_SCHEMA_MISMATCH")
+        try:
+            validate_store_index(index)
+        except RuntimeSchemaError as exc:
+            raise EvidenceResolutionError(f"EVIDENCE_STORE_INDEX_SCHEMA_REJECTED:{exc}") from exc
         entries = index.get("entries")
-        if not isinstance(entries, list):
-            raise EvidenceResolutionError("EVIDENCE_STORE_INDEX_ENTRIES_INVALID")
         self.entries: dict[str, Mapping[str, Any]] = {}
         for entry in entries:
-            if not isinstance(entry, Mapping):
-                raise EvidenceResolutionError("EVIDENCE_STORE_ENTRY_UNTYPED")
             content_hash = entry.get("content_hash")
-            if not isinstance(content_hash, str) or len(content_hash) != 64:
-                raise EvidenceResolutionError("EVIDENCE_STORE_HASH_INVALID")
             if content_hash in self.entries:
                 raise EvidenceResolutionError(f"EVIDENCE_STORE_DUPLICATE_HASH:{content_hash}")
-            self.entries[content_hash] = entry
+            self.entries[str(content_hash)] = entry
 
     @classmethod
     def from_index_file(cls, store_root: str | Path, index_path: str | Path) -> "EvidenceResolver":
@@ -104,15 +105,26 @@ class EvidenceResolver:
             raise EvidenceResolutionError(f"PROTOCOL_JSON_PARSE_REJECTED:{content_hash}:{exc}") from exc
         if not isinstance(parsed, Mapping):
             raise EvidenceResolutionError("PROTOCOL_JSON_NOT_OBJECT")
+
         canonical = canonical_json_bytes(parsed)
         if raw != canonical:
             raise EvidenceResolutionError(f"NONCANONICAL_STORED_PROTOCOL_BYTES:{content_hash}")
+
         schema = parsed.get("schema")
         if declared_schema is not None and schema != declared_schema:
             raise EvidenceResolutionError(f"DECLARED_SCHEMA_REBINDING:{declared_schema}:{schema}")
         if expected_schema is not None and schema != expected_schema:
             raise EvidenceResolutionError(f"EXPECTED_SCHEMA_MISMATCH:{expected_schema}:{schema}")
+
+        # Identity is recomputed before schema admission, by design. A malformed but
+        # content-addressed object is still rejected at the next explicit gate.
         actual = protocol_hash(parsed)
         if actual != content_hash:
             raise EvidenceResolutionError(f"PROTOCOL_OBJECT_HASH_MISMATCH:{content_hash}:{actual}")
+
+        try:
+            validate_protocol_object(parsed, expected_schema=expected_schema)
+        except RuntimeSchemaError as exc:
+            raise EvidenceResolutionError(f"RUNTIME_JSON_SCHEMA_REJECTED:{content_hash}:{exc}") from exc
+
         return ResolvedEvidence(content_hash, kind, str(media_type), str(schema), raw, parsed, path)
