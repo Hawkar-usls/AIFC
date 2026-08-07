@@ -1,5 +1,5 @@
 # DIAGNOSTIC ONLY — NOT A VERIFIER PASS WORKFLOW.
-name: AIFC Verifier v0.4 Attestation Build Probe
+name: AIFC Verifier v0.4 Attestation Replay Probe
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   actions: read
 
 jobs:
-  attestation_build_probe:
+  attestation_replay_probe:
     name: Verifier A environment self-audit
     runs-on: ubuntu-24.04
     steps:
@@ -127,9 +127,15 @@ jobs:
             --job-id '${{ steps.jobmeta.outputs.job_id }}' \
             --job-name 'Verifier A environment self-audit' \
             --output-dir ci-evidence
+      - name: Independently replay CI attestation semantics
+        run: |
+          python tools/verify_verifier_ci_attestation_v04.py \
+            --attestation ci-evidence/verifier-ci-attestation-v2.json \
+            --artifact-dir ci-evidence \
+            --sidecar ci-evidence/verifier-ci-attestation-v2.sha256.json
       - name: Preserve diagnostic ceiling
         run: |
-          echo "ATTESTATION_BUILD_PROBE_ONLY = TRUE"
+          echo "ATTESTATION_REPLAY_PROBE_ONLY = TRUE"
           echo "CI_PLATFORM_PROVENANCE_BINDING = NOT_EVALUATED"
           echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
           echo "AIFC_V1_FROZEN = FALSE"
