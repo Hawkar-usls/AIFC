@@ -12,8 +12,10 @@ AIFC does not assume or establish retrocausality, faster-than-light signalling, 
 
 ## 2. Core objects
 
-For trial `i`:
+For experiment `e` and trial `i`:
 
+- `experiment_id`: stable experiment identifier.
+- `trial_index_i`: monotonically assigned trial slot index.
 - `run_id_i`: globally unique trial identifier.
 - `R_i`: PRE_RETURN candidate object frozen before target generation.
 - `C_i`: canonical set of all admissible exact candidate values frozen for the trial.
@@ -22,45 +24,80 @@ For trial `i`:
 - `T_i`: future target generated only after the freeze certificate is complete.
 - `p_i`: history-wise upper bound on `max_t P(T_i=t | F_{i-1})`.
 - `a_i = min(1, K_i p_i)`: admitted exact-hit probability bound.
+- `L_e`: experiment-wide append-only trial ledger.
 - `Q_i`: external witness quorum certificate for the frozen PRE_RETURN state.
-- `E_i`: target-generation / entropy evidence.
+- `EP_i`: proof-carrying entropy profile justifying `p_i`.
+- `CM_i`: machine-readable causal model bound to the trial/experiment policy.
+- `WR`: versioned witness registry and key-lifecycle state.
+- `TE_i`: target-generation evidence.
+- `B_i`: complete trial evidence bundle.
 - `X_i = 1[T_i in C_i]`: exact-hit indicator.
 
 ## 3. Canonical hard witness
 
 The strongest AIFC grade MUST use canonical bytes, not semantic similarity.
 
-A recommended hard witness is a canonical JSON object containing at least:
+The v1 hard witness conforms to [`../schemas/hard-witness.schema.json`](../schemas/hard-witness.schema.json) and contains at least:
 
 ```json
 {
   "schema": "AIFC/hard-witness/v1",
+  "experiment_id": "...",
   "run_id": "...",
+  "trial_index": 1,
   "payload128": "32 lowercase hex chars",
   "nonce128": "32 lowercase hex chars"
 }
 ```
 
-Canonical serialization MUST be specified before trials. A recommended default is UTF-8 JSON with lexicographically sorted keys, no insignificant whitespace, and no platform-dependent encodings.
+Hash-critical AIFC v1 objects MUST follow [`CANONICALIZATION.md`](CANONICALIZATION.md). Canonicalization is normative, not implementation-defined.
 
 The exact identity target MAY be the canonical object itself or a domain-separated cryptographic digest of a canonical target object, provided that choice is frozen before the future target event.
 
-## 4. Temporal order
+## 4. Trial state machine and temporal order
 
-The following order is normative:
+The normative state machine is defined in [`STATE_MACHINE.md`](STATE_MACHINE.md) and machine-readable form in [`../conformance/state-machine-v1.json`](../conformance/state-machine-v1.json).
 
-1. construct PRE_RETURN candidate set `C_i`;
-2. freeze canonical candidate bytes;
-3. obtain external freshness/quorum certificate `Q_i`;
-4. only after step 3, make the designated target-producing event eligible;
-5. generate target `T_i`;
-6. obtain externally verifiable target/entropy evidence `E_i`;
-7. run the frozen verifier;
-8. publish the complete admitted transcript regardless of hit or miss.
+The normal path is:
 
-Any evidence that the target, target seed, target-derived commitment, prefetch buffer, deterministic future state, or equivalent hard side information existed before step 3 MUST invalidate the independent-future grade for that trial.
+```text
+CREATED
+-> PRE_RETURN_FROZEN
+-> QUORUM_CERTIFIED
+-> TARGET_ARMED
+-> TARGET_OBSERVED
+-> VERIFIED
+-> TERMINAL
+```
 
-## 5. Future-target requirement
+Crucially, a trial slot MUST be externally certified as `CREATED` **before candidate production begins**. This prevents selective trial initiation after inspecting candidate content.
+
+The following operational order is normative:
+
+1. create and externally certify the next trial slot in the global ledger;
+2. construct PRE_RETURN candidate set `C_i`;
+3. freeze canonical candidate bytes and multiplicity;
+4. obtain external freshness/quorum certificate `Q_i`;
+5. only after step 4, make the predetermined target-producing event eligible;
+6. generate target `T_i`;
+7. obtain externally verifiable target/entropy evidence and `EP_i`;
+8. run the frozen verifier;
+9. append and externally bind the terminal ledger event;
+10. publish the complete evidence bundle regardless of hit, miss, abort, or invalidation.
+
+Any evidence that the target, target seed, target-derived commitment, prefetch buffer, deterministic future state, or equivalent hard side information existed before the freeze MUST invalidate the independent-future grade for that trial.
+
+## 5. Global trial ledger
+
+AIFC MUST maintain an experiment-wide append-only sequence conforming to [`../schemas/trial-ledger-event.schema.json`](../schemas/trial-ledger-event.schema.json) and [`../docs/TRIAL_LEDGER.md`](../docs/TRIAL_LEDGER.md).
+
+The ledger MUST expose missing, aborted, invalidated, retried, replayed, and terminal trials. A certified initiated slot can never silently disappear or be renumbered.
+
+For fixed-horizon experiments, planned trial indices SHOULD be preregistered. For open-ended experiments, each new slot MUST be certified before candidate visibility under a frozen slot-creation rule.
+
+A local hash chain is insufficient as the sole proof of continuity; required ledger heads MUST be rooted outside the experiment rollback domain.
+
+## 6. Future-target requirement
 
 The target-generation mechanism MUST be specified before the run.
 
@@ -68,28 +105,25 @@ The mechanism MUST NOT permit the operator to choose among already observed futu
 
 If a public randomness beacon is used, the future round selection rule MUST be deterministic from information frozen before the selected round output exists.
 
-Example admissible rule:
+AIFC SHOULD prefer externally verifiable event/round ordering over local wall-clock timing. If actual elapsed time is part of the requirement, the experiment MUST satisfy [`TIME_AND_ORDERING.md`](TIME_AND_ORDERING.md), including external timing evidence and uncertainty bounds.
 
-```text
-future_round = first beacon round whose scheduled publication time is
-at least DELTA seconds after a valid PRE_RETURN quorum certificate.
-```
-
-`DELTA` MUST be fixed before trials.
-
-## 6. Conditional entropy requirement
+## 7. Conditional entropy evidence
 
 AIFC requires a history-wise point-probability cap, not merely marginal fairness.
 
-For every admitted trial, the evidence package MUST justify:
+For every admitted trial, an `AIFC/entropy-profile/v1` object conforming to [`../schemas/entropy-profile.schema.json`](../schemas/entropy-profile.schema.json) MUST justify:
 
 `max_t P(T_i=t | F_{i-1}) <= p_i` almost surely under the specified forward null.
 
-The side-information set `F_{i-1}` MUST include all admitted classical information that could improve target guessing, including shared state, previous targets, previous failures, operator actions, public metadata, prefetch state, and any disclosed beacon state.
+The entropy profile MUST bind the source/version, deterministic target selector, complete conditioning-view hash, exact rational point-probability upper bound, derivation method, supporting evidence, assumptions, and unresolved assumptions.
+
+The side-information set `F_{i-1}` MUST include all admitted classical information that could improve target guessing, including shared state, previous targets, previous failures, operator actions, public metadata, prefetch state, disclosed beacon state, and known history relevant to RNG rollback/reuse.
+
+A signature can prove provenance of an entropy claim; it does not by itself prove unpredictability. See [`../docs/ENTROPY_EVIDENCE.md`](../docs/ENTROPY_EVIDENCE.md).
 
 Average conditional guessing probability or marginal entropy MUST NOT be substituted for this history-wise condition in sequential product or optional-stopping claims unless an independent theorem explicitly justifies the substitution.
 
-## 7. Multiplicity
+## 8. Multiplicity
 
 All candidate values frozen before target generation MUST be counted.
 
@@ -101,15 +135,19 @@ Hidden candidate multiplicity, alternate decodings, selective hash functions, or
 
 AIFC SHOULD use exactly one hard candidate per trial.
 
-## 8. Causal isolation
+## 9. Machine-readable causal isolation
 
-The experiment MUST freeze a causal model before the challenge sequence.
+The experiment MUST freeze a machine-readable causal model before the challenge sequence or bind a versioned model policy applicable to the trial.
 
-The hard target `T_hard` SHOULD be d-separated from the hard PRE_RETURN view `R_pre` conditional only on explicitly allowed public metadata `M_public` in the admitted causal DAG.
+The model MUST conform to [`../schemas/causal-model.schema.json`](../schemas/causal-model.schema.json) and the rules in [`../docs/CAUSAL_MODEL.md`](../docs/CAUSAL_MODEL.md).
 
-The threat model MUST include potential common causes and side channels, not only direct `T -> R` paths.
+The strongest grade requires a structural query equivalent to:
 
-The audit MUST consider at least:
+`T_hard ⟂d R_pre | M_public`
+
+under the declared forward-causal DAG.
+
+The threat model MUST include potential common causes and side channels, not only direct `T -> R` paths. It MUST consider at least:
 
 - shared seed or deterministic state;
 - RNG prefetch;
@@ -123,22 +161,21 @@ The audit MUST consider at least:
 - operator knowledge and adaptive scheduling;
 - selection/reporting variables.
 
-D-connection means structural independence is not certified. It does not itself prove that leakage occurred.
+The verifier MUST independently evaluate the declared d-separation query and reject forbidden collider/post-selection conditioning.
 
-## 9. No post-selection
+D-separation success certifies structure only under the declared model. It does not prove physical causal-model completeness.
+
+## 10. No post-selection / selective abort
 
 The rule deciding whether a trial enters analysis MUST be frozen before target outcomes are observed.
 
-All valid initiated trials MUST produce one of:
+Every externally certified `CREATED` slot MUST reach a visible terminal state, including explicit abort/invalidation states from the state machine.
 
-- admitted hit;
-- admitted miss;
-- invalid / excluded for a preregistered technical reason;
-- unresolved evidence failure.
+A run MUST NOT disappear because its outcome is inconvenient, because target arming was selectively refused, or because a crash happened after candidate visibility.
 
-A run MUST NOT disappear merely because its outcome is inconvenient.
+The complete global trial ledger is the proof-carrying mechanism for this rule; a prose declaration of `all trials were reported` is insufficient.
 
-## 10. External freshness and rollback resistance
+## 11. External freshness and rollback resistance
 
 A local hash chain or valid local signature authenticates presented content but does not by itself prove that the content is the latest state.
 
@@ -153,7 +190,14 @@ Acceptable patterns include:
 
 If the entire trusted state can be restored by the same snapshot, that state MUST NOT serve as the sole anti-rollback root.
 
-## 11. Witness quorum
+## 12. Witness registry, quorum, and key lifecycle
+
+Witness identity and key validity MUST conform to [`../schemas/witness-registry.schema.json`](../schemas/witness-registry.schema.json) and [`WITNESS_LIFECYCLE.md`](WITNESS_LIFECYCLE.md).
+
+Individual receipts and quorum certificates MUST conform to:
+
+- [`../schemas/witness-receipt.schema.json`](../schemas/witness-receipt.schema.json)
+- [`../schemas/quorum-certificate.schema.json`](../schemas/quorum-certificate.schema.json)
 
 Let:
 
@@ -169,9 +213,9 @@ Equivalent minimum quorum:
 
 `q_min = floor((n+f)/2) + 1`.
 
-The first external AIFC bench SHOULD use multiple genuinely independent failure domains. Multiple containers, processes, or VMs sharing one rollback root MUST NOT be counted as independent witnesses.
+Witnesses are counted by stable identity/failure domain, not by process or key count. Key rotation, revocation, compromise intervals, stale-witness reconciliation, and same-position equivocation MUST be auditable.
 
-## 12. Sequential / anytime-valid inference
+## 13. Sequential / anytime-valid inference
 
 For bounded preregistered trials:
 
@@ -195,24 +239,34 @@ is a nonnegative supermartingale under the admitted null, and Ville's inequality
 
 The betting strategy, mixture, or adaptation rule MUST be specified so that all parameters used at trial `i` are predictable from the pre-target history.
 
-## 13. Evidence admission gates
+## 14. Evidence bundle
+
+A complete trial bundle MUST bind the exact hashes of the ledger state, PRE_RETURN certificate, entropy profile, causal model, witness registry, target evidence, candidate set/multiplicity, statistical state where applicable, and publication manifest.
+
+The bundle MUST conform to [`../schemas/evidence-bundle.schema.json`](../schemas/evidence-bundle.schema.json).
+
+Target evidence MUST conform to [`../schemas/target-evidence.schema.json`](../schemas/target-evidence.schema.json).
+
+## 15. Evidence admission gates
 
 The strongest AIFC grade requires all of the following to pass:
 
-1. exact pre-target candidate freeze;
-2. post-freeze target-generation order;
-3. externally supported history-wise entropy bound;
-4. causal-isolation audit;
-5. explicit multiplicity accounting;
-6. preregistered inclusion/no-post-selection rule;
-7. valid stopping/statistical method;
-8. external freshness/anti-rollback continuity;
-9. Byzantine-safe witness quorum under an explicit fault model;
-10. verifier integrity and deterministic replay.
+1. certified trial creation before candidate production;
+2. exact pre-target candidate freeze;
+3. post-freeze target-generation order;
+4. externally supported history-wise entropy profile;
+5. machine-readable causal-isolation audit;
+6. explicit multiplicity accounting;
+7. complete global trial-ledger continuity/no-post-selection evidence;
+8. valid stopping/statistical method;
+9. external freshness/anti-rollback continuity;
+10. Byzantine-safe witness quorum and key lifecycle under an explicit fault model;
+11. verifier integrity and deterministic replay;
+12. canonicalization conformance.
 
 A missing gate MUST fail closed.
 
-## 14. Verifier semantics
+## 16. Verifier semantics
 
 The verifier MUST distinguish asserted metadata from independently recomputed evidence.
 
@@ -226,42 +280,63 @@ external=true
 
 unless the protocol defines externally checkable evidence supporting those assertions.
 
-The verifier SHOULD reconstruct canonical hashes, candidate multiplicity, target bindings, quorum rules, evidence-grade transitions, and all deterministic predicates independently from the producer.
+The verifier SHOULD reconstruct canonical hashes, ledger continuity, candidate multiplicity, target bindings, entropy bounds, d-separation, quorum/key rules, evidence-grade transitions, and all deterministic predicates independently from the producer.
 
-## 15. Verdicts
+Verifier output MUST conform to [`../schemas/verifier-result.schema.json`](../schemas/verifier-result.schema.json).
+
+## 17. Verdicts
 
 The verifier MUST NOT output `RETROCAUSALITY_PROVED`.
 
-Normative result classes include:
+Normative machine result classes are constrained by the verifier-result schema and include:
 
 - `NOT_ADMITTED`
 - `STRUCTURAL_MATCH_ONLY`
-- `FORWARD_NULL_COMPATIBLE`
+- `FORWARD_NULL_CONSISTENT_MISS`
 - `FORWARD_NULL_INCOMPATIBILITY_CANDIDATE`
-- `EXTERNAL_REPLICATION_REQUIRED`
-- `PHYSICAL_MECHANISM_UNRESOLVED`
+- `INVALIDATED_EVIDENCE`
 
 A threshold crossing means that the observed record is incompatible with the specified forward null **or with at least one evidence premise used to instantiate that null**. It does not identify the failed premise or a physical mechanism by itself.
 
-## 16. Publication rule
+## 18. Publication rule
 
-All preregistered trials, including misses and invalidations, SHOULD be published with machine-readable evidence.
+Every externally certified `CREATED` trial MUST be represented in the published global ledger with a terminal state.
 
-AIFC treats negative results, failed attacks, discovered leakage, and verifier counterexamples as first-class scientific outputs.
+All completed trial evidence bundles, misses, hits, aborts, invalidations, discovered leakage, failed attacks, and verifier counterexamples MUST be preserved under the frozen publication policy.
 
-## 17. Current draft boundary
+AIFC treats negative results as first-class scientific outputs.
+
+## 19. Conformance and v1.0 freeze
+
+Repository-level draft conformance is checked by `tools/check_repo_conformance.py` and `.github/workflows/draft-conformance.yml`.
+
+The machine-readable release gate is [`../conformance/AIFC-RELEASE-GATE-v1.json`](../conformance/AIFC-RELEASE-GATE-v1.json).
+
+A release MUST NOT be labeled `AIFC v1.0 FROZEN` unless every required release gate is backed by machine-verifiable PASS evidence, including:
+
+- honest-vector acceptance;
+- attack-vector expected rejection;
+- zero fail-open cases;
+- two independent verifier implementations;
+- byte-identical canonicalization test vectors;
+- complete trial publication proof;
+- externally rooted bench evidence.
+
+## 20. Current draft boundary
 
 This draft is not yet the final externally frozen AIFC v1.0 protocol.
 
-Before v1.0 release, the project requires at least:
+The Phase-1 machine-readable schema set now exists as draft, but it is not frozen and has not yet been cross-implemented.
 
-- a standalone reference verifier;
-- frozen machine-readable schemas;
-- adversarial test vectors;
+Before v1.0 release, the project still requires at least:
+
+- standalone reference verifier implementation;
+- independent second implementation;
+- frozen adversarial and canonicalization test vectors;
 - one external public-randomness implementation path;
-- a complete provenance manifest;
-- independent review of the threat model;
-- a broader scholarly/patent prior-art audit;
-- a DOI-backed release.
+- complete release/provenance manifest;
+- independent review of the threat model and entropy assumptions;
+- broader scholarly/patent prior-art audit;
+- DOI-backed release.
 
 No physical anomalous result is reported by this specification.
