@@ -41,6 +41,7 @@ DOMAIN_BY_SCHEMA = {
     "AIFC/pre-target-conditioning-view/v1": "AIFC:PRE_TARGET_CONDITIONING_VIEW:v1",
     "AIFC/entropy-policy/v1": "AIFC:ENTROPY_POLICY:v1",
     "AIFC/entropy-profile/v1": "AIFC:ENTROPY_PROFILE:v1",
+    "AIFC/signature-preimage-policy/v1": "AIFC:SIGNATURE_PREIMAGE_POLICY:v1",
     "AIFC/causal-model/v1": "AIFC:CAUSAL_MODEL:v1",
     "AIFC/statistical-plan/v1": "AIFC:STATISTICAL_PLAN:v1",
     "AIFC/eprocess-state/v1": "AIFC:EPROCESS_STATE:v1",
