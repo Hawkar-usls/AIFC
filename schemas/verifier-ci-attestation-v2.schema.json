@@ -31,7 +31,7 @@
       "additionalProperties": false,
       "required": ["path", "raw_sha256", "run_id", "run_attempt", "job_id", "job_name", "event_name"],
       "properties": {
-        "path": {"const": ".github/workflows/verifier-self-audit-v04.yml"},
+        "path": {"const": ".github/workflows/verifier-self-audit-v03.yml"},
         "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "run_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
         "run_attempt": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
@@ -129,5 +129,5 @@
       }
     }
   },
-  "description": "Proof-carrying CI attestation v2. Offline verification MUST recompute exit codes from separately hashed .exit evidence and recompute the unittest count from the hashed unittest report. Declared numeric summaries are cross-checks, never trusted inputs. The attestation is additionally bound to an execution-environment manifest."
+  "description": "Proof-carrying CI attestation v2. Offline verification MUST recompute exit codes from separately hashed .exit evidence and recompute the unittest count from the hashed unittest report. Declared numeric summaries are cross-checks, never trusted inputs. The attestation is additionally bound to an execution-environment manifest. The historical workflow filename is retained as a GitHub pull-request bootstrap locator; its exact bytes/hash and v0.4 verifier identity define the active protocol semantics, not the filename suffix."
 }
