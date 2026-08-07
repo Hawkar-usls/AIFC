@@ -9,17 +9,19 @@
     "experiment_id",
     "protocol_version",
     "mode",
-    "trial_creation_policy",
+    "trial_creation_policy_hash",
     "declared_trial_count",
     "initial_witness_registry_hash",
     "candidate_generation_policy_hash",
-    "target_selector_profile_hash",
+    "target_selector_policy_hash",
     "target_derivation_policy_hash",
     "causal_model_hash",
     "statistical_plan_hash",
     "publication_policy_hash",
     "external_freshness_policy_hash",
     "conditioning_view_policy_hash",
+    "allowed_registry_reconfiguration",
+    "strongest_grade_exactly_one_target_derivation_per_trial",
     "frozen_before_first_created"
   ],
   "properties": {
@@ -27,26 +29,18 @@
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "protocol_version": {"type": "string", "minLength": 1, "maxLength": 64},
     "mode": {"enum": ["FIXED_HORIZON", "ANYTIME_WITH_PREDICTABLE_POLICY"]},
-    "trial_creation_policy": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["method", "policy_hash"],
-      "properties": {
-        "method": {"enum": ["PREALLOCATED_SLOTS", "DETERMINISTIC_SCHEDULE", "EXTERNAL_TRIGGER_POLICY"]},
-        "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
-      }
-    },
+    "trial_creation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "declared_trial_count": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
     "initial_witness_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "candidate_generation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "target_selector_profile_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_selector_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_derivation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "causal_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "statistical_plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "publication_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "external_freshness_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "conditioning_view_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "allowed_registry_reconfiguration": {"type": "boolean", "default": false},
+    "allowed_registry_reconfiguration": {"type": "boolean"},
     "strongest_grade_exactly_one_target_derivation_per_trial": {"const": true},
     "frozen_before_first_created": {"const": true}
   },
@@ -56,5 +50,5 @@
       "then": {"properties": {"declared_trial_count": {"type": "integer", "minimum": 1}}}
     }
   ],
-  "description": "The plan is the machine-readable pre-experiment contract. Its domain-separated hash must be externally certified before the first CREATED slot. It binds policies rather than post-hoc observed outcomes."
+  "description": "The pre-experiment contract. Every referenced hash must resolve through the evidence resolver to the declared machine-readable AIFC policy/model object before first CREATED. The plan itself is externally certified before trial creation."
 }
