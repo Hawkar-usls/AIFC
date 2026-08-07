@@ -25,26 +25,26 @@ REQUIRED_FILES = [
     "spec/TIME_AND_ORDERING.md",
     "docs/TRIAL_LEDGER.md",
     "docs/ENTROPY_EVIDENCE.md",
+    "docs/CAUSAL_MODEL.md",
+    "schemas/hard-witness.schema.json",
+    "schemas/pre-return-certificate.schema.json",
     "schemas/trial-ledger-event.schema.json",
     "schemas/entropy-profile.schema.json",
     "schemas/causal-model.schema.json",
     "schemas/witness-registry.schema.json",
+    "schemas/witness-receipt.schema.json",
+    "schemas/quorum-certificate.schema.json",
+    "schemas/target-evidence.schema.json",
+    "schemas/evidence-bundle.schema.json",
+    "schemas/verifier-result.schema.json",
     "conformance/state-machine-v1.json",
     "conformance/AIFC-RELEASE-GATE-v1.json",
 ]
 
-SCHEMA_FILES = [
-    "schemas/trial-ledger-event.schema.json",
-    "schemas/entropy-profile.schema.json",
-    "schemas/causal-model.schema.json",
-    "schemas/witness-registry.schema.json",
-]
+SCHEMA_FILES = [p for p in REQUIRED_FILES if p.startswith("schemas/")]
 
 EXPECTED_SCHEMA_IDS = {
-    "schemas/trial-ledger-event.schema.json": "https://github.com/Hawkar-usls/AIFC/schemas/trial-ledger-event.schema.json",
-    "schemas/entropy-profile.schema.json": "https://github.com/Hawkar-usls/AIFC/schemas/entropy-profile.schema.json",
-    "schemas/causal-model.schema.json": "https://github.com/Hawkar-usls/AIFC/schemas/causal-model.schema.json",
-    "schemas/witness-registry.schema.json": "https://github.com/Hawkar-usls/AIFC/schemas/witness-registry.schema.json",
+    rel: f"https://github.com/Hawkar-usls/AIFC/{rel}" for rel in SCHEMA_FILES
 }
 
 
@@ -82,7 +82,7 @@ def check_schema_headers() -> None:
         if obj.get("$id") != EXPECTED_SCHEMA_IDS[rel]:
             die(f"{rel}: unexpected $id")
         if obj.get("type") != "object" or obj.get("additionalProperties") is not False:
-            die(f"{rel}: hash-critical top-level schema must be closed object")
+            die(f"{rel}: hash-critical top-level schema must be a closed object")
     print(f"SCHEMA_HEADERS = PASS ({len(SCHEMA_FILES)}/{len(SCHEMA_FILES)})")
 
 
@@ -102,10 +102,17 @@ def check_state_machine() -> None:
     ]
     if normal != expected:
         die("normal state transition chain drift")
-    if not sm.get("forbidden", {}).get("silent_trial_deletion"):
-        die("silent trial deletion must be forbidden")
-    if not sm.get("forbidden", {}).get("candidate_before_created_certified"):
-        die("candidate-before-created must be forbidden")
+    forbidden = sm.get("forbidden", {})
+    for key in (
+        "silent_trial_deletion",
+        "candidate_before_created_certified",
+        "target_before_quorum_certified",
+        "target_selection_after_observing_target",
+        "terminal_to_nonterminal",
+        "state_skip_without_terminal_abort",
+    ):
+        if forbidden.get(key) is not True:
+            die(f"state-machine forbidden rule missing: {key}")
     print("STATE_MACHINE = PASS")
 
 
