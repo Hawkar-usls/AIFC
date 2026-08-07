@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/verifier-result.schema.json",
+  "title": "AIFC Verifier Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "experiment_id", "trial_index", "verifier_id", "verifier_version", "evidence_bundle_hash", "gate_results", "exact_match", "terminal_grade", "physical_interpretation"],
+  "properties": {
+    "schema": {"const": "AIFC/verifier-result/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "verifier_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "verifier_version": {"type": "string", "minLength": 1, "maxLength": 64},
+    "evidence_bundle_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gate_results": {
+      "type": "object",
+      "additionalProperties": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE"]}
+    },
+    "exact_match": {"type": "boolean"},
+    "terminal_grade": {
+      "enum": [
+        "NOT_ADMITTED",
+        "STRUCTURAL_MATCH_ONLY",
+        "FORWARD_NULL_CONSISTENT_MISS",
+        "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE",
+        "INVALIDATED_EVIDENCE"
+      ]
+    },
+    "physical_interpretation": {"const": "NO_AUTOMATIC_PHYSICAL_RETROCAUSALITY_CLAIM"},
+    "fail_open": {"const": false}
+  }
+}
