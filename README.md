@@ -48,9 +48,9 @@ sequenceDiagram
     W->>E: Authorize predetermined future target event
     E-->>V: Post-freeze target + verifiable evidence
     R-->>V: Frozen candidate + certificates
-    V->>V: Verify entropy, causal isolation, multiplicity,
-    V->>V: freshness, anti-rollback, quorum, no post-selection,
-    V->>V: and anytime-valid statistics
+    V->>V: Verify entropy, causal isolation, multiplicity
+    V->>V: Verify freshness, anti-rollback, quorum, no post-selection
+    V->>V: Apply frozen anytime-valid statistics
     V-->>R: Fail closed or issue bounded evidence grade
 ```
 
@@ -95,47 +95,47 @@ See [`spec/AIFC-SPEC-v1.0-draft.md`](spec/AIFC-SPEC-v1.0-draft.md) for the norma
 
 ## Formal core
 
-Let \(\mathcal F_{i-1}\) be the complete information available before target \(T_i\) is generated. Let \(C_i\) be the set of candidate values irreversibly frozen before that target, with \(|C_i|\le K_i\).
+Let $\mathcal F_{i-1}$ be the complete information available before target $T_i$ is generated. Let $C_i$ be the set of candidate values irreversibly frozen before that target, with $|C_i|\le K_i$.
 
 If the future-target source admits the history-wise bound
 
-\[
+$$
 \max_t \Pr(T_i=t\mid\mathcal F_{i-1}) \le p_i,
-\]
+$$
 
 then the per-trial exact-hit probability under the admitted forward null is bounded by
 
-\[
+$$
 a_i = \min(1,K_i p_i).
-\]
+$$
 
 For a bounded sequence of trials,
 
-\[
+$$
 \Pr(\exists i\le N:T_i\in C_i)
 \le
 1-\prod_{i=1}^{N}(1-a_i).
-\]
+$$
 
 For continuous monitoring, AIFC uses an anytime-valid test supermartingale / e-process. One simple factor is
 
-\[
+$$
 L_i=(1-\lambda_i)+\lambda_i\frac{X_i}{a_i},
 \qquad
 X_i=\mathbf 1[T_i\in C_i],
-\]
+$$
 
-with predictable \(\lambda_i\in[0,1]\). Then
+with predictable $\lambda_i\in[0,1]$. Then
 
-\[
+$$
 E_n=\prod_{i=1}^{n}L_i
-\]
+$$
 
 is a nonnegative supermartingale under the admitted null, giving the Ville bound
 
-\[
+$$
 \Pr_0\!\left(\sup_n E_n\ge \frac1\alpha\right)\le\alpha.
-\]
+$$
 
 **Important:** the mathematics above is not claimed as new. The research claim under review is the end-to-end protocol composition and its evidence semantics.
 
@@ -149,15 +149,15 @@ A candidate may contain prose, images, or human interpretation for exploratory w
 
 For a genuinely uniform 256-bit target with one frozen candidate, the one-shot guessing scale is
 
-\[
+$$
 2^{-256}\approx 8.64\times10^{-78}.
-\]
+$$
 
 Across one million preregistered opportunities, a simple union scale is approximately
 
-\[
+$$
 10^6\,2^{-256}\approx 8.64\times10^{-72},
-\]
+$$
 
 but AIFC does **not** permit this number to be quoted unless the required history-wise entropy and multiplicity premises are actually supported.
 
@@ -165,7 +165,7 @@ but AIFC does **not** permit this number to be quoted unless the required histor
 
 ## Adversarial hardening already performed
 
-The originating JANUS research line was used as a sandbox to attack the protocol before exposing it as a standalone methodology. The machine tests are evidence about the verifier logic and stated mathematical models; they are **not physical evidence of retrocausality**.
+The originating JANUS research line was used as a sandbox to attack the protocol before exposing it as a standalone methodology. The machine tests are evidence about verifier logic and stated mathematical models; they are **not physical evidence of retrocausality**.
 
 | Test family | Result |
 |---|---:|
@@ -177,7 +177,7 @@ The originating JANUS research line was used as a sandbox to attack the protocol
 | Anytime-valid adaptive betting policies | **2,187 fair + 2,187 biased, 0 Ville violations** |
 | Causal-isolation parallel channel subsets | **128 / 128** |
 | Temporal rollback/replay lab | **17 / 17** |
-| Quorum configurations \(n\le 8\) | **204 checked, 0 classification violations** |
+| Quorum configurations $n\le 8$ | **204 checked, 0 classification violations** |
 | Unsafe quorum configurations | **134 / 134 explicit counterexamples constructed** |
 
 The adversarial tests also produced concrete failures of weaker approaches, including:
@@ -194,19 +194,19 @@ The adversarial tests also produced concrete failures of weaker approaches, incl
 
 ## Quorum rule
 
-With \(n\) external witnesses, at most \(f\) Byzantine witnesses, and honest witnesses refusing to certify conflicting heads at the same logical position, conflicting \(q\)-witness certificates are excluded when
+With $n$ external witnesses, at most $f$ Byzantine witnesses, and honest witnesses refusing to certify conflicting heads at the same logical position, conflicting $q$-witness certificates are excluded when
 
-\[
+$$
 2q>n+f.
-\]
+$$
 
 Equivalently,
 
-\[
+$$
 q_{\min}=\left\lfloor\frac{n+f}{2}\right\rfloor+1.
-\]
+$$
 
-A practical baseline for the first external bench is **3-of-4** witnesses under an explicit \(f=1\) model, provided they are genuinely distinct failure domains. Four processes on one rollbackable host do not count as four independent witnesses.
+A practical baseline for the first external bench is **3-of-4** witnesses under an explicit $f=1$ model, provided they are genuinely distinct failure domains. Four processes on one rollbackable host do not count as four independent witnesses.
 
 ---
 
