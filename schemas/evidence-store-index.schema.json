@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/evidence-store-index.schema.json",
+  "title": "AIFC Evidence Store Index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "store_id", "entries"],
+  "properties": {
+    "schema": {"const": "AIFC/evidence-store-index/v1"},
+    "store_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["content_hash", "relative_path", "content_kind", "media_type"],
+        "properties": {
+          "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "relative_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+          },
+          "content_kind": {"enum": ["AIFC_PROTOCOL_JSON", "RAW_BYTES"]},
+          "declared_schema": {"type": ["string", "null"], "maxLength": 512},
+          "media_type": {"type": "string", "minLength": 1, "maxLength": 128}
+        }
+      }
+    }
+  },
+  "description": "Every content_hash must be unique. Resolver must open relative_path inside the store root, reject path escape/symlinks outside the root, read exact bytes, and recompute identity. For AIFC_PROTOCOL_JSON, strict parsing plus the schema's frozen AIFC domain separator is required. For RAW_BYTES, identity is SHA256(ASCII('AIFC:RAW_EVIDENCE:v1') || 0x00 || exact_bytes). A locator without resolvable bytes is not evidence."
+}
