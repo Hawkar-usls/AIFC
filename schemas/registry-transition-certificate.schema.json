@@ -6,24 +6,17 @@
   "additionalProperties": false,
   "required": [
     "schema",
-    "experiment_id",
-    "previous_registry_sequence",
-    "previous_registry_hash",
-    "next_registry_sequence",
-    "next_registry_hash",
+    "transition_body",
+    "transition_body_hash",
     "old_registry_authorization",
-    "new_registry_acceptance",
-    "transition_hash"
+    "new_registry_acceptance"
   ],
   "properties": {
     "schema": {"const": "AIFC/registry-transition-certificate/v1"},
-    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "previous_registry_sequence": {"type": "integer", "minimum": 0},
-    "previous_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "next_registry_sequence": {"type": "integer", "minimum": 1},
-    "next_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "old_registry_authorization": {"$ref": "quorum-certificate.schema.json"},
-    "new_registry_acceptance": {"$ref": "quorum-certificate.schema.json"},
-    "transition_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
-  }
+    "transition_body": {"$ref": "registry-transition-body.schema.json"},
+    "transition_body_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "old_registry_authorization": {"$ref": "registry-transition-quorum.schema.json"},
+    "new_registry_acceptance": {"$ref": "registry-transition-quorum.schema.json"}
+  },
+  "description": "Verifier MUST recompute transition_body_hash from the domain-separated canonical transition_body, require next_sequence=previous_sequence+1, and require old/new quorum roles plus signing_registry_hash bindings to match the transition body."
 }
