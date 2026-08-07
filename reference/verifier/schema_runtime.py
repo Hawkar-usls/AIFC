@@ -7,6 +7,11 @@ Order enforced by the caller:
 Schemas are loaded only from the tested repository tree. Network resolution is not
 used. Relative $ref values resolve through each schema's canonical $id and the
 local registry populated from schemas/*.schema.json.
+
+Schema source files have their own strict parse boundary: UTF-8 only, no BOM and
+no duplicate JSON object keys. This prevents last-key-wins ambiguity in the rules
+that validate protocol objects without imposing protocol-value restrictions (such
+as the ban on floating-point numbers) on JSON Schema source itself.
 """
 from __future__ import annotations
 
@@ -41,6 +46,34 @@ def _schema_files() -> list[Path]:
     return sorted((_repo_root() / "schemas").glob("*.schema.json"))
 
 
+def _schema_pairs_no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in out:
+            raise RuntimeSchemaError(f"SCHEMA_DUPLICATE_KEY:{key}")
+        out[key] = value
+    return out
+
+
+def load_schema_source_strict(path: Path) -> Mapping[str, Any]:
+    raw = path.read_bytes()
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raise RuntimeSchemaError(f"AMBIGUOUS_SCHEMA_SOURCE:{path.name}:UTF8_BOM_FORBIDDEN")
+    try:
+        text = raw.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise RuntimeSchemaError(f"AMBIGUOUS_SCHEMA_SOURCE:{path.name}:INVALID_UTF8:{exc}") from exc
+    try:
+        schema = json.loads(text, object_pairs_hook=_schema_pairs_no_duplicates)
+    except RuntimeSchemaError as exc:
+        raise RuntimeSchemaError(f"AMBIGUOUS_SCHEMA_SOURCE:{path.name}:{exc}") from exc
+    except (json.JSONDecodeError, UnicodeError, ValueError) as exc:
+        raise RuntimeSchemaError(f"SCHEMA_FILE_PARSE_FAILED:{path.name}:{exc}") from exc
+    if not isinstance(schema, Mapping):
+        raise RuntimeSchemaError(f"SCHEMA_FILE_NOT_OBJECT:{path.name}")
+    return schema
+
+
 def _load_catalog() -> SchemaCatalog:
     global _CATALOG
     if _CATALOG is not None:
@@ -49,12 +82,7 @@ def _load_catalog() -> SchemaCatalog:
     by_protocol: dict[str, Mapping[str, Any]] = {}
     resources: list[tuple[str, Resource]] = []
     for path in _schema_files():
-        try:
-            schema = json.loads(path.read_text(encoding="utf-8"))
-        except Exception as exc:  # repository schema corruption is fatal
-            raise RuntimeSchemaError(f"SCHEMA_FILE_PARSE_FAILED:{path.name}:{exc}") from exc
-        if not isinstance(schema, Mapping):
-            raise RuntimeSchemaError(f"SCHEMA_FILE_NOT_OBJECT:{path.name}")
+        schema = load_schema_source_strict(path)
         try:
             Draft202012Validator.check_schema(schema)
         except SchemaError as exc:

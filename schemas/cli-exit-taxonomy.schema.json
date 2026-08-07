@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/cli-exit-taxonomy.schema.json",
+  "title": "AIFC Verifier CLI Exit Taxonomy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "profile", "terminal_grade_exit_codes", "zero_exit_semantics", "external_automation_rule"],
+  "properties": {
+    "schema": {"const": "AIFC/cli-exit-taxonomy/v1"},
+    "profile": {"const": "AIFC-Verifier-A-v0.4"},
+    "terminal_grade_exit_codes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["INVALIDATED_EVIDENCE", "NOT_ADMITTED", "STRUCTURAL_MATCH_ONLY", "FORWARD_NULL_CONSISTENT_MISS", "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE"],
+      "properties": {
+        "INVALIDATED_EVIDENCE": {"const": 2},
+        "NOT_ADMITTED": {"const": 3},
+        "STRUCTURAL_MATCH_ONLY": {"const": 4},
+        "FORWARD_NULL_CONSISTENT_MISS": {"const": 0},
+        "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE": {"const": 0}
+      }
+    },
+    "zero_exit_semantics": {
+      "const": "VERIFIER_COMPLETED_WITH_A_PROTOCOL_OUTCOME_GRADE;EXIT_ZERO_IS_NOT_A_PHYSICAL_RETROCAUSALITY_CLAIM"
+    },
+    "external_automation_rule": {
+      "const": "EXTERNAL_AUTOMATION_MUST_PARSE_AND_VALIDATE_THE_VERIFIER_RESULT_JSON;PROCESS_EXIT_STATUS_ALONE_MUST_NOT_BE_INTERPRETED_AS_SCIENTIFIC_OR_PHYSICAL_ADMISSION"
+    }
+  }
+}

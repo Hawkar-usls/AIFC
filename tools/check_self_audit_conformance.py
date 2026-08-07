@@ -1,37 +1,60 @@
 #!/usr/bin/env python3
-"""AIFC Verifier A v0.3 self-audit repository checks."""
+"""AIFC Verifier A v0.4 environment self-audit repository checks."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 VERIFIER = ROOT / "reference" / "verifier"
 sys.path.insert(0, str(VERIFIER))
 
+from canonical import load_json_strict  # noqa: E402
 from schema_runtime import validate_protocol_object  # noqa: E402
+
+ACTIVE_WORKFLOW = ".github/workflows/verifier-self-audit-v03.yml"
 
 REQUIRED = [
     "reference/verifier/requirements.txt",
+    "reference/verifier/requirements.lock.txt",
     "reference/verifier/schema_runtime.py",
     "reference/verifier/protocol_semantics_v03.py",
     "reference/verifier/full_admission_v03.py",
     "reference/verifier/aifc_verify_v03.py",
+    "reference/verifier/aifc_verify_v04.py",
     "reference/tests/test_schema_runtime.py",
     "reference/tests/test_protocol_semantics_v03.py",
+    "reference/tests/test_ci_attestation_v04.py",
+    "reference/tests/test_cli_exit_v04.py",
     "schemas/verifier-ci-attestation.schema.json",
+    "schemas/verifier-ci-attestation-v2.schema.json",
+    "schemas/execution-environment-manifest.schema.json",
+    "schemas/ci-platform-receipt.schema.json",
+    "schemas/cli-exit-taxonomy.schema.json",
     "conformance/AIFC-RELEASE-GATE-v1.0.3-draft.json",
-    "tools/build_verifier_ci_attestation.py",
-    "tools/verify_verifier_ci_attestation.py",
+    "conformance/AIFC-RELEASE-GATE-v1.0.4-draft.json",
+    "conformance/CLI-EXIT-TAXONOMY-v1.json",
+    "tools/build_execution_environment_manifest.py",
+    "tools/build_verifier_ci_attestation_v04.py",
+    "tools/verify_verifier_ci_attestation_v04.py",
+    "tools/build_ci_platform_receipt.py",
+    "tools/verify_ci_platform_receipt.py",
+    ACTIVE_WORKFLOW,
 ]
 
-NEW_V03_FROZEN_GATES = {
-    "RUNTIME_JSON_SCHEMA_ADMISSION",
-    "CI_PASS_PROVENANCE_BINDING",
-    "TRIAL_CREATION_POLICY_REPLAY",
-    "TERMINAL_SUBTYPE_SEMANTICS",
-    "DECLARED_TRIAL_LEDGER_COVERAGE",
+NEW_V04_FROZEN_GATES = {
+    "CI_REPORT_SEMANTIC_RECOMPUTE",
+    "CI_PLATFORM_PROVENANCE_BINDING",
+    "EXECUTION_ENVIRONMENT_BINDING",
+    "SCHEMA_SOURCE_STRICTNESS",
+    "CLI_ADMISSION_EXIT_SEMANTICS",
+}
+
+PINNED_ACTIONS = {
+    "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python": "a26af69be951a213d495a4c3e4e4022e16d87065",
+    "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
 }
 
 
@@ -42,9 +65,9 @@ def fail(msg: str) -> None:
 
 def load(rel: str):
     try:
-        return json.loads((ROOT / rel).read_text(encoding="utf-8"))
+        return load_json_strict(ROOT / rel)
     except Exception as exc:
-        fail(f"cannot parse {rel}: {exc}")
+        fail(f"cannot strictly parse {rel}: {exc}")
 
 
 def required_gate_ids(obj: dict) -> list[str]:
@@ -84,64 +107,108 @@ def main() -> int:
         fail("VERIFIED must permit completed hit/miss terminal subtypes")
     print("TERMINAL_SUBTYPE_MACHINE_TABLE = PASS")
 
-    previous_gate = load("conformance/AIFC-RELEASE-GATE-v1.0.2-draft.json")
-    current_gate = load("conformance/AIFC-RELEASE-GATE-v1.0.3-draft.json")
+    previous_gate = load("conformance/AIFC-RELEASE-GATE-v1.0.3-draft.json")
+    current_gate = load("conformance/AIFC-RELEASE-GATE-v1.0.4-draft.json")
     previous_ids = required_gate_ids(previous_gate)
     current_ids = required_gate_ids(current_gate)
     if len(previous_ids) != len(set(previous_ids)) or len(current_ids) != len(set(current_ids)):
         fail("duplicate frozen gate id")
-    expected_current = set(previous_ids) | NEW_V03_FROZEN_GATES
+    expected_current = set(previous_ids) | NEW_V04_FROZEN_GATES
     if set(current_ids) != expected_current:
         fail(
-            f"v0.3 frozen gate drift missing={sorted(expected_current-set(current_ids))} "
+            f"v0.4 frozen gate drift missing={sorted(expected_current-set(current_ids))} "
             f"extra={sorted(set(current_ids)-expected_current)}"
         )
-    if len(current_ids) != 44:
-        fail(f"v0.3 frozen gate count must be 44, got {len(current_ids)}")
+    if len(previous_ids) != 44:
+        fail(f"v0.3 predecessor gate count must be 44, got {len(previous_ids)}")
+    if len(current_ids) != 49:
+        fail(f"v0.4 frozen gate count must be 49, got {len(current_ids)}")
     if current_gate.get("status") != "DRAFT_NOT_SATISFIED":
-        fail("v0.3 frozen gate must remain DRAFT_NOT_SATISFIED")
-    if current_gate.get("supersedes_for_draft_evaluation") != "conformance/AIFC-RELEASE-GATE-v1.0.2-draft.json":
-        fail("v0.3 frozen gate supersession chain invalid")
-    print("SELF_AUDITING_FROZEN_RELEASE_GATE = BLOCKED_AS_EXPECTED (44 unmet evidence classes declared)")
+        fail("v0.4 frozen gate must remain DRAFT_NOT_SATISFIED")
+    if current_gate.get("supersedes_for_draft_evaluation") != "conformance/AIFC-RELEASE-GATE-v1.0.3-draft.json":
+        fail("v0.4 frozen gate supersession chain invalid")
+    print("ENVIRONMENT_SELF_AUDITING_FROZEN_RELEASE_GATE = BLOCKED_AS_EXPECTED (49 unmet evidence classes declared)")
 
-    ci_schema = load("schemas/verifier-ci-attestation.schema.json")
-    validate_protocol_object({
-        "schema": "AIFC/verifier-ci-attestation/v1",
-        "verifier_id": "AIFC-Verifier-A",
-        "verifier_version": "0.3.0-self-audit",
-        "repository": "Hawkar-usls/AIFC",
-        "tested_source_commit_sha": "0" * 40,
-        "tested_tree_sha": "1" * 40,
-        "workflow": {
-            "path": ".github/workflows/verifier-self-audit-v03.yml",
-            "raw_sha256": "2" * 64,
-            "run_id": 1,
-            "run_attempt": 1,
-            "job_id": 1,
-            "job_name": "Verifier A self-audit",
-            "event_name": "push",
-            "runner_os": "Linux",
-            "python_version": "3.12.0"
-        },
-        "bound_source_sets": {
-            "schemas": {"manifest_sha256": "3" * 64, "file_count": 1},
-            "verifier_source": {"manifest_sha256": "4" * 64, "file_count": 1},
-            "test_corpus": {"manifest_sha256": "5" * 64, "file_count": 1},
-            "checkers": {"manifest_sha256": "6" * 64, "file_count": 1}
-        },
-        "reports": {
-            "base_conformance": {"path": "base.txt", "raw_sha256": "7" * 64, "aifc_raw_evidence_hash": "8" * 64, "exit_code": 0},
-            "preregistration_conformance": {"path": "prereg.txt", "raw_sha256": "d" * 64, "aifc_raw_evidence_hash": "e" * 64, "exit_code": 0},
-            "self_audit_conformance": {"path": "self.txt", "raw_sha256": "9" * 64, "aifc_raw_evidence_hash": "a" * 64, "exit_code": 0},
-            "unittest": {"path": "unit.txt", "raw_sha256": "b" * 64, "aifc_raw_evidence_hash": "c" * 64, "exit_code": 0, "test_count": 1}
-        },
-        "overall_status": "PASS",
-        "claim_ceiling": {"implementation_a_pass": False, "aifc_v1_frozen": False, "physical_retrocausality": "NOT_OBSERVED"},
-        "generated_at": "2026-08-07T00:00:00Z"
-    }, "AIFC/verifier-ci-attestation/v1")
-    if ci_schema.get("properties", {}).get("tested_source_commit_sha", {}).get("pattern") != "^[0-9a-f]{40}$":
-        fail("CI attestation source commit binding drift")
-    print("CI_ATTESTATION_SCHEMA = PASS")
+    taxonomy = load("conformance/CLI-EXIT-TAXONOMY-v1.json")
+    validate_protocol_object(taxonomy, "AIFC/cli-exit-taxonomy/v1")
+    expected_codes = {
+        "INVALIDATED_EVIDENCE": 2,
+        "NOT_ADMITTED": 3,
+        "STRUCTURAL_MATCH_ONLY": 4,
+        "FORWARD_NULL_CONSISTENT_MISS": 0,
+        "FORWARD_NULL_INCOMPATIBILITY_CANDIDATE": 0,
+    }
+    if taxonomy.get("terminal_grade_exit_codes") != expected_codes:
+        fail("CLI exit taxonomy mapping drift")
+    if "MUST_PARSE_AND_VALIDATE_THE_VERIFIER_RESULT_JSON" not in taxonomy.get("external_automation_rule", ""):
+        fail("CLI external automation rule missing")
+    print("CLI_ADMISSION_EXIT_SEMANTICS = PASS")
+
+    schema_runtime = (ROOT / "reference/verifier/schema_runtime.py").read_text(encoding="utf-8")
+    for token in ("SCHEMA_DUPLICATE_KEY", "AMBIGUOUS_SCHEMA_SOURCE", "load_schema_source_strict"):
+        if token not in schema_runtime:
+            fail(f"schema-source strictness path missing: {token}")
+    print("SCHEMA_SOURCE_STRICTNESS = IMPLEMENTED_CANDIDATE")
+
+    lock_lines = [
+        line.strip() for line in (ROOT / "reference/verifier/requirements.lock.txt").read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    if len(lock_lines) != 6:
+        fail(f"dependency lock must contain six exact runtime distributions, got {len(lock_lines)}")
+    for line in lock_lines:
+        if not re.match(r"^[A-Za-z0-9_.-]+==[^ ]+ --hash=sha256:[0-9a-f]{64}$", line):
+            fail(f"dependency lock row is not exact+hashed: {line}")
+    print("VERIFIER_DEPENDENCY_GRAPH_HASH_LOCK = PASS (6/6)")
+
+    workflow = (ROOT / ACTIVE_WORKFLOW).read_text(encoding="utf-8")
+    if "AIFC Verifier Environment Self-Audit v0.4" not in workflow:
+        fail("active historical workflow locator does not identify v0.4 semantics")
+    if "@v" in workflow:
+        fail("mutable GitHub Action major tag found in active v0.4 verifier workflow")
+    for repo, sha in PINNED_ACTIONS.items():
+        if f"uses: {repo}@{sha}" not in workflow:
+            fail(f"pinned action missing from v0.4 workflow: {repo}@{sha}")
+    if "--require-hashes" not in workflow or "--only-binary=:all:" not in workflow:
+        fail("v0.4 workflow does not enforce hashed binary dependency lock")
+    if "--workflow-path .github/workflows/verifier-self-audit-v03.yml" not in workflow:
+        fail("v0.4 attestation is not bound to the active workflow locator")
+    print("EXECUTION_ENVIRONMENT_WORKFLOW_PINS = PASS")
+
+    v2_schema = load("schemas/verifier-ci-attestation-v2.schema.json")
+    if v2_schema.get("properties", {}).get("schema", {}).get("const") != "AIFC/verifier-ci-attestation/v2":
+        fail("CI attestation v2 schema identity drift")
+    workflow_const = v2_schema.get("properties", {}).get("workflow", {}).get("properties", {}).get("path", {}).get("const")
+    if workflow_const != ACTIVE_WORKFLOW:
+        fail(f"CI attestation v2 workflow path drift: {workflow_const!r}")
+    env_schema = load("schemas/execution-environment-manifest.schema.json")
+    if env_schema.get("properties", {}).get("schema", {}).get("const") != "AIFC/execution-environment-manifest/v1":
+        fail("execution environment schema identity drift")
+    platform_schema = load("schemas/ci-platform-receipt.schema.json")
+    if platform_schema.get("properties", {}).get("schema", {}).get("const") != "AIFC/ci-platform-receipt/v1":
+        fail("CI platform receipt schema identity drift")
+    print("CI_ATTESTATION_V2_AND_PLATFORM_SCHEMAS = PASS")
+
+    verifier_v04 = (ROOT / "tools/verify_verifier_ci_attestation_v04.py").read_text(encoding="utf-8")
+    for token in (
+        "CI_EXIT_CODE_REBINDING",
+        "CI_TEST_COUNT_REBINDING",
+        "SAME_TREE_DIFFERENT_EXECUTION_ENVIRONMENT",
+        "DETACHED_CI_PASS_ATTESTATION",
+    ):
+        if token not in verifier_v04:
+            fail(f"v0.4 CI verifier attack path missing: {token}")
+    platform_verifier = (ROOT / "tools/verify_ci_platform_receipt.py").read_text(encoding="utf-8")
+    for token in (
+        "CI_PLATFORM_JOB_NOT_SUCCESS",
+        "CI_PLATFORM_ARTIFACT_DIGEST_REBINDING",
+        "CI_PLATFORM_ARTIFACT_ATTESTATION_RAW_REBINDING",
+    ):
+        if token not in platform_verifier:
+            fail(f"platform receipt attack path missing: {token}")
+    print("CI_REPORT_SEMANTIC_RECOMPUTE = IMPLEMENTED_CANDIDATE")
+    print("CI_PLATFORM_PROVENANCE_BINDING = IMPLEMENTED_CANDIDATE_POST_UPLOAD")
+    print("EXECUTION_ENVIRONMENT_BINDING = IMPLEMENTED_CANDIDATE")
 
     old_status = load("conformance/VERIFIER-A-REPLAY-v0.2.json")
     if old_status.get("status") != "HISTORICAL_CI_RECORD_NOT_CURRENT_TREE_ATTESTATION":
@@ -150,7 +217,7 @@ def main() -> int:
         fail("v0.2 status must not establish current-tree replay PASS")
     print("DETACHED_CI_PASS_ATTESTATION = FAIL_CLOSED")
 
-    semantics = (ROOT / "reference" / "verifier" / "protocol_semantics_v03.py").read_text(encoding="utf-8")
+    semantics = (ROOT / "reference/verifier/protocol_semantics_v03.py").read_text(encoding="utf-8")
     for token in (
         "CREATED_OUTSIDE_FROZEN_SCHEDULE_OR_TRIGGER_NOT_REPLAYABLE",
         "IMPOSSIBLE_TERMINAL_SUBTYPE",
@@ -159,7 +226,7 @@ def main() -> int:
         if token not in semantics:
             fail(f"protocol semantic replay path missing: {token}")
 
-    admission = (ROOT / "reference" / "verifier" / "full_admission_v03.py").read_text(encoding="utf-8")
+    admission = (ROOT / "reference/verifier/full_admission_v03.py").read_text(encoding="utf-8")
     for token in (
         "RUNTIME_JSON_SCHEMA_ADMISSION",
         "DECLARED_TRIAL_LEDGER_COVERAGE",
