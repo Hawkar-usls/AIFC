@@ -98,6 +98,7 @@ def main() -> int:
         },
         "reports": {
             "base_conformance": {"path": "base.txt", "raw_sha256": "7" * 64, "aifc_raw_evidence_hash": "8" * 64, "exit_code": 0},
+            "preregistration_conformance": {"path": "prereg.txt", "raw_sha256": "d" * 64, "aifc_raw_evidence_hash": "e" * 64, "exit_code": 0},
             "self_audit_conformance": {"path": "self.txt", "raw_sha256": "9" * 64, "aifc_raw_evidence_hash": "a" * 64, "exit_code": 0},
             "unittest": {"path": "unit.txt", "raw_sha256": "b" * 64, "aifc_raw_evidence_hash": "c" * 64, "exit_code": 0, "test_count": 1}
         },
