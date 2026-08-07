@@ -13,6 +13,8 @@ sys.path.insert(0, str(VERIFIER))
 from canonical import load_json_strict  # noqa: E402
 from schema_runtime import validate_protocol_object  # noqa: E402
 
+ACTIVE_WORKFLOW = ".github/workflows/verifier-self-audit-v03.yml"
+
 REQUIRED = [
     "reference/verifier/requirements.txt",
     "reference/verifier/requirements.lock.txt",
@@ -38,7 +40,7 @@ REQUIRED = [
     "tools/verify_verifier_ci_attestation_v04.py",
     "tools/build_ci_platform_receipt.py",
     "tools/verify_ci_platform_receipt.py",
-    ".github/workflows/verifier-self-audit-v04.yml",
+    ACTIVE_WORKFLOW,
 ]
 
 NEW_V04_FROZEN_GATES = {
@@ -159,19 +161,26 @@ def main() -> int:
             fail(f"dependency lock row is not exact+hashed: {line}")
     print("VERIFIER_DEPENDENCY_GRAPH_HASH_LOCK = PASS (6/6)")
 
-    workflow = (ROOT / ".github/workflows/verifier-self-audit-v04.yml").read_text(encoding="utf-8")
+    workflow = (ROOT / ACTIVE_WORKFLOW).read_text(encoding="utf-8")
+    if "AIFC Verifier Environment Self-Audit v0.4" not in workflow:
+        fail("active historical workflow locator does not identify v0.4 semantics")
     if "@v" in workflow:
-        fail("mutable GitHub Action major tag found in v0.4 verifier workflow")
+        fail("mutable GitHub Action major tag found in active v0.4 verifier workflow")
     for repo, sha in PINNED_ACTIONS.items():
         if f"uses: {repo}@{sha}" not in workflow:
             fail(f"pinned action missing from v0.4 workflow: {repo}@{sha}")
     if "--require-hashes" not in workflow or "--only-binary=:all:" not in workflow:
         fail("v0.4 workflow does not enforce hashed binary dependency lock")
+    if "--workflow-path .github/workflows/verifier-self-audit-v03.yml" not in workflow:
+        fail("v0.4 attestation is not bound to the active workflow locator")
     print("EXECUTION_ENVIRONMENT_WORKFLOW_PINS = PASS")
 
     v2_schema = load("schemas/verifier-ci-attestation-v2.schema.json")
     if v2_schema.get("properties", {}).get("schema", {}).get("const") != "AIFC/verifier-ci-attestation/v2":
         fail("CI attestation v2 schema identity drift")
+    workflow_const = v2_schema.get("properties", {}).get("workflow", {}).get("properties", {}).get("path", {}).get("const")
+    if workflow_const != ACTIVE_WORKFLOW:
+        fail(f"CI attestation v2 workflow path drift: {workflow_const!r}")
     env_schema = load("schemas/execution-environment-manifest.schema.json")
     if env_schema.get("properties", {}).get("schema", {}).get("const") != "AIFC/execution-environment-manifest/v1":
         fail("execution environment schema identity drift")
