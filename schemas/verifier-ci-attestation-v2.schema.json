@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/verifier-ci-attestation-v2.schema.json",
+  "title": "AIFC Verifier CI Attestation v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "verifier_id",
+    "verifier_version",
+    "repository",
+    "tested_source_commit_sha",
+    "tested_tree_sha",
+    "workflow",
+    "execution_environment",
+    "bound_source_sets",
+    "reports",
+    "overall_status",
+    "claim_ceiling",
+    "generated_at"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/verifier-ci-attestation/v2"},
+    "verifier_id": {"const": "AIFC-Verifier-A"},
+    "verifier_version": {"const": "0.4.0-environment-self-audit"},
+    "repository": {"const": "Hawkar-usls/AIFC"},
+    "tested_source_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "tested_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "raw_sha256", "run_id", "run_attempt", "job_id", "job_name", "event_name"],
+      "properties": {
+        "path": {"const": ".github/workflows/verifier-self-audit-v04.yml"},
+        "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "run_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "run_attempt": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "job_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "job_name": {"const": "Verifier A environment self-audit"},
+        "event_name": {"type": "string", "minLength": 1, "maxLength": 64}
+      }
+    },
+    "execution_environment": {"$ref": "#/$defs/contentBoundObject"},
+    "bound_source_sets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemas", "verifier_source", "test_corpus", "checkers"],
+      "properties": {
+        "schemas": {"$ref": "#/$defs/sourceSet"},
+        "verifier_source": {"$ref": "#/$defs/sourceSet"},
+        "test_corpus": {"$ref": "#/$defs/sourceSet"},
+        "checkers": {"$ref": "#/$defs/sourceSet"}
+      }
+    },
+    "reports": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_conformance", "preregistration_conformance", "self_audit_conformance", "unittest"],
+      "properties": {
+        "base_conformance": {"$ref": "#/$defs/report"},
+        "preregistration_conformance": {"$ref": "#/$defs/report"},
+        "self_audit_conformance": {"$ref": "#/$defs/report"},
+        "unittest": {"$ref": "#/$defs/unittestReport"}
+      }
+    },
+    "overall_status": {"enum": ["PASS", "FAIL"]},
+    "claim_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implementation_a_pass", "aifc_v1_frozen", "physical_retrocausality"],
+      "properties": {
+        "implementation_a_pass": {"const": false},
+        "aifc_v1_frozen": {"const": false},
+        "physical_retrocausality": {"const": "NOT_OBSERVED"}
+      }
+    },
+    "generated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sourceSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_sha256", "file_count"],
+      "properties": {
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "file_count": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+      }
+    },
+    "evidenceFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "raw_sha256", "aifc_raw_evidence_hash"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$", "maxLength": 128},
+        "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "aifc_raw_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "contentBoundObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "raw_sha256", "aifc_raw_evidence_hash", "protocol_content_hash"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$", "maxLength": 128},
+        "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "aifc_raw_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "protocol_content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output", "exit_evidence", "declared_exit_code"],
+      "properties": {
+        "output": {"$ref": "#/$defs/evidenceFile"},
+        "exit_evidence": {"$ref": "#/$defs/evidenceFile"},
+        "declared_exit_code": {"type": "integer", "minimum": 0, "maximum": 255}
+      }
+    },
+    "unittestReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output", "exit_evidence", "declared_exit_code", "declared_test_count"],
+      "properties": {
+        "output": {"$ref": "#/$defs/evidenceFile"},
+        "exit_evidence": {"$ref": "#/$defs/evidenceFile"},
+        "declared_exit_code": {"type": "integer", "minimum": 0, "maximum": 255},
+        "declared_test_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+      }
+    }
+  },
+  "description": "Proof-carrying CI attestation v2. Offline verification MUST recompute exit codes from separately hashed .exit evidence and recompute the unittest count from the hashed unittest report. Declared numeric summaries are cross-checks, never trusted inputs. The attestation is additionally bound to an execution-environment manifest."
+}
