@@ -1,5 +1,5 @@
 # DIAGNOSTIC ONLY — NOT A VERIFIER PASS WORKFLOW.
-name: AIFC Verifier v0.4 Attestation Replay Probe
+name: AIFC Verifier v0.4 Upload Probe
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   actions: read
 
 jobs:
-  attestation_replay_probe:
+  upload_probe:
     name: Verifier A environment self-audit
     runs-on: ubuntu-24.04
     steps:
@@ -133,9 +133,16 @@ jobs:
             --attestation ci-evidence/verifier-ci-attestation-v2.json \
             --artifact-dir ci-evidence \
             --sidecar ci-evidence/verifier-ci-attestation-v2.sha256.json
+      - name: Upload proof-carrying verifier evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verifier-a-v04-ci-attestation-${{ github.run_id }}
+          path: ci-evidence/
+          if-no-files-found: error
+          retention-days: 90
       - name: Preserve diagnostic ceiling
         run: |
-          echo "ATTESTATION_REPLAY_PROBE_ONLY = TRUE"
+          echo "UPLOAD_PROBE_ONLY = TRUE"
           echo "CI_PLATFORM_PROVENANCE_BINDING = NOT_EVALUATED"
           echo "IMPLEMENTATION_A_PASS = NOT_ESTABLISHED"
           echo "AIFC_V1_FROZEN = FALSE"
