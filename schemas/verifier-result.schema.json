@@ -31,7 +31,18 @@
       "items": {"type": "string", "minLength": 1, "maxLength": 2048},
       "uniqueItems": true
     },
+    "crypto_backend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend_id", "version_line", "executable_sha256"],
+      "properties": {
+        "backend_id": {"const": "OPENSSL_PKEYUTL_ED25519_V1"},
+        "version_line": {"type": "string", "minLength": 1, "maxLength": 256},
+        "executable_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "physical_interpretation": {"const": "NO_AUTOMATIC_PHYSICAL_RETROCAUSALITY_CLAIM"},
     "fail_open": {"const": false}
-  }
+  },
+  "description": "crypto_backend is optional for historical verifier results. Verifier A v0.6 populates it when Ed25519 cryptographic replay is attempted so the implementation backend is explicit. A backend fingerprint is reproducibility evidence, not independent proof that the backend is bug-free."
 }
