@@ -25,7 +25,13 @@ Schema: [`../schemas/release-manifest.schema.json`](../schemas/release-manifest.
 4. every evidence hash resolves to the preserved evidence object/artifact;
 5. the declared verifier/run identifiers are reproducible;
 6. the repository commit and release-gate profile hash match the released bytes;
-7. the manifest hash verifies under the frozen canonicalization profile.
+7. the external domain-separated canonical content hash of the manifest matches the release record.
+
+The manifest intentionally contains no self-hash field. Its identity is computed externally as:
+
+```text
+SHA256("AIFC:RELEASE_MANIFEST:v1\0" || canonical_manifest_bytes)
+```
 
 A human approval, README badge, Git tag, or CI green check cannot substitute for missing per-gate evidence.
 
