@@ -67,8 +67,9 @@
       "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
       "uniqueItems": true
     },
+    "key_lifecycle_ledger_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "target_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "publication_manifest_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   },
-  "description": "Development manifest for standalone Verifier A replay. It contains only content identities. experiment_plan_quorum_certificate_hash binds the experiment-scoped preregistration certificate that must precede the first CREATED slot. Every referenced object must be resolved from exact bytes and independently rehashed before use. It is not itself a frozen AIFC v1 evidence object and does not establish Implementation A PASS."
+  "description": "Development manifest for standalone Verifier A replay. v0.7 adds optional key_lifecycle_ledger_hash for historical-key semantics while preserving readability of earlier fixtures; Verifier A v0.7 requires the field for its strongest path. The local lifecycle ledger itself does not prove external completeness/freshness. Every referenced object must be resolved from exact bytes and independently rehashed."
 }
