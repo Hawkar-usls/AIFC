@@ -4,22 +4,7 @@
   "title": "AIFC Witness Receipt v1",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema",
-    "signature_profile_id",
-    "experiment_id",
-    "trial_index",
-    "logical_position",
-    "content_schema",
-    "content_hash",
-    "registry_hash",
-    "registry_sequence",
-    "witness_id",
-    "key_id",
-    "signature_algorithm",
-    "signature",
-    "wall_clock_timestamp"
-  ],
+  "required": ["schema", "experiment_id", "trial_index", "logical_position", "content_hash", "registry_hash", "witness_id", "key_id", "signature_algorithm", "signature"],
   "properties": {
     "schema": {"const": "AIFC/witness-receipt/v1"},
     "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
@@ -33,8 +18,19 @@
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
   },
-  "description": "Trial-scoped strongest-grade witness receipt. The signature preimage is not JCS JSON; it is the frozen AIFC typed binary profile selected by the experiment plan. content_schema and registry_sequence are signed to prevent cross-type and stale-registry replay. wall_clock_timestamp is signed for integrity when present but is never freshness proof."
+  "allOf": [
+    {
+      "if": {"required": ["signature_profile_id"]},
+      "then": {
+        "required": ["content_schema", "registry_sequence", "wall_clock_timestamp"],
+        "properties": {
+          "signature": {"pattern": "^[0-9a-f]{128}$"}
+        }
+      }
+    }
+  ],
+  "description": "Historical draft receipts without signature_profile_id remain schema-readable for old replay corpus only. Strongest-grade v0.5 receipts declare AIFC-ED25519-DIRECT-TYPED-V1 and then MUST include signed content_schema, registry_sequence and explicit timestamp/null plus exactly 64 signature bytes as lowercase hex. v0.5 preimage admission rejects the legacy form."
 }
