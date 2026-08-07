@@ -31,9 +31,9 @@
     },
     "anchor_role": {
       "enum": [
-        "EXPERIMENT_PLAN_CERTIFICATE",
+        "EXPERIMENT_PLAN",
         "PRE_RETURN_QUORUM_CERTIFICATE",
-        "TARGET_ARMED_CERTIFICATE"
+        "PRE_TARGET_VIEW_QUORUM_CERTIFICATE"
       ]
     },
     "parameters": {
@@ -50,5 +50,5 @@
     "exactly_one_event_per_trial": {"const": true},
     "frozen_before_first_created": {"const": true}
   },
-  "description": "This policy freezes how a per-trial AIFC/target-selector-profile/v1 instance must be derived. The instance supplies the concrete certified anchor and selected event; the verifier recomputes it under this policy."
+  "description": "This policy freezes how a per-trial AIFC/target-selector-profile/v1 instance must be derived. Anchor roles name directly resolvable protocol objects; the verifier recomputes the concrete selected event under this policy."
 }
