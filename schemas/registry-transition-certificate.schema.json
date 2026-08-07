@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/registry-transition-certificate.schema.json",
+  "title": "AIFC Witness Registry Transition Certificate v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "previous_registry_sequence",
+    "previous_registry_hash",
+    "next_registry_sequence",
+    "next_registry_hash",
+    "old_registry_authorization",
+    "new_registry_acceptance",
+    "transition_hash"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/registry-transition-certificate/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "previous_registry_sequence": {"type": "integer", "minimum": 0},
+    "previous_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "next_registry_sequence": {"type": "integer", "minimum": 1},
+    "next_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "old_registry_authorization": {"$ref": "quorum-certificate.schema.json"},
+    "new_registry_acceptance": {"$ref": "quorum-certificate.schema.json"},
+    "transition_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
