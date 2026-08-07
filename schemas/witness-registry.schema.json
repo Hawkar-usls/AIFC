@@ -9,17 +9,18 @@
     "schema": {"const": "AIFC/witness-registry/v1"},
     "registry_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "registry_sequence": {"type": "integer", "minimum": 0},
+    "registry_sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
     "previous_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "transition_certificate_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "fault_model": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["n", "f", "q"],
+      "required": ["n", "f", "q", "independence_unit"],
       "properties": {
-        "n": {"type": "integer", "minimum": 1},
-        "f": {"type": "integer", "minimum": 0},
-        "q": {"type": "integer", "minimum": 1}
+        "n": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "f": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "q": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "independence_unit": {"const": "FAILURE_DOMAIN"}
       }
     },
     "witnesses": {
@@ -45,8 +46,8 @@
                 "algorithm": {"enum": ["Ed25519"]},
                 "public_key_encoding": {"enum": ["base64", "hex"]},
                 "public_key": {"type": "string", "minLength": 32, "maxLength": 256},
-                "valid_from_registry_sequence": {"type": "integer", "minimum": 0},
-                "valid_until_registry_sequence": {"type": ["integer", "null"], "minimum": 0},
+                "valid_from_registry_sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+                "valid_until_registry_sequence": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
                 "status": {"enum": ["ACTIVE", "REVOKED", "COMPROMISED", "RETIRED"]},
                 "predecessor_key_id": {"type": ["string", "null"]},
                 "revocation_reason": {"type": ["string", "null"], "maxLength": 512}
@@ -63,5 +64,6 @@
       "then": {"properties": {"transition_certificate_hash": {"type": "null"}}},
       "else": {"required": ["transition_certificate_hash"], "properties": {"transition_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}
     }
-  ]
+  ],
+  "description": "For registry_sequence=0, previous_registry_hash must equal SHA256(ASCII('AIFC:WITNESS_REGISTRY_GENESIS:v1') || 0x00 || UTF8(experiment_id)). Full verifier must enforce unique witness_id, safe 2q>n+f, registry n against admitted membership, and at least q distinct failure domains among any accepted quorum. Multiple processes in one failure domain do not count as independent witnesses."
 }
