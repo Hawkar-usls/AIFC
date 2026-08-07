@@ -175,7 +175,7 @@ def signed_summary(registry_hash="33" * 32, message=b"AIFC-v0.6-crypto-integrati
     )
 
 
-def typed_preimage_signed_summary(registry_hash="33" * 32):
+def typed_preimage_signed_summary(registry_hash="22" * 32):
     receipt = {
         "schema": "AIFC/witness-receipt/v1",
         "signature_profile_id": "AIFC-ED25519-DIRECT-TYPED-V1",
@@ -183,7 +183,7 @@ def typed_preimage_signed_summary(registry_hash="33" * 32):
         "trial_index": 7,
         "logical_position": "PRE_RETURN_FROZEN",
         "content_schema": "AIFC/trial-ledger-event/v1",
-        "content_hash": "44" * 32,
+        "content_hash": "11" * 32,
         "registry_hash": registry_hash,
         "registry_sequence": 3,
         "witness_id": "w0",
