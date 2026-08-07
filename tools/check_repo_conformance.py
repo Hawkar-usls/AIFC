@@ -39,6 +39,9 @@ REQUIRED_FILES = [
     "schemas/witness-registry.schema.json",
     "schemas/witness-receipt.schema.json",
     "schemas/quorum-certificate.schema.json",
+    "schemas/registry-transition-body.schema.json",
+    "schemas/registry-transition-receipt.schema.json",
+    "schemas/registry-transition-quorum.schema.json",
     "schemas/registry-transition-certificate.schema.json",
     "schemas/target-evidence.schema.json",
     "schemas/evidence-bundle.schema.json",
@@ -100,6 +103,10 @@ def check_hardening_contracts() -> None:
     if "target_derivation_profile_hash" not in entropy.get("required", []):
         die("entropy profile must bind target derivation profile")
 
+    target_profile = load_json("schemas/target-derivation-profile.schema.json")
+    if "profile_hash" in target_profile.get("properties", {}):
+        die("target derivation profile must not contain self-hash field")
+
     quorum = load_json("schemas/quorum-certificate.schema.json")
     receipt_items = quorum["properties"]["receipts"].get("items", {})
     if receipt_items.get("$ref") != "witness-receipt.schema.json":
@@ -115,18 +122,33 @@ def check_hardening_contracts() -> None:
         if key not in pre.get("required", []):
             die(f"PRE_RETURN missing frozen binding: {key}")
 
+    bundle = load_json("schemas/evidence-bundle.schema.json")
+    for key in ("candidate_generation_profile_hash", "target_derivation_profile_hash", "witness_registry_transition_hash"):
+        if key not in bundle.get("required", []):
+            die(f"evidence bundle missing binding: {key}")
+
     registry = load_json("schemas/witness-registry.schema.json")
     if "transition_certificate_hash" not in registry.get("properties", {}):
         die("witness registry missing transition certificate binding")
 
     transition = load_json("schemas/registry-transition-certificate.schema.json")
-    for key in ("old_registry_authorization", "new_registry_acceptance"):
-        if key not in transition.get("required", []):
-            die(f"registry transition missing joint certificate side: {key}")
+    props = transition.get("properties", {})
+    if props.get("transition_body", {}).get("$ref") != "registry-transition-body.schema.json":
+        die("registry transition must bind typed transition body")
+    if props.get("old_registry_authorization", {}).get("$ref") != "registry-transition-quorum.schema.json":
+        die("old registry transition authorization must use experiment-scoped quorum")
+    if props.get("new_registry_acceptance", {}).get("$ref") != "registry-transition-quorum.schema.json":
+        die("new registry transition acceptance must use experiment-scoped quorum")
+
+    rtq = load_json("schemas/registry-transition-quorum.schema.json")
+    if rtq["properties"]["receipts"]["items"].get("$ref") != "registry-transition-receipt.schema.json":
+        die("registry transition quorum receipts must be typed")
 
     release_manifest = load_json("schemas/release-manifest.schema.json")
     if "gate_results" not in release_manifest.get("required", []):
         die("release manifest must carry per-gate results")
+    if "manifest_hash" in release_manifest.get("properties", {}):
+        die("release manifest must not contain self-hash field")
 
     ledger_doc = (ROOT / "docs/TRIAL_LEDGER.md").read_text(encoding="utf-8")
     if "AIFC:EXPERIMENT_GENESIS:v1" not in ledger_doc:
