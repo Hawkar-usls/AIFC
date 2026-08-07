@@ -13,6 +13,7 @@ from frontier import experiment_genesis_hash  # noqa: E402
 from preregistration_v02 import verify_plan_preregistration  # noqa: E402
 from replay import registry_genesis_hash  # noqa: E402
 from resolver_v02 import EvidenceResolverV02  # noqa: E402
+from signature_preimage_v05 import normative_policy  # noqa: E402
 
 
 class StoreV02:
@@ -73,7 +74,7 @@ def registry(exp="exp-1"):
     }
 
 
-def plan(exp, registry_hash):
+def plan(exp, registry_hash, signature_policy_hash):
     return {
         "schema": "AIFC/experiment-plan/v1",
         "experiment_id": exp,
@@ -82,6 +83,7 @@ def plan(exp, registry_hash):
         "trial_creation_policy_hash": "1" * 64,
         "declared_trial_count": 1,
         "initial_witness_registry_hash": registry_hash,
+        "signature_preimage_policy_hash": signature_policy_hash,
         "candidate_generation_policy_hash": "2" * 64,
         "target_selector_policy_hash": "3" * 64,
         "target_derivation_policy_hash": "4" * 64,
@@ -148,7 +150,9 @@ def build(root: Path):
     exp = "exp-1"
     reg = registry(exp)
     reg_hash = s.protocol(reg)
-    p = plan(exp, reg_hash)
+    sig_policy = normative_policy(exp)
+    sig_policy_hash = s.protocol(sig_policy)
+    p = plan(exp, reg_hash, sig_policy_hash)
     p_hash = s.protocol(p)
     q = plan_quorum(exp, p_hash, reg_hash)
     q_hash = s.protocol(q)
@@ -163,7 +167,7 @@ def build(root: Path):
         "ledger_event_hashes": [c_hash],
         "evidence_bundle_hash": "0" * 64,
     }
-    return s, package, reg, p, q, c
+    return s, package, reg, p, q, c, sig_policy
 
 
 class PlanPreregistrationTests(unittest.TestCase):
@@ -174,7 +178,7 @@ class PlanPreregistrationTests(unittest.TestCase):
 
     def test_created_without_plan_quorum_prerequisite_fails(self):
         with tempfile.TemporaryDirectory() as td:
-            s, package, reg, p, q, c = build(Path(td))
+            s, package, reg, p, q, c, sig_policy = build(Path(td))
             bad = copy.deepcopy(c)
             bad["prerequisite_certificate_hash"] = "f" * 64
             package["ledger_event_hashes"] = [s.protocol(bad)]
@@ -184,7 +188,7 @@ class PlanPreregistrationTests(unittest.TestCase):
 
     def test_plan_quorum_fault_model_rebinding_fails(self):
         with tempfile.TemporaryDirectory() as td:
-            s, package, reg, p, q, c = build(Path(td))
+            s, package, reg, p, q, c, sig_policy = build(Path(td))
             bad_q = copy.deepcopy(q)
             bad_q["q"] = 2
             bad_q_hash = s.protocol(bad_q)
@@ -198,7 +202,7 @@ class PlanPreregistrationTests(unittest.TestCase):
 
     def test_plan_quorum_same_failure_domain_fails(self):
         with tempfile.TemporaryDirectory() as td:
-            s, package, reg, p, q, c = build(Path(td))
+            s, package, reg, p, q, c, sig_policy = build(Path(td))
             bad_reg = copy.deepcopy(reg)
             for i in range(3):
                 bad_reg["witnesses"][i]["failure_domain"] = "shared"
@@ -218,7 +222,7 @@ class PlanPreregistrationTests(unittest.TestCase):
 
     def test_plan_receipt_experiment_rebinding_fails(self):
         with tempfile.TemporaryDirectory() as td:
-            s, package, reg, p, q, c = build(Path(td))
+            s, package, reg, p, q, c, sig_policy = build(Path(td))
             bad_q = copy.deepcopy(q)
             bad_q["receipts"][0]["experiment_id"] = "other-exp"
             bad_q_hash = s.protocol(bad_q)
@@ -229,6 +233,45 @@ class PlanPreregistrationTests(unittest.TestCase):
             result = verify_plan_preregistration(package, s.resolver())
             self.assertEqual(result["terminal_grade"], "INVALIDATED_EVIDENCE")
             self.assertTrue(any("PLAN_RECEIPT_EXPERIMENT_REBINDING" in x for x in result["failure_codes"]))
+
+    def test_claimant_defined_signature_preimage_policy_fails_before_created(self):
+        with tempfile.TemporaryDirectory() as td:
+            s, package, reg, p, q, c, sig_policy = build(Path(td))
+            bad_policy = copy.deepcopy(sig_policy)
+            bad_policy["ed25519_variant"] = "Ed25519ph"
+            # StoreV02 content-addresses it, but runtime schema admission must reject
+            # this claimant-defined variant before semantic preregistration can pass.
+            bad_policy_hash = s.protocol(bad_policy)
+            bad_plan = copy.deepcopy(p)
+            bad_plan["signature_preimage_policy_hash"] = bad_policy_hash
+            bad_plan_hash = s.protocol(bad_plan)
+            bad_q = plan_quorum("exp-1", bad_plan_hash, p["initial_witness_registry_hash"])
+            bad_q_hash = s.protocol(bad_q)
+            bad_c = created("exp-1", bad_plan_hash, bad_q_hash)
+            package["experiment_plan_hash"] = bad_plan_hash
+            package["experiment_plan_quorum_certificate_hash"] = bad_q_hash
+            package["ledger_event_hashes"] = [s.protocol(bad_c)]
+            result = verify_plan_preregistration(package, s.resolver())
+            self.assertEqual(result["terminal_grade"], "INVALIDATED_EVIDENCE")
+            self.assertTrue(any("SIGNATURE_PREIMAGE" in x or "RUNTIME_JSON_SCHEMA_REJECTED" in x for x in result["failure_codes"]))
+
+    def test_signature_policy_experiment_rebinding_fails(self):
+        with tempfile.TemporaryDirectory() as td:
+            s, package, reg, p, q, c, sig_policy = build(Path(td))
+            other_policy = normative_policy("other-exp")
+            other_hash = s.protocol(other_policy)
+            bad_plan = copy.deepcopy(p)
+            bad_plan["signature_preimage_policy_hash"] = other_hash
+            bad_plan_hash = s.protocol(bad_plan)
+            bad_q = plan_quorum("exp-1", bad_plan_hash, p["initial_witness_registry_hash"])
+            bad_q_hash = s.protocol(bad_q)
+            bad_c = created("exp-1", bad_plan_hash, bad_q_hash)
+            package["experiment_plan_hash"] = bad_plan_hash
+            package["experiment_plan_quorum_certificate_hash"] = bad_q_hash
+            package["ledger_event_hashes"] = [s.protocol(bad_c)]
+            result = verify_plan_preregistration(package, s.resolver())
+            self.assertEqual(result["terminal_grade"], "INVALIDATED_EVIDENCE")
+            self.assertTrue(any("SIGNATURE_PREIMAGE_POLICY_EXPERIMENT_REBINDING" in x for x in result["failure_codes"]))
 
 
 if __name__ == "__main__":
