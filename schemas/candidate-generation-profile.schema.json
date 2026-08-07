@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/candidate-generation-profile.schema.json",
+  "title": "AIFC Candidate Generation Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "experiment_id",
+    "trial_index",
+    "created_slot_certificate_hash",
+    "generation_mode",
+    "generator_identity",
+    "pre_created_state_commitment",
+    "candidate_set_cardinality_upper_bound",
+    "selection_freedom",
+    "external_evidence",
+    "assumptions",
+    "unresolved_assumptions",
+    "admission_status"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/candidate-generation-profile/v1"},
+    "profile_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "created_slot_certificate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "generation_mode": {
+      "enum": [
+        "SINGLE_SHOT_AFTER_CERTIFIED_CREATED",
+        "PRECOMMITTED_DETERMINISTIC_GENERATOR",
+        "VERIFIABLE_EXTERNAL_GENERATOR",
+        "DECLARED_CANDIDATE_POOL",
+        "OTHER_DOCUMENTED_METHOD"
+      ]
+    },
+    "generator_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implementation_id", "implementation_version", "code_or_image_hash"],
+      "properties": {
+        "implementation_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "implementation_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "code_or_image_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "pre_created_state_commitment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "content_hash"],
+      "properties": {
+        "method": {"type": "string", "minLength": 1, "maxLength": 256},
+        "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "externally_certified": {"type": "boolean"}
+      }
+    },
+    "candidate_set_cardinality_upper_bound": {"type": "integer", "minimum": 1},
+    "selection_freedom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator_choice_after_created", "operator_choice_after_generation", "hidden_pool_exclusion_basis"],
+      "properties": {
+        "operator_choice_after_created": {"type": "boolean"},
+        "operator_choice_after_generation": {"type": "boolean"},
+        "hidden_pool_exclusion_basis": {"type": "string", "minLength": 1, "maxLength": 2048}
+      }
+    },
+    "external_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_type", "content_hash"],
+        "properties": {
+          "evidence_type": {"type": "string", "minLength": 1, "maxLength": 128},
+          "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "locator": {"type": ["string", "null"], "maxLength": 2048}
+        }
+      }
+    },
+    "assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "unresolved_assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "admission_status": {
+      "enum": [
+        "ADMITTED",
+        "BLOCKED_SHADOW_POOL_NOT_EXCLUDED",
+        "BLOCKED_UNDECLARED_SELECTION_FREEDOM",
+        "BLOCKED_MISSING_EXTERNAL_EVIDENCE",
+        "BLOCKED_UNRESOLVED_ASSUMPTIONS"
+      ]
+    }
+  }
+}
