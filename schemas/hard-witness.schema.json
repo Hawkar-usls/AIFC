@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/hard-witness.schema.json",
+  "title": "AIFC Hard Witness v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "experiment_id", "run_id", "trial_index", "payload128", "nonce128"],
+  "properties": {
+    "schema": {"const": "AIFC/hard-witness/v1"},
+    "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "trial_index": {"type": "integer", "minimum": 1},
+    "semantic_class": {"type": ["string", "null"], "maxLength": 128},
+    "payload128": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+    "nonce128": {"type": "string", "pattern": "^[0-9a-f]{32}$"}
+  }
+}
