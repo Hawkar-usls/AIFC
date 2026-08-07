@@ -1,0 +1,128 @@
+{
+  "schema": "AIFC/schema-identity-registry/v1",
+  "registry_version": 1,
+  "validation_semantics_id": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+  "records": [
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/experiment-plan/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/experiment-plan.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "f32b679581d80708f325ceb967e7f350b77b3384",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/signature-preimage-policy/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/signature-preimage-policy.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "926653473ace09e6b653b0d19933d7e6b27b9427",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/witness-receipt/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/witness-receipt.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "694719699661b45bbd4d0220fbff89e566570a31",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/witness-registry/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/witness-registry.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "3da61d90bff9cdff534552952a289abce776e8b9",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/experiment-plan-receipt/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/experiment-plan-receipt.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "3c0e99221afa686e1d2520e5186e86a44029ee7e",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/quorum-certificate/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/quorum-certificate.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "1daa930cca1bc941806a045ed09ce7df2e7236fe",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/experiment-plan-quorum/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/experiment-plan-quorum.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "feb79c58d4a4ece9517f5e0b06c9d441b56aaa40",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/registry-transition-body/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/registry-transition-body.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "187cbb3c48162c0fc75ba2579c86fa59897a0cda",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/registry-transition-receipt/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/registry-transition-receipt.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "d778f8a48c1af96d4fb8d4613c32f5f841dca6c7",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/registry-transition-quorum/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/registry-transition-quorum.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "851a8e4cbe958325e5f361b2f90b7dc0d421b8ae",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    },
+    {
+      "schema": "AIFC/schema-identity-record/v1",
+      "schema_id": "AIFC/registry-transition-certificate/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/registry-transition-certificate.schema.json",
+      "source_content_algorithm": "GIT_BLOB_SHA1",
+      "source_content_id": "2506fd85c84cf179ba730aa1e86590480f116b7a",
+      "admission_semantics_version": "AIFC_JSON_SCHEMA_D2020_12_STRICT_SOURCE_RUNTIME_V03",
+      "issued_at_source_commit": "6169db0af0d15b1fdf5c37674f869de5dcb51c3c",
+      "status": "HISTORICAL_DRAFT_ISSUED"
+    }
+  ]
+}
