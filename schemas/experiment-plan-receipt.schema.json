@@ -24,7 +24,8 @@
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "minLength": 1, "maxLength": 1024}
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
   },
-  "description": "Experiment-scoped receipt over the frozen experiment-plan content hash. It intentionally has no trial_index because certification precedes creation of the first trial slot. Full verifier must check canonical signature input, key lifecycle, registry membership and failure-domain semantics."
+  "description": "Experiment-scoped receipt over the frozen experiment-plan content hash. It intentionally has no trial_index because certification precedes creation of the first trial slot. External signature encoding is exactly 64 signature bytes as 128 lowercase hexadecimal characters. Full cryptographic admission remains blocked until preimage, key lifecycle, registry membership and Ed25519 verification gates pass."
 }
