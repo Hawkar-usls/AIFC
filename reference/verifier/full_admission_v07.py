@@ -6,7 +6,8 @@ from typing import Any, Mapping
 
 from ed25519_admission import Ed25519AdmissionError, replay_ed25519_signatures
 from full_admission_v03 import verify_replay_manifest as verify_v03
-from key_lifecycle import KeyLifecycleError, replay_historical_key_lifecycle
+from key_lifecycle import KeyLifecycleError
+from key_lifecycle_admission import replay_historical_key_lifecycle_admitted
 from resolver import EvidenceResolutionError
 from resolver_v02 import EvidenceResolverV02
 from signature_policy_admission import SignaturePolicyAdmissionError, replay_signature_preimages
@@ -60,7 +61,7 @@ def verify_replay_manifest(manifest: Mapping[str, Any], resolver: EvidenceResolv
         return result
 
     try:
-        lifecycle_summary = replay_historical_key_lifecycle(manifest, resolver, preimage_summary)
+        lifecycle_summary = replay_historical_key_lifecycle_admitted(manifest, resolver, preimage_summary)
     except (KeyLifecycleError, EvidenceResolutionError, KeyError, TypeError, ValueError) as exc:
         detail = str(exc)
         result = _invalid(manifest, "HISTORICAL_KEY_LIFECYCLE_REJECTED", detail)
