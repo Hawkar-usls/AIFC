@@ -6,25 +6,33 @@
   "additionalProperties": false,
   "required": [
     "schema",
+    "signature_profile_id",
     "experiment_id",
     "transition_body_hash",
+    "content_schema",
     "signing_registry_hash",
+    "registry_sequence",
     "role",
     "witness_id",
     "key_id",
     "signature_algorithm",
-    "signature"
+    "signature",
+    "wall_clock_timestamp"
   ],
   "properties": {
     "schema": {"const": "AIFC/registry-transition-receipt/v1"},
+    "signature_profile_id": {"const": "AIFC-ED25519-DIRECT-TYPED-V1"},
     "experiment_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "transition_body_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "content_schema": {"const": "AIFC/registry-transition-body/v1"},
     "signing_registry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "registry_sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
     "role": {"enum": ["OLD_REGISTRY_AUTHORIZATION", "NEW_REGISTRY_ACCEPTANCE"]},
     "witness_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "key_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]+$"},
     "signature_algorithm": {"const": "Ed25519"},
-    "signature": {"type": "string", "minLength": 64, "maxLength": 256},
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
     "wall_clock_timestamp": {"type": ["string", "null"], "format": "date-time"}
-  }
+  },
+  "description": "Experiment-scoped receipt over a registry-transition body. role, signing registry hash, registry sequence and receipt schema are included in the frozen typed binary signature preimage, preventing cross-role, stale-registry and cross-receipt replay. A signed timestamp provides integrity only, not freshness."
 }
