@@ -3,8 +3,7 @@
 
 This module establishes that the exact Ed25519 message is frozen and can be
 reconstructed for every receipt currently carried by the replay package. It also
-returns bound signature materials for the subsequent crypto layer. It does NOT
-itself verify Ed25519 signatures.
+returns bound signature materials for crypto and later historical quorum replay.
 """
 from __future__ import annotations
 
@@ -31,6 +30,8 @@ class SignaturePreimageMaterial:
     registry_sequence: int
     witness_id: str
     key_id: str
+    certificate_group_id: str = ""
+    required_q: int = 1
 
 
 @dataclass(frozen=True)
@@ -63,7 +64,13 @@ def _content_exists_as_declared(resolver: EvidenceResolverV02, content_hash: str
     _obj(resolver, content_hash, content_schema)
 
 
-def _material(receipt: Mapping[str, Any], preimage: bytes, registry_hash_field: str) -> SignaturePreimageMaterial:
+def _material(
+    receipt: Mapping[str, Any],
+    preimage: bytes,
+    registry_hash_field: str,
+    certificate_group_id: str,
+    required_q: int,
+) -> SignaturePreimageMaterial:
     registry_hash = receipt.get(registry_hash_field)
     registry_sequence = receipt.get("registry_sequence")
     witness_id = receipt.get("witness_id")
@@ -72,6 +79,8 @@ def _material(receipt: Mapping[str, Any], preimage: bytes, registry_hash_field: 
     _require(isinstance(registry_sequence, int) and registry_sequence >= 0, "SIGNATURE_MATERIAL_REGISTRY_SEQUENCE_INVALID")
     _require(isinstance(witness_id, str) and witness_id, "SIGNATURE_MATERIAL_WITNESS_ID_INVALID")
     _require(isinstance(key_id, str) and key_id, "SIGNATURE_MATERIAL_KEY_ID_INVALID")
+    _require(isinstance(certificate_group_id, str) and certificate_group_id, "SIGNATURE_MATERIAL_GROUP_ID_INVALID")
+    _require(isinstance(required_q, int) and required_q >= 1, "SIGNATURE_MATERIAL_REQUIRED_Q_INVALID")
     return SignaturePreimageMaterial(
         receipt_schema=str(receipt.get("schema")),
         receipt=receipt,
@@ -80,6 +89,8 @@ def _material(receipt: Mapping[str, Any], preimage: bytes, registry_hash_field: 
         registry_sequence=registry_sequence,
         witness_id=witness_id,
         key_id=key_id,
+        certificate_group_id=certificate_group_id,
+        required_q=required_q,
     )
 
 
@@ -90,6 +101,8 @@ def _trial_quorum_receipts(
 ) -> list[SignaturePreimageMaterial]:
     quorum = _obj(resolver, quorum_hash, "AIFC/quorum-certificate/v1")
     expected_registry_sequence = _registry_sequence(resolver, str(quorum.get("registry_hash")))
+    required_q = quorum.get("q")
+    _require(isinstance(required_q, int) and required_q >= 1, "TRIAL_QUORUM_Q_INVALID")
     receipts = quorum.get("receipts")
     _require(isinstance(receipts, list) and receipts, "TRIAL_QUORUM_RECEIPTS_MISSING")
     out: list[SignaturePreimageMaterial] = []
@@ -105,7 +118,7 @@ def _trial_quorum_receipts(
         _require(isinstance(content_schema, str), "SIGNED_CONTENT_SCHEMA_MISSING")
         _content_exists_as_declared(resolver, str(receipt.get("content_hash")), content_schema)
         preimage = compile_signature_preimage(receipt, policy)
-        out.append(_material(receipt, preimage, "registry_hash"))
+        out.append(_material(receipt, preimage, "registry_hash", quorum_hash, required_q))
     return out
 
 
@@ -119,6 +132,8 @@ def _plan_quorum_receipts(
     _require(quorum.get("content_hash") == plan_hash, "PLAN_QUORUM_CONTENT_REBINDING")
     expected_registry_sequence = _registry_sequence(resolver, str(quorum.get("registry_hash")))
     _require(expected_registry_sequence == 0, "PLAN_QUORUM_REGISTRY_SEQUENCE_NOT_ZERO")
+    required_q = quorum.get("q")
+    _require(isinstance(required_q, int) and required_q >= 1, "PLAN_QUORUM_Q_INVALID")
     receipts = quorum.get("receipts")
     _require(isinstance(receipts, list) and receipts, "PLAN_QUORUM_RECEIPTS_MISSING")
     out: list[SignaturePreimageMaterial] = []
@@ -132,7 +147,7 @@ def _plan_quorum_receipts(
         _require(receipt.get("content_schema") == "AIFC/experiment-plan/v1", "PLAN_RECEIPT_CONTENT_SCHEMA_REBINDING")
         _content_exists_as_declared(resolver, plan_hash, "AIFC/experiment-plan/v1")
         preimage = compile_signature_preimage(receipt, policy)
-        out.append(_material(receipt, preimage, "registry_hash"))
+        out.append(_material(receipt, preimage, "registry_hash", quorum_hash, required_q))
     return out
 
 
@@ -161,8 +176,11 @@ def _transition_receipts(
         registry_hash = quorum.get("signing_registry_hash")
         _require(isinstance(registry_hash, str), "SIGNING_REGISTRY_HASH_MISSING")
         expected_registry_sequence = _registry_sequence(resolver, registry_hash)
+        required_q = quorum.get("q")
+        _require(isinstance(required_q, int) and required_q >= 1, "REGISTRY_TRANSITION_QUORUM_Q_INVALID")
         receipts = quorum.get("receipts")
         _require(isinstance(receipts, list) and receipts, "REGISTRY_TRANSITION_RECEIPTS_MISSING")
+        group_id = f"{certificate_hash}:{expected_role}"
         for receipt in receipts:
             _require(isinstance(receipt, Mapping), "REGISTRY_TRANSITION_RECEIPT_NOT_OBJECT")
             _require(receipt.get("experiment_id") == quorum.get("experiment_id"), "CROSS_EXPERIMENT_SIGNATURE_REPLAY")
@@ -172,7 +190,7 @@ def _transition_receipts(
             _require(receipt.get("registry_sequence") == expected_registry_sequence, "REGISTRY_SEQUENCE_REBINDING")
             _require(receipt.get("content_schema") == "AIFC/registry-transition-body/v1", "TRANSITION_CONTENT_SCHEMA_REBINDING")
             preimage = compile_signature_preimage(receipt, policy)
-            out.append(_material(receipt, preimage, "signing_registry_hash"))
+            out.append(_material(receipt, preimage, "signing_registry_hash", group_id, required_q))
     return out
 
 
