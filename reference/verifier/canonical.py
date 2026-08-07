@@ -39,6 +39,7 @@ DOMAIN_BY_SCHEMA = {
     "AIFC/target-derivation-profile/v1": "AIFC:TARGET_DERIVATION_PROFILE:v1",
     "AIFC/conditioning-view-policy/v1": "AIFC:CONDITIONING_VIEW_POLICY:v1",
     "AIFC/pre-target-conditioning-view/v1": "AIFC:PRE_TARGET_CONDITIONING_VIEW:v1",
+    "AIFC/entropy-policy/v1": "AIFC:ENTROPY_POLICY:v1",
     "AIFC/entropy-profile/v1": "AIFC:ENTROPY_PROFILE:v1",
     "AIFC/causal-model/v1": "AIFC:CAUSAL_MODEL:v1",
     "AIFC/statistical-plan/v1": "AIFC:STATISTICAL_PLAN:v1",
@@ -157,7 +158,6 @@ def validate_value(value: Any, where: str = "$") -> None:
 
 
 def _utf16_sort_key(value: str) -> bytes:
-    # RFC 8785 / ECMAScript property ordering compares UTF-16 code units.
     return value.encode("utf-16-be", errors="strict")
 
 
@@ -172,9 +172,6 @@ def _ordered(value: Any) -> Any:
 def canonical_json_bytes(value: Any) -> bytes:
     validate_value(value)
     ordered = _ordered(value)
-    # With AIFC's no-float restriction, Python's compact JSON string escaping plus
-    # UTF-16 key ordering covers the current protocol-object subset. Cross-language
-    # equivalence remains an explicit release gate and is not asserted here.
     text = json.dumps(
         ordered,
         ensure_ascii=False,
