@@ -14,18 +14,18 @@ REGISTRY_PATH="conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v16.json"
 PREDECESSOR_REGISTRY_PATH="conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v15.json"
 PREDECESSOR_REGISTRY_BLOB="d8e2b0ec45e6d34336d0fc5484bb5c507ef2ffd9"
 AUDIT_PATH="conformance/AIFC-COMPLETENESS-BASIS-AUTHORITY-REACHABILITY-AUDIT-v1.json"
-AUDIT_HASH="837959c3da5c7e3ea714890d0ed60952aa4815cafee5c6450bad2cb9ada103c4"
+AUDIT_HASH="c3c3833abeacc00de92065a22235cbed6f77e4012da69463780517136b20c287"
 BINDING_PATH="conformance/AIFC-COMPLETENESS-BASIS-AUTHORITY-REACHABILITY-IMPLEMENTATION-BINDING-v1.json"
 BINDING_ID="AIFC-SAL-V1.14-COMPLETENESS-BASIS-AUTHORITY-REACHABILITY-IMPLEMENTATION-BINDING-V1"
-BINDING_HASH="40fc871b358610c3551ed38fa6588a75035e60fdac7efed6e8ab76ad7e91e189"
+BINDING_HASH="1bb092c2c32a4de182e85c9a40f317ef3c05d59273c75d784c61a5ab9fc97780"
 BINDING_DOMAIN="AIFC:COMPLETENESS-BASIS-AUTHORITY-REACHABILITY-IMPLEMENTATION-BINDING:v1"
 IMPLEMENTATION_PATH="reference/verifier/completeness_basis_authority_reachability_v1.py"
-IMPLEMENTATION_BLOB="09af1cafbefd54bb73826288118199e6fb0408d0"
-IMPLEMENTATION_RAW="a462e3679cf881a777d4e01d26def794dd7418b5e7ebf6af77b3ddc7b7a7c5c3"
+IMPLEMENTATION_BLOB="cd4ac5014fa97925733084095e8e8d8391a0e0e8"
+IMPLEMENTATION_RAW="0a7d0ba0c568b66ca69954e957512001bd816ee047b658145eae07b282c28a8e"
 
 SCHEMAS=(
 ("AIFC/completeness-basis-authority-reachability-profile/v1","schemas/completeness-basis-authority-reachability-profile-v1.schema.json","579d135b533e8420d281e944bfe4e4f72f0cdbd5","7450ffa2322cd963d9ee91b79aba83455b1c393e082e6e20a2ac897a76083e86"),
-("AIFC/completeness-basis-authority-reachability-audit/v1","schemas/completeness-basis-authority-reachability-audit-v1.schema.json","086c900decf0d5ea0c4e9ebee3d2fb206f5c9989","dde19e479b3adea80ae3c4e1d3ace30178d023806090a823af264115dd48b89e"),
+("AIFC/completeness-basis-authority-reachability-audit/v1","schemas/completeness-basis-authority-reachability-audit-v1.schema.json","4a2d78638cc93520c11ab5b4249cf6b581acf628","5929a0f8223fdcf9a1a4d03c1f80c5e6a630a5d6a2ef5a66790fbda77f3c97b5"),
 ("AIFC/completeness-basis-authority-reachability-implementation-binding/v1","schemas/completeness-basis-authority-reachability-implementation-binding-v1.schema.json","c39c1cdca57332b9dac6d3b5d3e9d2ec7d1b428e","73a15351d1910ea5a52829a3cfd005de92ea05967ace43f2f5742ad9cf5e1535"),
 ("AIFC/schema-identity-registry/v16","schemas/schema-identity-registry-v16.schema.json","604f9198cabcef80e66a444a0466ee2e7b5f9344","550937372f8a21dc6c916a831db6f1a57b290e589c01a283e2d3869e31892d73"),
 )
