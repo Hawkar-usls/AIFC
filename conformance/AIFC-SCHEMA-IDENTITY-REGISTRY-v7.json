@@ -1,0 +1,72 @@
+{
+  "schema": "AIFC/schema-identity-registry/v7",
+  "registry_version": 7,
+  "predecessor_registry_path": "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v6.json",
+  "predecessor_registry_git_blob_sha1": "9b8313263f95a66fe07873da0e0675a38ffdd9d0",
+  "source_observed_at_commit": "a95138c7c7a096084414021073fc02a67c5bea2a",
+  "records": [
+    {
+      "schema_id": "AIFC/historical-semantic-anchor/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/historical-semantic-anchor-v1.schema.json",
+      "git_blob_sha1": "f938e138ffd67a4ab4452ccda6cf5b0aa125e42a",
+      "raw_schema_sha256": "4931728ff78b133de0709bb4b14e0ddb69c2d9403f40b82db82aed5334ffc0af",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-coverage-manifest/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-coverage-manifest-v1.schema.json",
+      "git_blob_sha1": "c1ea4757282ffa4d558e3b167168103030780c95",
+      "raw_schema_sha256": "478714e452af64fa01fbd3094445904061920b2bf26f0ec2b278d9413bd73db4",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-compilation-profile/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-compilation-profile-v1.schema.json",
+      "git_blob_sha1": "4de3a784484c3b2614dbcf6f2f0707b085899e4d",
+      "raw_schema_sha256": "6cc3e6aac31f5836050ea60fb6183e9be9084c9931099cf712eadb309d672642",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-formula/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-formula-v1.schema.json",
+      "git_blob_sha1": "8b543131632d294518d41460a40ddbb1542e31e3",
+      "raw_schema_sha256": "42e13572f3a20c9daa0bac19dce83c7000905a72f03133400f7e05fbd6dea030",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/entailment-question/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/entailment-question-v1.schema.json",
+      "git_blob_sha1": "14066d9c382806a88d38e97c3b96b2105b65db34",
+      "raw_schema_sha256": "c130668eade88adf95bdca3dcd969b966f1d43686be57aea12075646393353c5",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/authoritative-semantic-compilation-audit/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/authoritative-semantic-compilation-audit-v1.schema.json",
+      "git_blob_sha1": "b62f608ef83532d69662c0b0737f655fe110ad3a",
+      "raw_schema_sha256": "25fbb6ddb7b6395eadcd6bd7b62648905c94e2e4659e285223033e6df807c60b",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/schema-identity-registry/v7",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/schema-identity-registry-v7.schema.json",
+      "git_blob_sha1": "bdcde045da203da59cb231596a0753bee18b0822",
+      "raw_schema_sha256": "54d381661eef346fa1932aa234792b965be66998443f59ca5b43555475323c39",
+      "first_registered_by_registry_version": 7,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    }
+  ]
+}
