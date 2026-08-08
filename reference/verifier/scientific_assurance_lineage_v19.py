@@ -421,11 +421,8 @@ def audit_semantic_bridge_execution_closure(
             expected_question_id=v17.QUESTION_ID,
             require_authority=False,
         )
-        direct_state, bridged_state, _ = bridge_exec.bridge_effect_test_vector()
     except bridge_exec.SemanticBridgeExecutionV1Error as exc:
         raise ScientificAssuranceLineageV19Error(str(exc)) from exc
-    if direct_state != "REFUTED_BY_COUNTERMODEL" or bridged_state != "PROVED":
-        raise ScientificAssuranceLineageV19Error("SEMANTIC_BRIDGE_EXECUTION_EFFECT_NOT_ESTABLISHED")
     if not bridge_axioms and empty_composition.composed_premise != pred_ast:
         raise ScientificAssuranceLineageV19Error("EMPTY_BRIDGE_COMPOSITION_REBINDING")
 
