@@ -1,0 +1,20 @@
+{
+  "schema": "AIFC/entailment-question-source-binding/v2",
+  "binding_id": "AIFC-SAL-V1.9-ENTAILMENT-QUESTION-SOURCE-BINDING-V2",
+  "predecessor_binding_id": "AIFC-SAL-V1.8-ENTAILMENT-QUESTION-SOURCE-BINDING-V1",
+  "predecessor_binding_git_blob_sha1": "fb6e363b98ccd7be912ddda586f1fbc2f9360419",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "predecessor_artifact_id": "AIFC-RELEASE-GATE-v1.0.9-draft",
+  "predecessor_commit_sha": "7e58b47398fe585b24db6304ee6122871095d668",
+  "predecessor_source_path": "conformance/AIFC-RELEASE-GATE-v1.0.9-draft.json",
+  "predecessor_git_blob_sha1": "e46cfee9963e61a22bc25e4e68ac5f11781e8d47",
+  "predecessor_raw_sha256": null,
+  "target_profile_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "target_profile_commit_sha": "5afc09e9a965f8b20d0b07059f1ff753aad920b7",
+  "target_profile_source_path": "conformance/AIFC-LINEAGE-TRANSITION-PROFILE-v1.json",
+  "target_profile_git_blob_sha1": "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b",
+  "target_profile_raw_sha256": null,
+  "recomputation_rule": "EXACT_HISTORICAL_TREE_MEMBERSHIP_THEN_RAW_SHA256_V1",
+  "binding_status": "SUCCESSOR_CANDIDATE_RECOMPUTATION_REQUIRED_NOT_AUTHORITY_ADMISSIBLE",
+  "binding_content_hash": "27d7d0efb42b792de17fd1642ff32d2fe7d783b2ca9a209a945fe64c3369cb9c"
+}

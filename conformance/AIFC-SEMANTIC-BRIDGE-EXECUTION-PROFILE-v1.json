@@ -1,0 +1,21 @@
+{
+  "schema": "AIFC/semantic-bridge-execution-profile/v1",
+  "execution_profile_id": "AIFC-SAL-V1.9-SEMANTIC-BRIDGE-EXECUTION-PROFILE-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "semantic_bridge_theory_id": "AIFC-SAL-V1.9-CROSS-FORMULA-SEMANTIC-BRIDGE-V2",
+  "semantic_bridge_theory_content_hash": "d4856ecb21bc1b9306b0bf6a884e6b87c87e264a05b56fbf7ca39d97409038be",
+  "entailment_method_profile_id": "AIFC-SAL-V1.8-ENTAILMENT-METHOD-PROFILE-V1",
+  "entailment_method_profile_content_hash": "fb6055c0bc2f9a6e6b0daef8269200d0f914e8428d4d2fd8e13e06e15acd7255",
+  "composition_rule": "PREMISE_AND_ORDERED_BRIDGE_AXIOMS_V1",
+  "bridge_axiom_schema_id": "AIFC/semantic-bridge-axiom/v1",
+  "bridge_axiom_schema_git_blob_sha1": "1dd24634f0100409546ab52db65250fe21d7fedf",
+  "bridge_axiom_schema_raw_sha256": "4019af8c5cf538cfa1ef43cc56a88a7eaf3d8bce0b2768d37a9e7ad4062484f5",
+  "formula_ast_schema_id": "AIFC/semantic-formula/v1",
+  "formula_ast_schema_git_blob_sha1": "8b543131632d294518d41460a40ddbb1542e31e3",
+  "formula_ast_schema_raw_sha256": "42e13572f3a20c9daa0bac19dce83c7000905a72f03133400f7e05fbd6dea030",
+  "execution_implementation_path": "reference/verifier/semantic_bridge_execution_v1.py",
+  "execution_implementation_git_blob_sha1": "2ec3ff451d8e13a969d46b6bfaf0cf2f12e763f7",
+  "execution_implementation_raw_sha256": "3bf69ee003d653792f32bea424830ff0b264ef033e05ff9e01005032c7b974d2",
+  "execution_authority_status": "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+  "profile_content_hash": "15e44b8fb5c091c55e80e68ef4dd178881a30a20e03286bb95420739bca47694"
+}

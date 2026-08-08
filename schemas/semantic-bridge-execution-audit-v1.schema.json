@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/semantic-bridge-execution-audit-v1.schema.json",
+  "title": "AIFC Semantic Bridge Execution Audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "audit_id",
+    "entailment_question_id",
+    "bridge_theory_id",
+    "execution_profile_id",
+    "question_source_binding_id",
+    "bridge_axiom_executable_semantics",
+    "semantic_bridge_execution_binding",
+    "bridge_theory_composition_replay",
+    "bridge_aware_method_capacity",
+    "question_source_raw_sha256_recomputation",
+    "current_bridge_axiom_count",
+    "current_bridge_aware_atom_count",
+    "solver_invocation_count",
+    "result",
+    "blocked_subtype",
+    "normative_countermodel",
+    "audit_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/semantic-bridge-execution-audit/v1"
+    },
+    "audit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "bridge_theory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "question_source_binding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bridge_axiom_executable_semantics": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_bridge_execution_binding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bridge_theory_composition_replay": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bridge_aware_method_capacity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "question_source_raw_sha256_recomputation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current_bridge_axiom_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "current_bridge_aware_atom_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "solver_invocation_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "result": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blocked_subtype": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "normative_countermodel": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "audit_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

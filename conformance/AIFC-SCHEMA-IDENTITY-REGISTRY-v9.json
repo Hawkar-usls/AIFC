@@ -1,0 +1,63 @@
+{
+  "schema": "AIFC/schema-identity-registry/v9",
+  "registry_version": 9,
+  "predecessor_registry_path": "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v8.json",
+  "predecessor_registry_git_blob_sha1": "28aab7e71e6bc6b20aec9553e16c434e348314ca",
+  "source_observed_at_commit": "631e13d384c649983e320ac9d8b32f2fb75095df",
+  "records": [
+    {
+      "schema_id": "AIFC/semantic-bridge-axiom/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-bridge-axiom-v1.schema.json",
+      "git_blob_sha1": "1dd24634f0100409546ab52db65250fe21d7fedf",
+      "raw_schema_sha256": "4019af8c5cf538cfa1ef43cc56a88a7eaf3d8bce0b2768d37a9e7ad4062484f5",
+      "first_registered_by_registry_version": 9,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-bridge-theory/v2",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-bridge-theory-v2.schema.json",
+      "git_blob_sha1": "44332979562bf9f9bd97c6fc0e9d70a23acec411",
+      "raw_schema_sha256": "12a3f9c08e839c9559998c65ddaca2177a7d0ecc1b6c43ca0fb0da9fa11ab99f",
+      "first_registered_by_registry_version": 9,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-bridge-execution-profile/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-bridge-execution-profile-v1.schema.json",
+      "git_blob_sha1": "2f937607c431ad8e4f2efe38ba005030d22cd0af",
+      "raw_schema_sha256": "1fa29a93c14426ae1d8d9b21d6486d507efe79c172dcb1c06969e05faf01a293",
+      "first_registered_by_registry_version": 9,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/entailment-question-source-binding/v2",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/entailment-question-source-binding-v2.schema.json",
+      "git_blob_sha1": "1fc971a27ce71426918c6bc5ad7c7f81595f2e5c",
+      "raw_schema_sha256": "acffa5a4589c67be610200f5a9c86e4ae0e61349ddda6a5480207ca32e5f983d",
+      "first_registered_by_registry_version": 9,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-bridge-execution-audit/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-bridge-execution-audit-v1.schema.json",
+      "git_blob_sha1": "69ec997fa9320d3adb2ec6d1fcf0637aaafc96bd",
+      "raw_schema_sha256": "8bfc595df943d5a8ea1f36acc173fa998d9594ee4e19ee962704e0f5adad8c17",
+      "first_registered_by_registry_version": 9,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/schema-identity-registry/v9",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/schema-identity-registry-v9.schema.json",
+      "git_blob_sha1": "c9253a71877e404ee3c64d8d9f93b9857b243c50",
+      "raw_schema_sha256": "703a7717ecde69927915cd00f222c160741de37c617ce19a2ab95fc0a03e32ed",
+      "first_registered_by_registry_version": 9,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    }
+  ]
+}
