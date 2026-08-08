@@ -40,10 +40,18 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
 
-      - name: Run SAL v1.13 adversarial unit module
+      - name: Capture completeness-basis auditor implementation identity
         shell: bash
         run: |
           mkdir -p sal-lineage-completeness-basis-authority-evidence
+          impl=reference/verifier/lineage_completeness_basis_authority_v1.py
+          echo "COMPLETENESS_BASIS_AUDITOR_IMPLEMENTATION_PATH = $impl" | tee sal-lineage-completeness-basis-authority-evidence/auditor-implementation-identity.txt
+          echo "COMPLETENESS_BASIS_AUDITOR_IMPLEMENTATION_GIT_BLOB_SHA1 = $(git hash-object "$impl")" | tee -a sal-lineage-completeness-basis-authority-evidence/auditor-implementation-identity.txt
+          echo "COMPLETENESS_BASIS_AUDITOR_IMPLEMENTATION_RAW_SHA256 = $(sha256sum "$impl" | awk '{print $1}')" | tee -a sal-lineage-completeness-basis-authority-evidence/auditor-implementation-identity.txt
+
+      - name: Run SAL v1.13 adversarial unit module
+        shell: bash
+        run: |
           python -m unittest discover -s reference/tests -p 'test_sal_lineage_completeness_basis_authority_v113.py' -v 2>&1 | tee sal-lineage-completeness-basis-authority-evidence/sal-v113-unit-tests.txt
 
       - name: Run attested SAL v1.13 completeness basis authority checker
