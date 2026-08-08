@@ -57,7 +57,7 @@ class AuthorityReachabilityReport:
     object_recognition_completeness_authority_path: str
     reference_semantics_completeness_authority_path: str
     caller_root_registry_injection: str
-    fake_authority_receipt_promotion: str
+    authority_receipt_caller_input_surface: str
     ci_receipt_to_normative_authority_promotion: str
     successor_defined_authority_edge_promotion: str
     external_bootstrap_ratification: str
@@ -153,7 +153,7 @@ def audit_current_reachability() -> AuthorityReachabilityReport:
         NOT_REGISTERED, NOT_REGISTERED, NOT_REGISTERED, NOT_REGISTERED,
         ABSENT_PATH, ABSENT_PATH, ABSENT_PATH,
         "REJECTED",
-        "REJECTED_BY_FIXED_RECEIPT_BINDING",
+        "FORBIDDEN_NO_CALLER_INPUT_SURFACE",
         "FORBIDDEN_NO_AUTHORITY_INPUT_SURFACE",
         "REJECTED",
         "NOT_PERFORMED",
