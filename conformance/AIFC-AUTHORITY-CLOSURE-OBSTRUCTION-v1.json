@@ -1,0 +1,15 @@
+{
+  "schema": "AIFC/authority-closure-obstruction/v1",
+  "obstruction_id": "AIFC-SAL-V1.5-UNANCHORED-LINEAGE-TRANSITION-SEMANTICS",
+  "predecessor_registry_id": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V2",
+  "predecessor_registry_path": "conformance/AIFC-NORMATIVE-ASSURANCE-ROOTS-v2.json",
+  "predecessor_registry_git_blob_sha1": "d2bb7f3917f8761836825a4e80f03c1e282fc37d",
+  "predecessor_authority_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+  "required_transition_profile_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "required_transition_profile_schema": "AIFC/lineage-transition-profile/v1",
+  "observed_authoritative_profile_records": 0,
+  "successor_candidate_profile_path": "conformance/AIFC-LINEAGE-TRANSITION-PROFILE-v1.json",
+  "successor_candidate_profile_git_blob_sha1": "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b",
+  "result": "BLOCKED_NO_PREDECESSOR_TRANSITION_PROFILE_AUTHORITY",
+  "authority_closed_finite_induction": false
+}

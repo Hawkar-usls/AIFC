@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/authority-receipt-provenance-v2.schema.json",
+  "title": "AIFC Authority Receipt Provenance v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "provenance_id", "repository", "observation_method", "receipts", "platform_trust_proven", "status"],
+  "properties": {
+    "schema": {"const": "AIFC/authority-receipt-provenance/v2"},
+    "provenance_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "repository": {"const": "Hawkar-usls/AIFC"},
+    "observation_method": {"const": "GITHUB_ACTIONS_API_LIVE_REPLAY_WITH_RECEIPT_CONTENT_BINDING"},
+    "receipts": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["receipt_id", "receipt_path", "receipt_git_blob_sha1", "tested_source_commit", "tested_tree_sha", "live_replay_required", "workflow_runs", "artifacts"],
+        "properties": {
+          "receipt_id": {"type": "string", "minLength": 1, "maxLength": 256},
+          "receipt_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "receipt_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "tested_source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "tested_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "live_replay_required": {"const": true},
+          "workflow_runs": {
+            "type": "array", "minItems": 1,
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["role", "run_id", "workflow_name", "workflow_id", "workflow_path", "workflow_git_blob_sha1", "event", "expected_conclusion"],
+              "properties": {
+                "role": {"type": "string", "minLength": 1, "maxLength": 64},
+                "run_id": {"type": "integer", "minimum": 1},
+                "workflow_name": {"type": "string", "minLength": 1, "maxLength": 256},
+                "workflow_id": {"type": "integer", "minimum": 1},
+                "workflow_path": {"type": "string", "pattern": "^\\.github/workflows/.+\\.ya?ml$"},
+                "workflow_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+                "event": {"const": "pull_request"},
+                "expected_conclusion": {"const": "success"}
+              }
+            }
+          },
+          "artifacts": {
+            "type": "array", "minItems": 1,
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["artifact_id", "name", "digest", "head_sha"],
+              "properties": {
+                "artifact_id": {"type": "integer", "minimum": 1},
+                "name": {"type": "string", "minLength": 1, "maxLength": 256},
+                "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+                "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "platform_trust_proven": {"const": false},
+    "status": {"const": "REQUIRES_RECEIPT_BOUND_WORKFLOW_DEFINITION_AND_ARTIFACT_REPLAY"}
+  },
+  "description": "Successor provenance profile. Replayed workflow/artifact evidence must be content-bound to the exact receipt that names it, and each workflow run is bound to the historical workflow definition blob at its tested source commit."
+}

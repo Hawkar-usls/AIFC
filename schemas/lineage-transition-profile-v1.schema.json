@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/lineage-transition-profile-v1.schema.json",
+  "title": "AIFC Lineage Transition Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "profile_id", "allowed_authority_transition", "receipt_binding_rule", "workflow_definition_rule", "registry_delta_rule", "artifact_semantic_replay_rule", "successor_registry_rule", "authority_status"],
+  "properties": {
+    "schema": {"const": "AIFC/lineage-transition-profile/v1"},
+    "profile_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "allowed_authority_transition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["from", "to", "required_evidence"],
+      "properties": {
+        "from": {"const": "SUCCESSOR_CANDIDATE_REQUIRES_EXACT_COMMIT_ATTESTATION"},
+        "to": {"const": "ATTESTED_SUCCESSOR_AT_COMMIT"},
+        "required_evidence": {
+          "type": "array", "minItems": 5, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 128}
+        }
+      }
+    },
+    "receipt_binding_rule": {"const": "REPLAYED_EVIDENCE_SET_MUST_EQUAL_RECEIPT_NAMED_EVIDENCE_SET"},
+    "workflow_definition_rule": {"const": "RUN_ID_WORKFLOW_ID_PATH_AND_GIT_BLOB_AT_HEAD_SHA"},
+    "registry_delta_rule": {"const": "SUCCESSOR_RECORD_SET_EQUALS_PREDECESSOR_SET_UNION_EXPLICIT_NEW_SET"},
+    "artifact_semantic_replay_rule": {"const": "DOWNLOAD_BOUND_BYTES_AND_REPLAY_TYPED_SEMANTICS_AT_ATTESTED_SOURCE"},
+    "successor_registry_rule": {"const": "SUCCESSOR_REGISTRY_CANNOT_AUTHORIZE_ITS_OWN_TRANSITION"},
+    "authority_status": {"const": "SUCCESSOR_CANDIDATE_REQUIRES_PREDECESSOR_PROFILE_ATTESTATION"}
+  },
+  "description": "Candidate rule set for authority-closed finite lineage induction. This schema does not make any instance authoritative; authority must already exist in the predecessor lineage."
+}

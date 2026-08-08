@@ -1,0 +1,70 @@
+{
+  "schema": "AIFC/authority-receipt-provenance/v2",
+  "provenance_id": "AIFC-SAL-AUTHORITY-RECEIPT-PROVENANCE-V2",
+  "repository": "Hawkar-usls/AIFC",
+  "observation_method": "GITHUB_ACTIONS_API_LIVE_REPLAY_WITH_RECEIPT_CONTENT_BINDING",
+  "receipts": [
+    {
+      "receipt_id": "AIFC-SAL-V1.2-EXACT-MAIN-RECEIPT-7e58b47",
+      "receipt_path": "conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-7e58b47-v1.json",
+      "receipt_git_blob_sha1": "49b54886f065ac42ee4ff22935112c60f44d4a6c",
+      "tested_source_commit": "7e58b47398fe585b24db6304ee6122871095d668",
+      "tested_tree_sha": "e3aa8a8cd09f0faa9a6f9e976d0f5cbe8291f2c9",
+      "live_replay_required": true,
+      "workflow_runs": [
+        {"role":"draft","run_id":31224356394,"workflow_name":"AIFC Draft Conformance","workflow_id":329150629,"workflow_path":".github/workflows/draft-conformance.yml","workflow_git_blob_sha1":"38a85aa8fd31220960f6d59230fe5dc33dbaf423","event":"pull_request","expected_conclusion":"success"},
+        {"role":"replay","run_id":31224356455,"workflow_name":"AIFC Replay v0.2 Conformance","workflow_id":329224902,"workflow_path":".github/workflows/replay-v02-conformance.yml","workflow_git_blob_sha1":"0a2007321965693795f064c0f23e76e14f9becf0","event":"pull_request","expected_conclusion":"success"},
+        {"role":"self_audit","run_id":31224356379,"workflow_name":"AIFC Verifier Environment Self-Audit v0.4","workflow_id":329506366,"workflow_path":".github/workflows/verifier-self-audit-v03.yml","workflow_git_blob_sha1":"fca10c8cdc654adacf49e2b18e0bf25082233f6b","event":"pull_request","expected_conclusion":"success"},
+        {"role":"sal","run_id":31224356683,"workflow_name":"AIFC SAL v1.2 Conformance","workflow_id":329675734,"workflow_path":".github/workflows/sal-conformance-v12.yml","workflow_git_blob_sha1":"f8e753e55196a485ba2061b4465c162bd2dacf2d","event":"pull_request","expected_conclusion":"success"}
+      ],
+      "artifacts": [
+        {"artifact_id":9011542150,"name":"verifier-a-v04-ci-attestation-31224356379","digest":"sha256:43a8a4fe906d6e6d25e749e220d490cc8b313c58a723b20d713acce2698927b6","head_sha":"7e58b47398fe585b24db6304ee6122871095d668"},
+        {"artifact_id":9011548464,"name":"verifier-a-v04-platform-receipt-31224356379","digest":"sha256:3d61fb7e866f73518b566182fe4895ec5575daa73ffe63cbd20f2c14b2d621c0","head_sha":"7e58b47398fe585b24db6304ee6122871095d668"},
+        {"artifact_id":9011541276,"name":"sal-v12-conformance-31224356683","digest":"sha256:0a2c3a7205e2c0acd5fe818466571a54746dbbe23c77f72cbf2076444670729b","head_sha":"7e58b47398fe585b24db6304ee6122871095d668"}
+      ]
+    },
+    {
+      "receipt_id": "AIFC-SAL-V1.3-EXACT-MAIN-RECEIPT-eeee61c",
+      "receipt_path": "conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-eeee61c-v2.json",
+      "receipt_git_blob_sha1": "67803a0561ec24549b8b78719de586ab1865ff8e",
+      "tested_source_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+      "tested_tree_sha": "2e939271d22d0a1906c93bd7e0fced77780aa88c",
+      "live_replay_required": true,
+      "workflow_runs": [
+        {"role":"draft","run_id":31226916655,"workflow_name":"AIFC Draft Conformance","workflow_id":329150629,"workflow_path":".github/workflows/draft-conformance.yml","workflow_git_blob_sha1":"38a85aa8fd31220960f6d59230fe5dc33dbaf423","event":"pull_request","expected_conclusion":"success"},
+        {"role":"replay","run_id":31226916619,"workflow_name":"AIFC Replay v0.2 Conformance","workflow_id":329224902,"workflow_path":".github/workflows/replay-v02-conformance.yml","workflow_git_blob_sha1":"0a2007321965693795f064c0f23e76e14f9becf0","event":"pull_request","expected_conclusion":"success"},
+        {"role":"self_audit","run_id":31226916602,"workflow_name":"AIFC Verifier Environment Self-Audit v0.4","workflow_id":329506366,"workflow_path":".github/workflows/verifier-self-audit-v03.yml","workflow_git_blob_sha1":"fca10c8cdc654adacf49e2b18e0bf25082233f6b","event":"pull_request","expected_conclusion":"success"},
+        {"role":"sal_v12","run_id":31226916648,"workflow_name":"AIFC SAL v1.2 Conformance","workflow_id":329675734,"workflow_path":".github/workflows/sal-conformance-v12.yml","workflow_git_blob_sha1":"f8e753e55196a485ba2061b4465c162bd2dacf2d","event":"pull_request","expected_conclusion":"success"},
+        {"role":"sal_v13_root_closure","run_id":31226916624,"workflow_name":"AIFC SAL v1.3 Root Closure","workflow_id":329693015,"workflow_path":".github/workflows/sal-root-closure-v13.yml","workflow_git_blob_sha1":"214085d3a92e17cbef2fc7340099b47f6f4aeb7c","event":"pull_request","expected_conclusion":"success"}
+      ],
+      "artifacts": [
+        {"artifact_id":9012409581,"name":"verifier-a-v04-ci-attestation-31226916602","digest":"sha256:1630c6a41e79df357ff1b07894a079dffee733dfc4b9a5ab01ac96f5d99caa63","head_sha":"eeee61c6143cde1bea64c643def6eaec461e7aa2"},
+        {"artifact_id":9012413383,"name":"verifier-a-v04-platform-receipt-31226916602","digest":"sha256:4d0a7a56f9779b5e3f5d704a840262f650dc486351175962067aebbaf34ef0d7","head_sha":"eeee61c6143cde1bea64c643def6eaec461e7aa2"},
+        {"artifact_id":9012408634,"name":"sal-v13-root-closure-31226916624","digest":"sha256:a6af71c8103abd5b2e0f5dfefe81ad6c003906c67a18613808c1c4d20d5be57e","head_sha":"eeee61c6143cde1bea64c643def6eaec461e7aa2"}
+      ]
+    },
+    {
+      "receipt_id": "AIFC-SAL-V1.4-EXACT-MAIN-RECEIPT-56370d6",
+      "receipt_path": "conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-56370d6-v2.json",
+      "receipt_git_blob_sha1": "2f73844d7f5c639d62295cd38bd4d837a8969bcd",
+      "tested_source_commit": "56370d60f43feca8b82871d30a0b71acf1409a2f",
+      "tested_tree_sha": "495188b12f8b8d728732ee44a502b2089203ebb9",
+      "live_replay_required": true,
+      "workflow_runs": [
+        {"role":"draft","run_id":31229796024,"workflow_name":"AIFC Draft Conformance","workflow_id":329150629,"workflow_path":".github/workflows/draft-conformance.yml","workflow_git_blob_sha1":"38a85aa8fd31220960f6d59230fe5dc33dbaf423","event":"pull_request","expected_conclusion":"success"},
+        {"role":"replay","run_id":31229795980,"workflow_name":"AIFC Replay v0.2 Conformance","workflow_id":329224902,"workflow_path":".github/workflows/replay-v02-conformance.yml","workflow_git_blob_sha1":"0a2007321965693795f064c0f23e76e14f9becf0","event":"pull_request","expected_conclusion":"success"},
+        {"role":"self_audit","run_id":31229795995,"workflow_name":"AIFC Verifier Environment Self-Audit v0.4","workflow_id":329506366,"workflow_path":".github/workflows/verifier-self-audit-v03.yml","workflow_git_blob_sha1":"fca10c8cdc654adacf49e2b18e0bf25082233f6b","event":"pull_request","expected_conclusion":"success"},
+        {"role":"sal_v12","run_id":31229795996,"workflow_name":"AIFC SAL v1.2 Conformance","workflow_id":329675734,"workflow_path":".github/workflows/sal-conformance-v12.yml","workflow_git_blob_sha1":"f8e753e55196a485ba2061b4465c162bd2dacf2d","event":"pull_request","expected_conclusion":"success"},
+        {"role":"sal_v13_root_closure","run_id":31229795967,"workflow_name":"AIFC SAL v1.3 Root Closure","workflow_id":329693015,"workflow_path":".github/workflows/sal-root-closure-v13.yml","workflow_git_blob_sha1":"214085d3a92e17cbef2fc7340099b47f6f4aeb7c","event":"pull_request","expected_conclusion":"success"},
+        {"role":"sal_v14_lineage_activation","run_id":31229796000,"workflow_name":"AIFC SAL v1.4 Lineage Activation","workflow_id":329708478,"workflow_path":".github/workflows/sal-lineage-activation-v14.yml","workflow_git_blob_sha1":"04083c633392eeffed1306e5f1e83591cbfabe9c","event":"pull_request","expected_conclusion":"success"}
+      ],
+      "artifacts": [
+        {"artifact_id":9013357830,"name":"verifier-a-v04-ci-attestation-31229795995","digest":"sha256:1bab5d28e3aa70f4f211d50537931f492c132199aa761525645823da12d1f5b6","head_sha":"56370d60f43feca8b82871d30a0b71acf1409a2f"},
+        {"artifact_id":9013364432,"name":"verifier-a-v04-platform-receipt-31229795995","digest":"sha256:f699fcc5aa478ad45cf23b90bcaa48ea1838b198f2d1c81979263a2af7c4a2f8","head_sha":"56370d60f43feca8b82871d30a0b71acf1409a2f"},
+        {"artifact_id":9013358172,"name":"sal-v14-lineage-activation-31229796000","digest":"sha256:2c2f25c4ad937b2504f2d98ea562c9bd8062aff84fe3516c296e09fefae5ae00","head_sha":"56370d60f43feca8b82871d30a0b71acf1409a2f"}
+      ]
+    }
+  ],
+  "platform_trust_proven": false,
+  "status": "REQUIRES_RECEIPT_BOUND_WORKFLOW_DEFINITION_AND_ARTIFACT_REPLAY"
+}

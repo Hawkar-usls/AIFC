@@ -1,0 +1,30 @@
+{
+  "schema": "AIFC/normative-authority-receipt/v2",
+  "receipt_id": "AIFC-SAL-V1.4-EXACT-MAIN-RECEIPT-56370d6",
+  "repository": "Hawkar-usls/AIFC",
+  "tested_source_commit": "56370d60f43feca8b82871d30a0b71acf1409a2f",
+  "tested_tree_sha": "495188b12f8b8d728732ee44a502b2089203ebb9",
+  "unit_test_count": 189,
+  "workflow_runs": [
+    {"role": "draft", "run_id": 31229796024, "workflow_name": "AIFC Draft Conformance", "expected_conclusion": "success"},
+    {"role": "replay", "run_id": 31229795980, "workflow_name": "AIFC Replay v0.2 Conformance", "expected_conclusion": "success"},
+    {"role": "self_audit", "run_id": 31229795995, "workflow_name": "AIFC Verifier Environment Self-Audit v0.4", "expected_conclusion": "success"},
+    {"role": "sal_v12", "run_id": 31229795996, "workflow_name": "AIFC SAL v1.2 Conformance", "expected_conclusion": "success"},
+    {"role": "sal_v13_root_closure", "run_id": 31229795967, "workflow_name": "AIFC SAL v1.3 Root Closure", "expected_conclusion": "success"},
+    {"role": "sal_v14_lineage_activation", "run_id": 31229796000, "workflow_name": "AIFC SAL v1.4 Lineage Activation", "expected_conclusion": "success"}
+  ],
+  "artifacts": [
+    {"artifact_id": 9013357830, "name": "verifier-a-v04-ci-attestation-31229795995", "digest": "sha256:1bab5d28e3aa70f4f211d50537931f492c132199aa761525645823da12d1f5b6", "head_sha": "56370d60f43feca8b82871d30a0b71acf1409a2f"},
+    {"artifact_id": 9013364432, "name": "verifier-a-v04-platform-receipt-31229795995", "digest": "sha256:f699fcc5aa478ad45cf23b90bcaa48ea1838b198f2d1c81979263a2af7c4a2f8", "head_sha": "56370d60f43feca8b82871d30a0b71acf1409a2f"},
+    {"artifact_id": 9013358172, "name": "sal-v14-lineage-activation-31229796000", "digest": "sha256:2c2f25c4ad937b2504f2d98ea562c9bd8062aff84fe3516c296e09fefae5ae00", "head_sha": "56370d60f43feca8b82871d30a0b71acf1409a2f"}
+  ],
+  "checks": {
+    "all_declared_workflows_success": true,
+    "unit_test_count_recomputed": true,
+    "ci_attestation_pass": true,
+    "platform_receipt_pass": true,
+    "lineage_activation_eligible": true
+  },
+  "platform_trust_proven": false,
+  "status": "EXACT_POST_MERGE_RECEIPT_CONFIRMED_REQUIRES_PROVENANCE_REPLAY"
+}

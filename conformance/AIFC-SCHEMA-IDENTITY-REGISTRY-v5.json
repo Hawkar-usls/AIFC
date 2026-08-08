@@ -1,0 +1,13 @@
+{
+  "schema": "AIFC/schema-identity-registry/v5",
+  "registry_version": 5,
+  "predecessor_registry_path": "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v4.json",
+  "predecessor_registry_git_blob_sha1": "4de28a045f8da0995ca0f7b07c051cce6f632881",
+  "source_observed_at_commit": "5ae54ba3099e4378458db8bdc8db58ff1237e493",
+  "records": [
+    {"schema_id":"AIFC/authority-receipt-provenance/v2","dialect":"https://json-schema.org/draft/2020-12/schema","source_path":"schemas/authority-receipt-provenance-v2.schema.json","git_blob_sha1":"e42e635f1f94cac90c436bf0464d7ecbbfbb3555","raw_schema_sha256":"17866de640821711a54bb3965b793a9421c0a6dde5e9abfe68a5808dd698a120","first_registered_by_registry_version":5,"status":"REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"},
+    {"schema_id":"AIFC/lineage-transition-profile/v1","dialect":"https://json-schema.org/draft/2020-12/schema","source_path":"schemas/lineage-transition-profile-v1.schema.json","git_blob_sha1":"1147ee498615ebf064606a419695780875dcd4af","raw_schema_sha256":"4fcc8061709471086231b5f54f9a87a8fdc5babc64d7c71aad27cef25ffef23d","first_registered_by_registry_version":5,"status":"REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"},
+    {"schema_id":"AIFC/authority-closure-obstruction/v1","dialect":"https://json-schema.org/draft/2020-12/schema","source_path":"schemas/authority-closure-obstruction-v1.schema.json","git_blob_sha1":"84a7b13b1f4ba9bd67781f633604331df8511258","raw_schema_sha256":"60fa75ea3458a988a9bb7266419db6402c47565d1180ae2227a33b39f47c6d33","first_registered_by_registry_version":5,"status":"REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"},
+    {"schema_id":"AIFC/schema-identity-registry/v5","dialect":"https://json-schema.org/draft/2020-12/schema","source_path":"schemas/schema-identity-registry-v5.schema.json","git_blob_sha1":"3be2c190f8dc01adadf81d1b580238ef3a4d0a3a","raw_schema_sha256":"cb795e035477c69401645dba15f95af400ba14620bdacfc34d94daaa915948db","first_registered_by_registry_version":5,"status":"REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"}
+  ]
+}
