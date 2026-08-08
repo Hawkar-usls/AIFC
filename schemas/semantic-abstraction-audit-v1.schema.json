@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/semantic-abstraction-audit-v1.schema.json",
+  "title": "AIFC Semantic Abstraction Audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "audit_id",
+    "entailment_question_id",
+    "predecessor_surface_definition_id",
+    "target_surface_definition_id",
+    "semantic_bridge_theory_id",
+    "entailment_method_profile_id",
+    "question_source_binding_id",
+    "normative_semantic_surface_authority",
+    "semantic_abstraction_adequacy",
+    "cross_formula_semantic_bridge_identity",
+    "cross_formula_semantic_bridge_authority",
+    "cross_formula_semantic_bridge",
+    "disjoint_semantic_vocabulary",
+    "disjoint_vocabulary_trivial_refutation",
+    "entailment_method_content_identity",
+    "entailment_method_authority",
+    "entailment_method_capacity_for_issued_question",
+    "entailment_question_source_dual_identity",
+    "solver_invocation_count",
+    "result",
+    "blocked_subtype",
+    "normative_countermodel"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/semantic-abstraction-audit/v1"
+    },
+    "audit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_surface_definition_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_surface_definition_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_bridge_theory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_method_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "question_source_binding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normative_semantic_surface_authority": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ESTABLISHED"
+      ]
+    },
+    "semantic_abstraction_adequacy": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ESTABLISHED"
+      ]
+    },
+    "cross_formula_semantic_bridge_identity": {
+      "enum": [
+        "PASS_CONTENT_IDENTIFIED_EMPTY_THEORY",
+        "PASS_CONTENT_IDENTIFIED_THEORY"
+      ]
+    },
+    "cross_formula_semantic_bridge_authority": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ESTABLISHED"
+      ]
+    },
+    "cross_formula_semantic_bridge": {
+      "enum": [
+        "ABSENT",
+        "PRESENT"
+      ]
+    },
+    "disjoint_semantic_vocabulary": {
+      "enum": [
+        "CONFIRMED",
+        "NOT_DISJOINT"
+      ]
+    },
+    "disjoint_vocabulary_trivial_refutation": {
+      "enum": [
+        "LATENT_IF_SOLVER_PREMATURELY_ENABLED",
+        "NOT_ESTABLISHED"
+      ]
+    },
+    "entailment_method_content_identity": {
+      "enum": [
+        "PASS_CANDIDATE_EXACT_SOURCE_AND_FORMAL_SEMANTICS",
+        "NOT_ESTABLISHED"
+      ]
+    },
+    "entailment_method_authority": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ESTABLISHED"
+      ]
+    },
+    "entailment_method_capacity_for_issued_question": {
+      "enum": [
+        "BLOCKED_ATOM_LIMIT_18_GT_16",
+        "PASS"
+      ]
+    },
+    "entailment_question_source_dual_identity": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "PASS"
+      ]
+    },
+    "solver_invocation_count": {
+      "const": 0
+    },
+    "result": {
+      "const": "BLOCKED"
+    },
+    "blocked_subtype": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normative_countermodel": {
+      "type": "null"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/semantic-bridge-theory-v1.schema.json",
+  "title": "AIFC Semantic Bridge Theory v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "bridge_theory_id",
+    "entailment_question_id",
+    "predecessor_formula_content_hash",
+    "target_formula_content_hash",
+    "logical_fragment",
+    "bridge_axioms",
+    "bridge_status",
+    "bridge_authority_status",
+    "abstraction_adequacy_status",
+    "theory_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/semantic-bridge-theory/v1"
+    },
+    "bridge_theory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_formula_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target_formula_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "logical_fragment": {
+      "const": "FINITE_CLASSICAL_PROPOSITIONAL_V1"
+    },
+    "bridge_axioms": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "bridge_status": {
+      "enum": [
+        "ABSENT_NO_AUTHORITY_ADMISSIBLE_AXIOMS",
+        "CANDIDATE_BRIDGE_THEORY",
+        "AUTHORITY_ADMISSIBLE_BRIDGE_THEORY"
+      ]
+    },
+    "bridge_authority_status": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ADMISSIBLE"
+      ]
+    },
+    "abstraction_adequacy_status": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ESTABLISHED"
+      ]
+    },
+    "theory_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "description": "First-class cross-formula semantic bridge. A content-identified theory is not thereby normative or adequate."
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "AIFC/semantic-surface-definition/v1",
+  "definition_id": "AIFC-SAL-V1.8-PREDECESSOR-REQUIRED-SEMANTIC-SURFACE-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "surface_role": "PREDECESSOR",
+  "source_artifact_id": "AIFC-RELEASE-GATE-v1.0.9-draft",
+  "source_git_blob_sha1": "e46cfee9963e61a22bc25e4e68ac5f11781e8d47",
+  "coverage_manifest_id": "AIFC-SAL-V1.7-PREDECESSOR-SEMANTIC-COVERAGE-V1",
+  "required_normative_semantic_surface": [
+    "REQUIRED_CHECK_ID:AUTHORITY_CLOSED_PROOF",
+    "REQUIRED_CHECK_ID:GATE_DEFINITION_HISTORICAL_ANCHOR",
+    "REQUIRED_CHECK_ID:GATE_ATOM_SEMANTIC_IDENTITY",
+    "FORBIDDEN_SHORTCUT_EXACT:allowing a transition proof to create or select the normative semantics that constitute its own theorem",
+    "FORBIDDEN_SHORTCUT_EXACT:allowing a normative root to self-authenticate through a descendant transition"
+  ],
+  "selection_rule": "EXPLICIT_SUCCESSOR_CANDIDATE_SURFACE_V1",
+  "selection_authority_status": "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+  "completeness_claim": "NOT_ESTABLISHED",
+  "definition_content_hash": "1ca06e84d436f36d946dcdedadc6c4db54b906ebe47e20fabf04d974820193af"
+}

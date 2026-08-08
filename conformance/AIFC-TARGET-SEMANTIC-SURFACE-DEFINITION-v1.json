@@ -1,0 +1,28 @@
+{
+  "schema": "AIFC/semantic-surface-definition/v1",
+  "definition_id": "AIFC-SAL-V1.8-TARGET-REQUIRED-SEMANTIC-SURFACE-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "surface_role": "TARGET",
+  "source_artifact_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "source_git_blob_sha1": "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b",
+  "coverage_manifest_id": "AIFC-SAL-V1.7-TARGET-SEMANTIC-COVERAGE-V1",
+  "required_normative_semantic_surface": [
+    "PROFILE_FIELD:allowed_authority_transition.from",
+    "PROFILE_FIELD:allowed_authority_transition.to",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.0",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.1",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.2",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.3",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.4",
+    "PROFILE_FIELD:receipt_binding_rule",
+    "PROFILE_FIELD:workflow_definition_rule",
+    "PROFILE_FIELD:registry_delta_rule",
+    "PROFILE_FIELD:artifact_semantic_replay_rule",
+    "PROFILE_FIELD:successor_registry_rule",
+    "PROFILE_FIELD:authority_status"
+  ],
+  "selection_rule": "EXPLICIT_SUCCESSOR_CANDIDATE_SURFACE_V1",
+  "selection_authority_status": "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+  "completeness_claim": "NOT_ESTABLISHED",
+  "definition_content_hash": "70f14f3040a9b4c98a1c018728cd35d0235517e61255731d0e8cf34c780cb099"
+}

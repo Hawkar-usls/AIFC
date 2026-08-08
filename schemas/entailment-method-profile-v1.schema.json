@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/entailment-method-profile-v1.schema.json",
+  "title": "AIFC Entailment Method Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "method_profile_id",
+    "entailment_question_id",
+    "method_label",
+    "solver_source_path",
+    "solver_git_blob_sha1",
+    "solver_symbol",
+    "formal_semantics",
+    "issued_question_atom_count",
+    "method_authority_status",
+    "method_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/entailment-method-profile/v1"
+    },
+    "method_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "method_label": {
+      "const": "ANCHOR_GATED_FINITE_PROPOSITIONAL_IMPLICATION_V1"
+    },
+    "solver_source_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "solver_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "solver_symbol": {
+      "const": "finite_propositional_entailment"
+    },
+    "formal_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "logic",
+        "model_domain",
+        "entailment_rule",
+        "countermodel_semantics",
+        "normalization_operators",
+        "max_atoms"
+      ],
+      "properties": {
+        "logic": {
+          "const": "FINITE_CLASSICAL_PROPOSITIONAL_LOGIC"
+        },
+        "model_domain": {
+          "const": "TOTAL_BOOLEAN_VALUATIONS_OVER_UNION_OF_FORMULA_ATOMS"
+        },
+        "entailment_rule": {
+          "const": "NO_MODEL_SATISFIES_PREMISE_AND_FALSIFIES_TARGET"
+        },
+        "countermodel_semantics": {
+          "const": "TOTAL_BOOLEAN_VALUATION_WITH_PREMISE_TRUE_AND_TARGET_FALSE"
+        },
+        "normalization_operators": {
+          "const": [
+            "ATOM",
+            "NOT",
+            "AND",
+            "OR"
+          ]
+        },
+        "max_atoms": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "issued_question_atom_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "method_authority_status": {
+      "enum": [
+        "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+        "AUTHORITY_ADMISSIBLE"
+      ]
+    },
+    "method_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "description": "Binds an issued entailment-method label to exact executable source and formal model/countermodel semantics. Identity is distinct from normative authority."
+}

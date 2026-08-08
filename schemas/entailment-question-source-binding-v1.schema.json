@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/entailment-question-source-binding-v1.schema.json",
+  "title": "AIFC Entailment Question Source Binding v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "binding_id",
+    "entailment_question_id",
+    "predecessor_artifact_id",
+    "predecessor_git_blob_sha1",
+    "predecessor_raw_sha256",
+    "target_profile_id",
+    "target_profile_git_blob_sha1",
+    "target_profile_raw_sha256",
+    "binding_status",
+    "binding_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/entailment-question-source-binding/v1"
+    },
+    "binding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predecessor_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "predecessor_raw_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_profile_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "target_profile_raw_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "binding_status": {
+      "enum": [
+        "NOT_ESTABLISHED_RAW_SHA256_MISSING",
+        "DUAL_IDENTITY_ESTABLISHED"
+      ]
+    },
+    "binding_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "description": "Non-mutating strengthening receipt for an already-issued v1 question identity. The original question hash is preserved."
+}

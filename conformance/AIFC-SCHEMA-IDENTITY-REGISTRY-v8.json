@@ -1,0 +1,63 @@
+{
+  "schema": "AIFC/schema-identity-registry/v8",
+  "registry_version": 8,
+  "predecessor_registry_path": "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v7.json",
+  "predecessor_registry_git_blob_sha1": "2396a0e5c76cc73007442c57b60a743cc4951ae7",
+  "source_observed_at_commit": "847529fa3c3cbf0a710b2726543634479fef266f",
+  "records": [
+    {
+      "schema_id": "AIFC/semantic-surface-definition/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-surface-definition-v1.schema.json",
+      "git_blob_sha1": "258281c44dcc6a205881308a97e6fb0147a54434",
+      "raw_schema_sha256": "dde61a6cbd872d02b50d2f943b0d9a9239e06971be8a9fe3c3baff51fcbaabb4",
+      "first_registered_by_registry_version": 8,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-bridge-theory/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-bridge-theory-v1.schema.json",
+      "git_blob_sha1": "27fd57b7a3e2e3a7b6495ccb2f68e3d3f4144a1d",
+      "raw_schema_sha256": "9d86450bd461462d27eadafeac7d9273cfee5e3473ac4e0a82727ec8f31f1767",
+      "first_registered_by_registry_version": 8,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/entailment-method-profile/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/entailment-method-profile-v1.schema.json",
+      "git_blob_sha1": "5bd8b716ef388ce17258cdefd64245c530bfac83",
+      "raw_schema_sha256": "fec53406fd9b4b6a66ee4a0c4ec981c46786e1f40814f340824e24e98ef41a59",
+      "first_registered_by_registry_version": 8,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/entailment-question-source-binding/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/entailment-question-source-binding-v1.schema.json",
+      "git_blob_sha1": "6052f4de191ce19350af807e7e494f001ea65af5",
+      "raw_schema_sha256": "3b9d8f2e84cf74226d47a2ce17538a089f5b71270b82cadd6a2b64ae3529355f",
+      "first_registered_by_registry_version": 8,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/semantic-abstraction-audit/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/semantic-abstraction-audit-v1.schema.json",
+      "git_blob_sha1": "ceb033558e946fb375c45708bb612710decc4195",
+      "raw_schema_sha256": "39457ab9a3b38a2ccec6ed28164e4318f5de347e5e8b022511f04d3a7465083a",
+      "first_registered_by_registry_version": 8,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/schema-identity-registry/v8",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/schema-identity-registry-v8.schema.json",
+      "git_blob_sha1": "56eece390911074ecfcef1791f4c79c0d91a2d31",
+      "raw_schema_sha256": "7f143b56690cbc84af88aee63229e834b1adc169a8c5d05becf51ac0964e75ee",
+      "first_registered_by_registry_version": 8,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    }
+  ]
+}
