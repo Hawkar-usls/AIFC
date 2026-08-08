@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifc.dev/schemas/semantic-coverage-manifest-v1.schema.json",
+  "title": "AIFC Semantic Coverage Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","coverage_id","entailment_question_id","source_artifact_id","required_normative_semantic_surface","covered_semantic_surface","coverage_policy","coverage_status"],
+  "properties": {
+    "schema": {"const":"AIFC/semantic-coverage-manifest/v1"},
+    "coverage_id": {"type":"string","minLength":1},
+    "entailment_question_id": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "source_artifact_id": {"type":"string","minLength":1},
+    "required_normative_semantic_surface": {"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "covered_semantic_surface": {"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "coverage_policy": {"const":"EXACT_SET_EQUALITY_NO_OMISSION_V1"},
+    "coverage_status": {"enum":["CANDIDATE_EXACT_COVERAGE","AUTHORITY_ADMISSIBLE_EXACT_COVERAGE","INCOMPLETE"]}
+  }
+}
