@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifc.dev/schemas/authoritative-semantic-compilation-audit-v1.schema.json",
+  "title": "AIFC Authoritative Semantic Compilation Audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","audit_id","entailment_question_id","predecessor_formula_content_hash","target_formula_content_hash","semantic_compilation_profile_id","historical_semantic_anchor_provenance","normative_semantic_coverage","semantic_compilation_profile_content_identity","semantic_compilation_profile_authority","semantic_anchor_to_formula_binding","entailment_question_identity_preserved","caller_supplied_normative_formula_forbidden","solver_execution_gated_by_semantic_closure","solver_invocation_count","result","blocked_subtype","countermodel"],
+  "properties": {
+    "schema": {"const":"AIFC/authoritative-semantic-compilation-audit/v1"},
+    "audit_id": {"const":"AIFC-SAL-V1.7-AUTHORITATIVE-SEMANTIC-COMPILATION-AUDIT"},
+    "entailment_question_id": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "predecessor_formula_content_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "target_formula_content_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "semantic_compilation_profile_id": {"const":"AIFC-SEMANTIC-COMPILATION-PROFILE-V1"},
+    "historical_semantic_anchor_provenance": {"enum":["PASS_CANDIDATE_PROVENANCE","PASS_AUTHORITY_LINEAGE_BOUND"]},
+    "normative_semantic_coverage": {"enum":["PASS_CANDIDATE_EXACT_COVERAGE","PASS_AUTHORITY_ADMISSIBLE_EXACT_COVERAGE"]},
+    "semantic_compilation_profile_content_identity": {"const":"PASS"},
+    "semantic_compilation_profile_authority": {"enum":["NOT_ESTABLISHED_SUCCESSOR_CANDIDATE","PASS"]},
+    "semantic_anchor_to_formula_binding": {"const":"PASS_DETERMINISTIC_CANDIDATE_DERIVATION"},
+    "entailment_question_identity_preserved": {"const":"PASS"},
+    "caller_supplied_normative_formula_forbidden": {"const":"PASS"},
+    "solver_execution_gated_by_semantic_closure": {"const":"PASS"},
+    "solver_invocation_count": {"type":"integer","minimum":0,"maximum":1},
+    "result": {"enum":["PROVED","BLOCKED","REFUTED_BY_COUNTERMODEL"]},
+    "blocked_subtype": {"type":["string","null"]},
+    "countermodel": {"type":["object","null"],"additionalProperties":{"type":"boolean"}}
+  }
+}
