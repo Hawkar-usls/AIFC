@@ -1,0 +1,29 @@
+{
+  "schema": "AIFC/normative-authority-receipt/v2",
+  "receipt_id": "AIFC-SAL-V1.3-EXACT-MAIN-RECEIPT-eeee61c",
+  "repository": "Hawkar-usls/AIFC",
+  "tested_source_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+  "tested_tree_sha": "2e939271d22d0a1906c93bd7e0fced77780aa88c",
+  "unit_test_count": 178,
+  "workflow_runs": [
+    {"role": "draft", "run_id": 31226916655, "workflow_name": "AIFC Draft Conformance", "expected_conclusion": "success"},
+    {"role": "replay", "run_id": 31226916619, "workflow_name": "AIFC Replay v0.2 Conformance", "expected_conclusion": "success"},
+    {"role": "self_audit", "run_id": 31226916602, "workflow_name": "AIFC Verifier Environment Self-Audit v0.4", "expected_conclusion": "success"},
+    {"role": "sal_v12", "run_id": 31226916648, "workflow_name": "AIFC SAL v1.2 Conformance", "expected_conclusion": "success"},
+    {"role": "sal_v13_root_closure", "run_id": 31226916624, "workflow_name": "AIFC SAL v1.3 Root Closure", "expected_conclusion": "success"}
+  ],
+  "artifacts": [
+    {"artifact_id": 9012409581, "name": "verifier-a-v04-ci-attestation-31226916602", "digest": "sha256:1630c6a41e79df357ff1b07894a079dffee733dfc4b9a5ab01ac96f5d99caa63", "head_sha": "eeee61c6143cde1bea64c643def6eaec461e7aa2"},
+    {"artifact_id": 9012413383, "name": "verifier-a-v04-platform-receipt-31226916602", "digest": "sha256:4d0a7a56f9779b5e3f5d704a840262f650dc486351175962067aebbaf34ef0d7", "head_sha": "eeee61c6143cde1bea64c643def6eaec461e7aa2"},
+    {"artifact_id": 9012408634, "name": "sal-v13-root-closure-31226916624", "digest": "sha256:a6af71c8103abd5b2e0f5dfefe81ad6c003906c67a18613808c1c4d20d5be57e", "head_sha": "eeee61c6143cde1bea64c643def6eaec461e7aa2"}
+  ],
+  "checks": {
+    "all_declared_workflows_success": true,
+    "unit_test_count_recomputed": true,
+    "ci_attestation_pass": true,
+    "platform_receipt_pass": true,
+    "lineage_activation_eligible": true
+  },
+  "platform_trust_proven": false,
+  "status": "EXACT_POST_MERGE_RECEIPT_CONFIRMED_REQUIRES_PROVENANCE_REPLAY"
+}
