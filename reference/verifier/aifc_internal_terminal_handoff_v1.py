@@ -31,11 +31,14 @@ def _require(condition: bool, label: str) -> None:
 
 
 def verify() -> dict[str, str | int | bool]:
-    """Verify the internal terminal handoff without creating new authority."""
-    _require(
-        _git("rev-parse", f"{PREDECESSOR_MAIN}^{{tree}}") == PREDECESSOR_TREE,
-        "PREDECESSOR_TREE_IDENTITY_MISMATCH",
-    )
+    """Replay content-bound terminal semantics without assuming Git history depth.
+
+    The exact PREDECESSOR_MAIN -> PREDECESSOR_TREE relationship is a separate
+    mandatory check in the dedicated full-history workflow. Keeping that check
+    outside this function makes the same semantic verifier replayable inside
+    ordinary shallow-checkout repository test jobs without silently fetching or
+    trusting missing history.
+    """
     _require(
         _git("hash-object", V117_AUDIT_PATH) == V117_AUDIT_GIT_BLOB_SHA1,
         "V117_AUDIT_IDENTITY_MISMATCH",
@@ -121,6 +124,7 @@ def verify() -> dict[str, str | int | bool]:
     return {
         "PREDECESSOR_MAIN": PREDECESSOR_MAIN,
         "PREDECESSOR_TREE": PREDECESSOR_TREE,
+        "PREDECESSOR_COMMIT_TREE_BINDING": "REQUIRED_SEPARATELY_BY_FULL_HISTORY_WORKFLOW",
         "V117_AUDIT_IDENTITY": "CONFIRMED_PINNED_GIT_BLOB",
         "RELEASE_GATE_IDENTITY": "CONFIRMED_PINNED_GIT_BLOB",
         "V116_NON_SELF_RATIFICATION_BOUNDARY": "PRESERVED_BY_V117",
