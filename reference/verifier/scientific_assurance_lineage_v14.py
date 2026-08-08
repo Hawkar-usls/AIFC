@@ -72,6 +72,13 @@ NEW_FRONTIER_GATES = frozenset({
     "LINEAGE_TRANSITION_REPLAY",
     "SUCCESSOR_REGISTRY_NON_SELF_PROMOTION",
 })
+REQUIRED_REPLAYS = frozenset({
+    "PREDECESSOR_COMMIT_TREE_MEMBERSHIP",
+    "PREDECESSOR_ROOT_REGISTRY_MEMBERSHIP",
+    "AUTHORITY_RECEIPT_PROVENANCE",
+    "LINEAGE_TRANSITION_REPLAY",
+    "SUCCESSOR_REGISTRY_NON_SELF_PROMOTION",
+})
 
 
 class ScientificAssuranceLineageV14Error(ValueError):
@@ -295,7 +302,7 @@ def verify_lineage_activation_local() -> LineageActivationReport:
         raise ScientificAssuranceLineageV14Error("SAL_RELEASE_GATE_78_TO_83_NOT_STRICT_ADDITIVE")
 
     required_replays = transition.get("required_replays")
-    if not isinstance(required_replays, list) or set(required_replays) != NEW_FRONTIER_GATES:
+    if not isinstance(required_replays, list) or set(required_replays) != REQUIRED_REPLAYS:
         raise ScientificAssuranceLineageV14Error("LINEAGE_REQUIRED_REPLAY_SET_REBINDING")
 
     return LineageActivationReport(
@@ -339,7 +346,9 @@ def _download_artifact_zip(url: str, token: str) -> bytes:
         location = exc.headers.get("Location")
     if not isinstance(location, str) or not location.startswith("https://"):
         raise ScientificAssuranceLineageV14Error("GITHUB_ARTIFACT_REDIRECT_MISSING")
-    with urllib.request.urlopen(urllib.request.Request(location, headers={"User-Agent": "AIFC-SAL-Lineage-v1.4"}), timeout=60) as response:
+    with urllib.request.urlopen(
+        urllib.request.Request(location, headers={"User-Agent": "AIFC-SAL-Lineage-v1.4"}), timeout=60
+    ) as response:
         return response.read()
 
 
