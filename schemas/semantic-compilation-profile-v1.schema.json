@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifc.dev/schemas/semantic-compilation-profile-v1.schema.json",
+  "title": "AIFC Semantic Compilation Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","profile_id","profile_domain","supported_logical_fragment","semantic_locator_policy","semantic_coverage_policy","ambiguity_resolution_policy","unsupported_construct_policy","compiler_source_path","compiler_git_blob_sha1","compiler_raw_sha256","compiler_authority_status","profile_authority_status","profile_content_hash"],
+  "properties": {
+    "schema": {"const":"AIFC/semantic-compilation-profile/v1"},
+    "profile_id": {"const":"AIFC-SEMANTIC-COMPILATION-PROFILE-V1"},
+    "profile_domain": {"const":"AIFC:SEMANTIC-COMPILATION-PROFILE:v1"},
+    "supported_logical_fragment": {"const":"FINITE_PROPOSITIONAL_AND_OR_NOT_ATOM_V1"},
+    "semantic_locator_policy": {"const":"EXACT_TYPED_LOCATOR_PLUS_LOCATED_VALUE_HASH_V1"},
+    "semantic_coverage_policy": {"const":"EXACT_SET_EQUALITY_NO_OMISSION_V1"},
+    "ambiguity_resolution_policy": {"const":"AMBIGUITY_BLOCKS_COMPILATION"},
+    "unsupported_construct_policy": {"const":"UNSUPPORTED_CONSTRUCT_BLOCKS_COMPILATION"},
+    "compiler_source_path": {"type":"string","minLength":1},
+    "compiler_git_blob_sha1": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "compiler_raw_sha256": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "compiler_authority_status": {"enum":["SUCCESSOR_CREATED_COMPILER_IDENTITY_ONLY","PREDECESSOR_AUTHORITY_ADMITTED_COMPILER"]},
+    "profile_authority_status": {"enum":["SUCCESSOR_CANDIDATE_REQUIRES_PREDECESSOR_AUTHORITY","AUTHORITY_ADMISSIBLE"]},
+    "profile_content_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}

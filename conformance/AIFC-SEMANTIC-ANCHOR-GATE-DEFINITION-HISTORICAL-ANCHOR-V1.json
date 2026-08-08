@@ -1,0 +1,15 @@
+{
+  "schema": "AIFC/historical-semantic-anchor/v1",
+  "anchor_id": "AIFC-SEMANTIC-ANCHOR-GATE-DEFINITION-HISTORICAL-ANCHOR-V1",
+  "source_artifact_id": "AIFC-RELEASE-GATE-v1.0.9-draft",
+  "source_commit_sha": "7e58b47398fe585b24db6304ee6122871095d668",
+  "source_path": "conformance/AIFC-RELEASE-GATE-v1.0.9-draft.json",
+  "source_git_blob_sha1": "e46cfee9963e61a22bc25e4e68ac5f11781e8d47",
+  "semantic_loci": [
+    {"locator_type":"REQUIRED_CHECK_ID","locator_value":"GATE_DEFINITION_HISTORICAL_ANCHOR","located_value_sha256":"54b8f4b939f361116532a54679bcf6a6149044c6a74a095fea58810a7280b23c"}
+  ],
+  "interpretation_origin": "LATER_FORMALIZATION_OF_HISTORICAL_NORMATIVE_TEXT",
+  "interpretation_status": "INTERPRETATION_CANDIDATE",
+  "retroactive_discovery_of_preexisting_executable_semantics": false,
+  "authority_lineage_status": "NOT_ESTABLISHED_SUCCESSOR_CANDIDATE"
+}

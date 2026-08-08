@@ -1,0 +1,10 @@
+{
+  "schema": "AIFC/entailment-question/v1",
+  "question_domain": "AIFC:ENTAILMENT-QUESTION:v1",
+  "predecessor_artifact_id": "AIFC-RELEASE-GATE-v1.0.9-draft",
+  "predecessor_git_blob_sha1": "e46cfee9963e61a22bc25e4e68ac5f11781e8d47",
+  "target_profile_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "target_profile_git_blob_sha1": "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b",
+  "entailment_method": "ANCHOR_GATED_FINITE_PROPOSITIONAL_IMPLICATION_V1",
+  "question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6"
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "AIFC/semantic-formula/v1",
+  "formula_role": "PREDECESSOR_PREMISE",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "source_semantic_anchor_ids": [
+    "AIFC-SEMANTIC-ANCHOR-AUTHORITY-CLOSED-PROOF-V1",
+    "AIFC-SEMANTIC-ANCHOR-GATE-DEFINITION-HISTORICAL-ANCHOR-V1",
+    "AIFC-SEMANTIC-ANCHOR-GATE-ATOM-SEMANTIC-IDENTITY-V1"
+  ],
+  "semantic_compilation_profile_id": "AIFC-SEMANTIC-COMPILATION-PROFILE-V1",
+  "semantic_coverage_manifest_id": "AIFC-SAL-V1.7-PREDECESSOR-SEMANTIC-COVERAGE-V1",
+  "normalized_formula_ast": {
+    "op": "AND",
+    "args": [
+      {"op":"ATOM","id":"SEMANTIC_ATOM_74dc9a8a21718f9c25bcff35112d4eed1b98e2681a95ee43a7abcab1536df3c5"},
+      {"op":"ATOM","id":"SEMANTIC_ATOM_ce16d499da238c04234272169472f9681da249e160c7dd348c393c8ec8352aa6"},
+      {"op":"ATOM","id":"SEMANTIC_ATOM_86f973c56467be6d01d13657d406838f7128dd5d59c5dade17452de1efc49aa3"},
+      {"op":"ATOM","id":"SEMANTIC_ATOM_4d2b7a49715441050ed965da96f0dbd5d6300402145273d03ee96d6b172e0474"},
+      {"op":"ATOM","id":"SEMANTIC_ATOM_e370be8a8402707ccd98e8172841f1d87060d36d64fc2f1839ffddd65764847a"}
+    ]
+  },
+  "atom_bindings": {
+    "SEMANTIC_ATOM_74dc9a8a21718f9c25bcff35112d4eed1b98e2681a95ee43a7abcab1536df3c5": "FORBIDDEN_SHORTCUT_EXACT:allowing a normative root to self-authenticate through a descendant transition",
+    "SEMANTIC_ATOM_ce16d499da238c04234272169472f9681da249e160c7dd348c393c8ec8352aa6": "FORBIDDEN_SHORTCUT_EXACT:allowing a transition proof to create or select the normative semantics that constitute its own theorem",
+    "SEMANTIC_ATOM_86f973c56467be6d01d13657d406838f7128dd5d59c5dade17452de1efc49aa3": "REQUIRED_CHECK_ID:AUTHORITY_CLOSED_PROOF",
+    "SEMANTIC_ATOM_4d2b7a49715441050ed965da96f0dbd5d6300402145273d03ee96d6b172e0474": "REQUIRED_CHECK_ID:GATE_ATOM_SEMANTIC_IDENTITY",
+    "SEMANTIC_ATOM_e370be8a8402707ccd98e8172841f1d87060d36d64fc2f1839ffddd65764847a": "REQUIRED_CHECK_ID:GATE_DEFINITION_HISTORICAL_ANCHOR"
+  },
+  "formula_content_hash": "b8d4771e7fc598ef3398b6995323fbd8d0b3b9f8b86b1b8b736d990527a88353",
+  "derivation_status": "DETERMINISTIC_CANDIDATE_DERIVATION"
+}

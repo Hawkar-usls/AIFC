@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifc.dev/schemas/historical-semantic-anchor-v1.schema.json",
+  "title": "AIFC Historical Semantic Anchor v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","anchor_id","source_artifact_id","source_commit_sha","source_path","source_git_blob_sha1","semantic_loci","interpretation_origin","interpretation_status","retroactive_discovery_of_preexisting_executable_semantics","authority_lineage_status"],
+  "properties": {
+    "schema": {"const": "AIFC/historical-semantic-anchor/v1"},
+    "anchor_id": {"type":"string","minLength":1},
+    "source_artifact_id": {"type":"string","minLength":1},
+    "source_commit_sha": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "source_path": {"type":"string","minLength":1},
+    "source_git_blob_sha1": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "semantic_loci": {
+      "type":"array","minItems":1,"uniqueItems":true,
+      "items": {
+        "type":"object","additionalProperties":false,
+        "required":["locator_type","locator_value","located_value_sha256"],
+        "properties": {
+          "locator_type":{"enum":["REQUIRED_CHECK_ID","FORBIDDEN_SHORTCUT_EXACT","PROFILE_FIELD"]},
+          "locator_value":{"type":"string","minLength":1},
+          "located_value_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "interpretation_origin": {"enum":["LATER_FORMALIZATION_OF_HISTORICAL_NORMATIVE_TEXT","DIRECT_MACHINE_PROFILE_FIELD_BINDING"]},
+    "interpretation_status": {"enum":["INTERPRETATION_CANDIDATE","AUTHORITY_RATIFIED_INTERPRETATION","REJECTED_INTERPRETATION"]},
+    "retroactive_discovery_of_preexisting_executable_semantics": {"const":false},
+    "authority_lineage_status": {"enum":["NOT_ESTABLISHED_SUCCESSOR_CANDIDATE","AUTHORITY_LINEAGE_ESTABLISHED"]}
+  }
+}
