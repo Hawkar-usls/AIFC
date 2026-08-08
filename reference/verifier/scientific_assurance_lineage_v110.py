@@ -103,7 +103,9 @@ def _verify_capacity_extension(method):
 
 def _capacity_extension_is_admissible(e,*,bridge_aware_atom_count):
     n=e.get("extended_max_atoms")
-    return all([e.get("old_domain_result_equivalence_status")=="ESTABLISHED_BY_REPLAY",e.get("same_question_method_semantics_preservation_status")=="ESTABLISHED",e.get("bridge_aware_extended_capacity_status")=="CAPACITY_AVAILABLE_FOR_RESOLVED_THEOREM",e.get("extension_authority_status")=="AUTHORITY_ADMISSIBLE",e.get("authority_lineage_status")=="AUTHORITY_LINEAGE_ESTABLISHED",e.get("resolved_bridge_aware_atom_count")==bridge_aware_atom_count,isinstance(n,int),n>=bridge_aware_atom_count,n>=16])
+    if not isinstance(n,int):
+        return False
+    return all([e.get("old_domain_result_equivalence_status")=="ESTABLISHED_BY_REPLAY",e.get("same_question_method_semantics_preservation_status")=="ESTABLISHED",e.get("bridge_aware_extended_capacity_status")=="CAPACITY_AVAILABLE_FOR_RESOLVED_THEOREM",e.get("extension_authority_status")=="AUTHORITY_ADMISSIBLE",e.get("authority_lineage_status")=="AUTHORITY_LINEAGE_ESTABLISHED",e.get("resolved_bridge_aware_atom_count")==bridge_aware_atom_count,n>=bridge_aware_atom_count,n>=16])
 def _effective_max_atoms(method,e,*,bridge_aware_atom_count):
     base=method.get("formal_semantics",{}).get("max_atoms")
     if base!=16: raise ScientificAssuranceLineageV110Error("BASE_METHOD_CAPACITY_REBINDING")
