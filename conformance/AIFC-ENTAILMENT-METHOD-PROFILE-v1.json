@@ -1,0 +1,25 @@
+{
+  "schema": "AIFC/entailment-method-profile/v1",
+  "method_profile_id": "AIFC-SAL-V1.8-ENTAILMENT-METHOD-PROFILE-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "method_label": "ANCHOR_GATED_FINITE_PROPOSITIONAL_IMPLICATION_V1",
+  "solver_source_path": "reference/verifier/scientific_assurance_lineage_v16.py",
+  "solver_git_blob_sha1": "5d6534c51418b776c6e456dc14416a0804d7bb09",
+  "solver_symbol": "finite_propositional_entailment",
+  "formal_semantics": {
+    "logic": "FINITE_CLASSICAL_PROPOSITIONAL_LOGIC",
+    "model_domain": "TOTAL_BOOLEAN_VALUATIONS_OVER_UNION_OF_FORMULA_ATOMS",
+    "entailment_rule": "NO_MODEL_SATISFIES_PREMISE_AND_FALSIFIES_TARGET",
+    "countermodel_semantics": "TOTAL_BOOLEAN_VALUATION_WITH_PREMISE_TRUE_AND_TARGET_FALSE",
+    "normalization_operators": [
+      "ATOM",
+      "NOT",
+      "AND",
+      "OR"
+    ],
+    "max_atoms": 16
+  },
+  "issued_question_atom_count": 18,
+  "method_authority_status": "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+  "method_content_hash": "fb6055c0bc2f9a6e6b0daef8269200d0f914e8428d4d2fd8e13e06e15acd7255"
+}
