@@ -48,13 +48,19 @@ class BootstrapNonSelfRatificationV116Tests(unittest.TestCase):
     def test_profile_cannot_inject_external_ratifier(self):
         x = copy.deepcopy(self.profile)
         x["external_ratifier"] = "SUCCESSOR_CHOSEN_WITNESS"
-        with self.assertRaisesRegex(sal.BootstrapNonSelfRatificationV1Error, "RATIFIER_OR_LEGITIMACY_INPUT_SURFACE"):
+        with self.assertRaisesRegex(
+            sal.BootstrapNonSelfRatificationV1Error,
+            "PROFILE_CONTENT_REBINDING|PROFILE_EXACT_HASH_REBINDING",
+        ):
             sal.verify_profile(x)
 
     def test_profile_cannot_self_assert_authority(self):
         x = copy.deepcopy(self.profile)
         x["authority_status"] = "AUTHORITATIVE"
-        with self.assertRaisesRegex(sal.BootstrapNonSelfRatificationV1Error, "RATIFIER_OR_LEGITIMACY_INPUT_SURFACE"):
+        with self.assertRaisesRegex(
+            sal.BootstrapNonSelfRatificationV1Error,
+            "PROFILE_CONTENT_REBINDING|PROFILE_EXACT_HASH_REBINDING",
+        ):
             sal.verify_profile(x)
 
     def test_descendant_closure_is_reflexive_transitive(self):
