@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/normative-assurance-root-registry-v3.schema.json",
+  "title": "AIFC Normative Assurance Root Registry v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "registry_id", "predecessor_registry_id", "predecessor_registry_path", "predecessor_registry_git_blob_sha1", "predecessor_exact_main_commit", "predecessor_exact_tree_sha", "activation_transition_id", "registry_authority_status", "records"],
+  "properties": {
+    "schema": {"const": "AIFC/normative-assurance-root-registry/v3"},
+    "registry_id": {"const": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V3"},
+    "predecessor_registry_id": {"const": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V2"},
+    "predecessor_registry_path": {"const": "conformance/AIFC-NORMATIVE-ASSURANCE-ROOTS-v2.json"},
+    "predecessor_registry_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "predecessor_exact_main_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "predecessor_exact_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "activation_transition_id": {"type": "string", "minLength": 1},
+    "registry_authority_status": {"const": "SUCCESSOR_REGISTRY_CANDIDATE_REQUIRES_NEXT_LINEAGE_ATTESTATION"},
+    "records": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["artifact_id", "kind", "expected_schema", "relative_path", "git_blob_sha1", "authority_status", "authority_commit", "authority_receipt_id"],
+        "properties": {
+          "artifact_id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "expected_schema": {"type": "string", "minLength": 1},
+          "relative_path": {"type": "string", "minLength": 1},
+          "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "authority_status": {"enum": ["HISTORICAL_ROOT_AT_PREDECESSOR_COMMIT", "ATTESTED_SUCCESSOR_AT_COMMIT", "SUCCESSOR_CANDIDATE_REQUIRES_EXACT_COMMIT_ATTESTATION"]},
+          "authority_commit": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+          "authority_receipt_id": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "AIFC/normative-lineage-transition/v1",
+  "transition_id": "AIFC-SAL-LINEAGE-ACTIVATION-eeee61c-V1",
+  "predecessor_registry": {
+    "registry_id": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V2",
+    "relative_path": "conformance/AIFC-NORMATIVE-ASSURANCE-ROOTS-v2.json",
+    "git_blob_sha1": "d2bb7f3917f8761836825a4e80f03c1e282fc37d",
+    "authority_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+    "authority_tree_sha": "2e939271d22d0a1906c93bd7e0fced77780aa88c"
+  },
+  "historical_anchor": {
+    "commit": "7e58b47398fe585b24db6304ee6122871095d668",
+    "registry_v1_path": "conformance/AIFC-NORMATIVE-ASSURANCE-ROOTS-v1.json",
+    "registry_v1_git_blob_sha1": "0aec9d6ad0d54ce10d312d28a8cb0def1729f835",
+    "required_memberships": [
+      {"artifact_id":"AIFC-RELEASE-GATE-v1.0.8-draft","relative_path":"conformance/AIFC-RELEASE-GATE-v1.0.8-draft.json","git_blob_sha1":"656bda0bae1d1af515a642f157149450c78d879e"},
+      {"artifact_id":"AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1","relative_path":"conformance/AIFC-ADMISSION-AUTHORITY-ORDER-v1.json","git_blob_sha1":"38eeb695caf781dcdc79115d4903c743db7311f9"},
+      {"artifact_id":"AIFC-RELEASE-GATE-v1.0.9-draft","relative_path":"conformance/AIFC-RELEASE-GATE-v1.0.9-draft.json","git_blob_sha1":"e46cfee9963e61a22bc25e4e68ac5f11781e8d47"},
+      {"artifact_id":"AIFC/assurance-evidence-hash/v1","relative_path":"conformance/AIFC-ASSURANCE-HASH-PROFILE-MANIFEST-v1.json","git_blob_sha1":"2f061fe9244369ba43819771e2cf22a8642c2fe8"},
+      {"artifact_id":"AIFC-INHERITED-GATE-OBLIGATION-HASH-V1","relative_path":"conformance/AIFC-INHERITED-GATE-HASH-PROFILE-v1.json","git_blob_sha1":"df68961799dad62d5aef61b48a177d46c470176c"}
+    ]
+  },
+  "successor_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+  "successor_tree_sha": "2e939271d22d0a1906c93bd7e0fced77780aa88c",
+  "authority_receipt": {
+    "receipt_id": "AIFC-SAL-V1.3-EXACT-MAIN-RECEIPT-eeee61c",
+    "relative_path": "conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-eeee61c-v2.json",
+    "git_blob_sha1": "67803a0561ec24549b8b78719de586ab1865ff8e"
+  },
+  "authority_receipt_provenance": {
+    "provenance_id": "AIFC-SAL-AUTHORITY-RECEIPT-PROVENANCE-V1",
+    "relative_path": "conformance/AIFC-AUTHORITY-RECEIPT-PROVENANCE-v1.json",
+    "git_blob_sha1": "bc6b1ff50e9729ea7c3d05828902b604d398028d"
+  },
+  "activated_artifact_ids": [
+    "AIFC-SCHEMA-IDENTITY-REGISTRY-V3",
+    "AIFC-INHERITED-GATE-OBLIGATION-HASH-V1-IMPLEMENTATION-BINDING-V1",
+    "AIFC-RELEASE-GATE-v1.0.10-draft"
+  ],
+  "successor_registry_candidate": {
+    "registry_id": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V3",
+    "relative_path": "conformance/AIFC-NORMATIVE-ASSURANCE-ROOTS-v3.json",
+    "git_blob_sha1": "2092e1a85692dbca2f6c640945ab6b6de224ebd1",
+    "authority_status": "SUCCESSOR_REGISTRY_CANDIDATE_REQUIRES_NEXT_LINEAGE_ATTESTATION"
+  },
+  "required_replays": [
+    "PREDECESSOR_COMMIT_TREE_MEMBERSHIP",
+    "PREDECESSOR_ROOT_REGISTRY_MEMBERSHIP",
+    "AUTHORITY_RECEIPT_PROVENANCE",
+    "LINEAGE_TRANSITION_REPLAY",
+    "SUCCESSOR_REGISTRY_NON_SELF_PROMOTION"
+  ],
+  "status": "PREREGISTERED_TRANSITION_REQUIRES_REPLAY"
+}

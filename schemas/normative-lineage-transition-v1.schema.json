@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/normative-lineage-transition-v1.schema.json",
+  "title": "AIFC Normative Lineage Transition v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "transition_id", "predecessor_registry", "historical_anchor", "successor_commit", "successor_tree_sha", "authority_receipt", "authority_receipt_provenance", "activated_artifact_ids", "successor_registry_candidate", "required_replays", "status"],
+  "properties": {
+    "schema": {"const": "AIFC/normative-lineage-transition/v1"},
+    "transition_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "predecessor_registry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["registry_id", "relative_path", "git_blob_sha1", "authority_commit", "authority_tree_sha"],
+      "properties": {
+        "registry_id": {"type": "string", "minLength": 1},
+        "relative_path": {"type": "string", "minLength": 1},
+        "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "authority_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "authority_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "historical_anchor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "registry_v1_path", "registry_v1_git_blob_sha1", "required_memberships"],
+      "properties": {
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "registry_v1_path": {"type": "string", "minLength": 1},
+        "registry_v1_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "required_memberships": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["artifact_id", "relative_path", "git_blob_sha1"],
+            "properties": {
+              "artifact_id": {"type": "string", "minLength": 1},
+              "relative_path": {"type": "string", "minLength": 1},
+              "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+            }
+          }
+        }
+      }
+    },
+    "successor_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "successor_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "authority_receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["receipt_id", "relative_path", "git_blob_sha1"],
+      "properties": {
+        "receipt_id": {"type": "string", "minLength": 1},
+        "relative_path": {"type": "string", "minLength": 1},
+        "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "authority_receipt_provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provenance_id", "relative_path", "git_blob_sha1"],
+      "properties": {
+        "provenance_id": {"type": "string", "minLength": 1},
+        "relative_path": {"type": "string", "minLength": 1},
+        "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "activated_artifact_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "successor_registry_candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["registry_id", "relative_path", "git_blob_sha1", "authority_status"],
+      "properties": {
+        "registry_id": {"type": "string", "minLength": 1},
+        "relative_path": {"type": "string", "minLength": 1},
+        "git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "authority_status": {"const": "SUCCESSOR_REGISTRY_CANDIDATE_REQUIRES_NEXT_LINEAGE_ATTESTATION"}
+      }
+    },
+    "required_replays": {
+      "type": "array", "minItems": 4, "uniqueItems": true,
+      "items": {"enum": ["PREDECESSOR_COMMIT_TREE_MEMBERSHIP", "PREDECESSOR_ROOT_REGISTRY_MEMBERSHIP", "AUTHORITY_RECEIPT_PROVENANCE", "LINEAGE_TRANSITION_REPLAY", "SUCCESSOR_REGISTRY_NON_SELF_PROMOTION"]}
+    },
+    "status": {"const": "PREREGISTERED_TRANSITION_REQUIRES_REPLAY"}
+  }
+}
