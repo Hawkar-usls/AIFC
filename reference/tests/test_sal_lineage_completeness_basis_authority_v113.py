@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "reference" / "verifier"))
 
 import lineage_completeness_basis_authority_v1 as sal  # noqa: E402
 import lineage_vertex_reference_closure_v1 as v112  # noqa: E402
+import sal_lineage_completeness_basis_authority_checker_v113 as checker  # noqa: E402
 
 
 def load(path: str):
@@ -27,6 +28,7 @@ class TestSALLineageCompletenessBasisAuthorityV113(unittest.TestCase):
         cls.object_profile = load(sal.OBJECT_INDEX_PROFILE_PATH)
         cls.basis_profile = load(sal.BASIS_PROFILE_PATH)
         cls.audit = load(sal.AUDIT_PATH)
+        cls.implementation_binding = load(checker.IMPLEMENTATION_BINDING_PATH)
 
     def test_current_path_confirms_obstruction_solver_zero(self):
         report = sal.audit_lineage_completeness_basis()
@@ -164,6 +166,34 @@ class TestSALLineageCompletenessBasisAuthorityV113(unittest.TestCase):
         bad["audit_content_hash"] = sal.audit_content_hash(bad)
         with self.assertRaises(sal.LineageCompletenessBasisAuthorityV1Error):
             sal.verify_audit_object(bad, report)
+
+    def test_auditor_implementation_binding_is_exact(self):
+        self.assertEqual(
+            checker.implementation_binding_content_hash(self.implementation_binding),
+            checker.IMPLEMENTATION_BINDING_HASH,
+        )
+        checker.verify_implementation_binding(self.implementation_binding)
+
+    def test_auditor_implementation_identity_rebindings_are_rejected(self):
+        mutations = (
+            ("implementation_path", "reference/verifier/other_auditor.py"),
+            ("implementation_git_blob_sha1", "0" * 40),
+            ("implementation_raw_sha256", "0" * 64),
+        )
+        for field, value in mutations:
+            with self.subTest(field=field):
+                bad = copy.deepcopy(self.implementation_binding)
+                bad[field] = value
+                bad["binding_content_hash"] = checker.implementation_binding_content_hash(bad)
+                with self.assertRaises(SystemExit):
+                    checker.verify_implementation_binding(bad)
+
+    def test_auditor_implementation_binding_cannot_self_assert_authority(self):
+        bad = copy.deepcopy(self.implementation_binding)
+        bad["authority_status"] = "ROOT_CLOSED_AUTHORITY_ADMISSIBLE"
+        bad["binding_content_hash"] = checker.implementation_binding_content_hash(bad)
+        with self.assertRaises(SystemExit):
+            checker.verify_implementation_binding(bad)
 
 
 if __name__ == "__main__":
