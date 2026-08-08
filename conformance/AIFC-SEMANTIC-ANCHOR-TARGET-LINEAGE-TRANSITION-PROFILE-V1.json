@@ -1,0 +1,27 @@
+{
+  "schema": "AIFC/historical-semantic-anchor/v1",
+  "anchor_id": "AIFC-SEMANTIC-ANCHOR-TARGET-LINEAGE-TRANSITION-PROFILE-V1",
+  "source_artifact_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "source_commit_sha": "5afc09e9a965f8b20d0b07059f1ff753aad920b7",
+  "source_path": "conformance/AIFC-LINEAGE-TRANSITION-PROFILE-v1.json",
+  "source_git_blob_sha1": "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b",
+  "semantic_loci": [
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.from","located_value_sha256":"5774af14fcea35e42972be5b413cf381efc3e4f665f01dac3b9875d979d5d3e9"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.to","located_value_sha256":"01ec00cb931880123e823dcdd800c13b959e1605add83391fd6e3f2d55390fc5"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.required_evidence.0","located_value_sha256":"7e94083aa382b7e3b706152237fd8a23c0c7264b8605c184cf9d01a0e90cfa72"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.required_evidence.1","located_value_sha256":"a7e81481ecc8b9e45e8741e076d03fe898df3d001f3257c8cb06a66eb6ad406f"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.required_evidence.2","located_value_sha256":"b812252c6d9308977fe73ca9cbebe327fa593ba8d9f26526ad00c1a1a690d500"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.required_evidence.3","located_value_sha256":"4914533202e0220eb49c3d3ff39fb89e1f162dfa885be7fd66c4400010365355"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"allowed_authority_transition.required_evidence.4","located_value_sha256":"265a4e731328f7f96a23c9853e136c43ec6a5dd9d32719c8cd16b3a2f63ced0d"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"receipt_binding_rule","located_value_sha256":"326edad5276196fc2921f50d93291845ace2827c550e2ab26cd039593d4e9d1a"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"workflow_definition_rule","located_value_sha256":"535afe915900ee218cb0eec38823be9b676770826810aaef386d48af4eb1f47e"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"registry_delta_rule","located_value_sha256":"feee223e10f51c38b0c96bb2ff3f67cf0a0c0b655a12b6cef771f97c71f5e9a8"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"artifact_semantic_replay_rule","located_value_sha256":"5fe1999fd343da4fc3dde31e8dde6469903e058344fc5f5011d8cbe2525dceb5"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"successor_registry_rule","located_value_sha256":"26caf192ce39a7d5ba3a997870b433750b8b2f8d41af7c70bcbb5062ec0de7b6"},
+    {"locator_type":"PROFILE_FIELD","locator_value":"authority_status","located_value_sha256":"0d0bdf5b05b42711deb51f7ce4e729c9762829432cf376225a22529cae8f3315"}
+  ],
+  "interpretation_origin": "DIRECT_MACHINE_PROFILE_FIELD_BINDING",
+  "interpretation_status": "INTERPRETATION_CANDIDATE",
+  "retroactive_discovery_of_preexisting_executable_semantics": false,
+  "authority_lineage_status": "NOT_ESTABLISHED_SUCCESSOR_CANDIDATE"
+}
