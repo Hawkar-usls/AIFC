@@ -1,0 +1,49 @@
+{
+  "schema": "AIFC/authority-receipt-provenance/v1",
+  "provenance_id": "AIFC-SAL-AUTHORITY-RECEIPT-PROVENANCE-V1",
+  "repository": "Hawkar-usls/AIFC",
+  "observation_method": "GITHUB_ACTIONS_API_LIVE_REPLAY",
+  "receipts": [
+    {
+      "receipt_id": "AIFC-SAL-V1.2-EXACT-MAIN-RECEIPT-7e58b47",
+      "receipt_path": "conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-7e58b47-v1.json",
+      "receipt_git_blob_sha1": "49b54886f065ac42ee4ff22935112c60f44d4a6c",
+      "tested_source_commit": "7e58b47398fe585b24db6304ee6122871095d668",
+      "tested_tree_sha": "e3aa8a8cd09f0faa9a6f9e976d0f5cbe8291f2c9",
+      "live_replay_required": true,
+      "workflow_runs": [
+        {"run_id": 31224356394, "workflow_name": "AIFC Draft Conformance", "expected_conclusion": "success"},
+        {"run_id": 31224356455, "workflow_name": "AIFC Replay v0.2 Conformance", "expected_conclusion": "success"},
+        {"run_id": 31224356379, "workflow_name": "AIFC Verifier Environment Self-Audit v0.4", "expected_conclusion": "success"},
+        {"run_id": 31224356683, "workflow_name": "AIFC SAL v1.2 Conformance", "expected_conclusion": "success"}
+      ],
+      "artifacts": [
+        {"artifact_id": 9011542150, "name": "verifier-a-v04-ci-attestation-31224356379", "digest": "sha256:43a8a4fe906d6e6d25e749e220d490cc8b313c58a723b20d713acce2698927b6", "head_sha": "7e58b47398fe585b24db6304ee6122871095d668"},
+        {"artifact_id": 9011548464, "name": "verifier-a-v04-platform-receipt-31224356379", "digest": "sha256:3d61fb7e866f73518b566182fe4895ec5575daa73ffe63cbd20f2c14b2d621c0", "head_sha": "7e58b47398fe585b24db6304ee6122871095d668"},
+        {"artifact_id": 9011541276, "name": "sal-v12-conformance-31224356683", "digest": "sha256:0a2c3a7205e2c0acd5fe818466571a54746dbbe23c77f72cbf2076444670729b", "head_sha": "7e58b47398fe585b24db6304ee6122871095d668"}
+      ]
+    },
+    {
+      "receipt_id": "AIFC-SAL-V1.3-EXACT-MAIN-RECEIPT-eeee61c",
+      "receipt_path": "conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-eeee61c-v2.json",
+      "receipt_git_blob_sha1": "67803a0561ec24549b8b78719de586ab1865ff8e",
+      "tested_source_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+      "tested_tree_sha": "2e939271d22d0a1906c93bd7e0fced77780aa88c",
+      "live_replay_required": true,
+      "workflow_runs": [
+        {"run_id": 31226916655, "workflow_name": "AIFC Draft Conformance", "expected_conclusion": "success"},
+        {"run_id": 31226916619, "workflow_name": "AIFC Replay v0.2 Conformance", "expected_conclusion": "success"},
+        {"run_id": 31226916602, "workflow_name": "AIFC Verifier Environment Self-Audit v0.4", "expected_conclusion": "success"},
+        {"run_id": 31226916648, "workflow_name": "AIFC SAL v1.2 Conformance", "expected_conclusion": "success"},
+        {"run_id": 31226916624, "workflow_name": "AIFC SAL v1.3 Root Closure", "expected_conclusion": "success"}
+      ],
+      "artifacts": [
+        {"artifact_id": 9012409581, "name": "verifier-a-v04-ci-attestation-31226916602", "digest": "sha256:1630c6a41e79df357ff1b07894a079dffee733dfc4b9a5ab01ac96f5d99caa63", "head_sha": "eeee61c6143cde1bea64c643def6eaec461e7aa2"},
+        {"artifact_id": 9012413383, "name": "verifier-a-v04-platform-receipt-31226916602", "digest": "sha256:4d0a7a56f9779b5e3f5d704a840262f650dc486351175962067aebbaf34ef0d7", "head_sha": "eeee61c6143cde1bea64c643def6eaec461e7aa2"},
+        {"artifact_id": 9012408634, "name": "sal-v13-root-closure-31226916624", "digest": "sha256:a6af71c8103abd5b2e0f5dfefe81ad6c003906c67a18613808c1c4d20d5be57e", "head_sha": "eeee61c6143cde1bea64c643def6eaec461e7aa2"}
+      ]
+    }
+  ],
+  "platform_trust_proven": false,
+  "status": "REQUIRES_INDEPENDENT_LIVE_REPLAY"
+}
