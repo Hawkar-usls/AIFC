@@ -1,0 +1,63 @@
+name: AIFC SAL v1.11u Derived Semantic Lineage Edge Universe Closure
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  sal-v111u-derived-semantic-lineage-edge-universe:
+    runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact tested source commit with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Confirm exact checkout and immutable v1.11h source boundary
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          echo "TESTED_SOURCE_COMMIT_SHA = $actual"
+          test "$actual" = "$EXPECTED_SHA"
+          git cat-file -e 367dc30f53365225157dfb77e45fe6ef9ba027c8^{commit}
+          test "$(git ls-tree HEAD -- conformance/AIFC-DERIVED-SEMANTIC-LINEAGE-EDGE-BINDING-v1.json | awk '{print $3}')" = "c5ccf513f826aae2e1115b65475f489f40232486"
+          test "$(git ls-tree HEAD -- conformance/AIFC-DERIVED-SEMANTIC-LINEAGE-EDGE-AUDIT-v1.json | awk '{print $3}')" = "30ec3fa8d0060cac107dfc668b86710ab5ed2b17"
+          test "$(git ls-tree HEAD -- conformance/AIFC-SEMANTIC-DERIVATION-PROFILE-v1.json | awk '{print $3}')" = "37cab9a72d836b5fd3cbefbbf6e51e41abb140d2"
+          test "$(git ls-tree HEAD -- conformance/AIFC-SEMANTIC-DERIVATION-PROOF-v1.json | awk '{print $3}')" = "d582c0599226d50bddba1e548c28aaf720dac070"
+          test "$(git ls-tree HEAD -- conformance/AIFC-DERIVATION-LEAF-MANIFEST-v1.json | awk '{print $3}')" = "d871a69b86f2951a2800df8ecad2f2ba4e0f73cf"
+          test "$(git ls-tree HEAD -- conformance/AIFC-CANONICAL-SEMANTIC-DEPENDENCY-GRAPH-v1.json | awk '{print $3}')" = "f7553ad50c45f75a484163266b2be74d8ed99892"
+          test "$(git ls-tree HEAD -- conformance/AIFC-BRIDGE-DERIVED-SEMANTIC-OBJECT-v2.json | awk '{print $3}')" = "759f67300af84bba3060cf348aa766b15500933f"
+          test "$(git ls-tree HEAD -- conformance/AIFC-ENTAILMENT-QUESTION-v1.json | awk '{print $3}')" = "592df1a8147d678ddfd6229fd64f79a681a554f6"
+          echo "SAL_V111U_SOURCE_BOUNDARY = PASS"
+
+      - name: Set up exact Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.13
+          check-latest: false
+
+      - name: Install hash-locked verifier runtime
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
+
+      - name: Run attested SAL v1.11u edge-universe checker
+        shell: bash
+        run: |
+          mkdir -p sal-derived-semantic-lineage-edge-universe-evidence
+          python reference/verifier/sal_derived_semantic_lineage_edge_universe_checker_v111u.py | tee sal-derived-semantic-lineage-edge-universe-evidence/sal-derived-semantic-lineage-edge-universe-v111u.txt
+          sha256sum sal-derived-semantic-lineage-edge-universe-evidence/sal-derived-semantic-lineage-edge-universe-v111u.txt | tee sal-derived-semantic-lineage-edge-universe-evidence/sal-derived-semantic-lineage-edge-universe-v111u.sha256
+
+      - name: Upload SAL v1.11u edge-universe evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sal-v111u-derived-semantic-lineage-edge-universe-${{ github.run_id }}
+          path: sal-derived-semantic-lineage-edge-universe-evidence/
+          if-no-files-found: error
+          retention-days: 90
