@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/semantic-bridge-theory-v2.schema.json",
+  "title": "AIFC Semantic Bridge Theory v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "bridge_theory_id",
+    "predecessor_bridge_theory_id",
+    "predecessor_bridge_theory_git_blob_sha1",
+    "entailment_question_id",
+    "predecessor_formula_content_hash",
+    "target_formula_content_hash",
+    "logical_fragment",
+    "bridge_axiom_refs",
+    "bridge_status",
+    "bridge_authority_status",
+    "abstraction_adequacy_status",
+    "theory_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/semantic-bridge-theory/v2"
+    },
+    "bridge_theory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predecessor_bridge_theory_id": {
+      "const": "AIFC-SAL-V1.8-CROSS-FORMULA-SEMANTIC-BRIDGE-V1"
+    },
+    "predecessor_bridge_theory_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_formula_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target_formula_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "logical_fragment": {
+      "const": "FINITE_CLASSICAL_PROPOSITIONAL_V1"
+    },
+    "bridge_axiom_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "axiom_id",
+          "source_path",
+          "git_blob_sha1",
+          "raw_sha256",
+          "axiom_content_hash"
+        ],
+        "properties": {
+          "axiom_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_path": {
+            "type": "string",
+            "pattern": "^conformance/"
+          },
+          "git_blob_sha1": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "raw_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "axiom_content_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "bridge_status": {
+      "enum": [
+        "ABSENT_NO_AUTHORITY_ADMISSIBLE_AXIOMS",
+        "CANDIDATE_BRIDGE_THEORY",
+        "AUTHORITY_ADMISSIBLE_BRIDGE_THEORY"
+      ]
+    },
+    "bridge_authority_status": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ADMISSIBLE"
+      ]
+    },
+    "abstraction_adequacy_status": {
+      "enum": [
+        "NOT_ESTABLISHED",
+        "AUTHORITY_ESTABLISHED"
+      ]
+    },
+    "theory_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "description": "Versioned bridge theory whose non-empty axioms must resolve through strict executable bridge-axiom identities."
+}

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/semantic-bridge-axiom-v1.schema.json",
+  "title": "AIFC Semantic Bridge Axiom v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "axiom_id",
+    "entailment_question_id",
+    "logical_fragment",
+    "normalized_formula_ast",
+    "atom_bindings",
+    "axiom_authority_status",
+    "axiom_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/semantic-bridge-axiom/v1"
+    },
+    "axiom_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "logical_fragment": {
+      "const": "FINITE_CLASSICAL_PROPOSITIONAL_V1"
+    },
+    "normalized_formula_ast": {
+      "$ref": "#/$defs/formula"
+    },
+    "atom_bindings": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "semantic_role",
+          "semantic_identity"
+        ],
+        "properties": {
+          "semantic_role": {
+            "enum": [
+              "PREDECESSOR_ATOM",
+              "TARGET_ATOM",
+              "BRIDGE_DERIVED_ATOM"
+            ]
+          },
+          "semantic_identity": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "axiom_authority_status": {
+      "enum": [
+        "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+        "AUTHORITY_ADMISSIBLE"
+      ]
+    },
+    "axiom_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "formula": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "id"
+          ],
+          "properties": {
+            "op": {
+              "const": "ATOM"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "arg"
+          ],
+          "properties": {
+            "op": {
+              "const": "NOT"
+            },
+            "arg": {
+              "$ref": "#/$defs/formula"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "args"
+          ],
+          "properties": {
+            "op": {
+              "enum": [
+                "AND",
+                "OR"
+              ]
+            },
+            "args": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/formula"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "description": "Strict executable syntax for one cross-formula bridge axiom. Content identity and executable syntax do not confer normative authority."
+}

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/entailment-question-source-binding-v2.schema.json",
+  "title": "AIFC Entailment Question Source Binding v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "binding_id",
+    "predecessor_binding_id",
+    "predecessor_binding_git_blob_sha1",
+    "entailment_question_id",
+    "predecessor_artifact_id",
+    "predecessor_commit_sha",
+    "predecessor_source_path",
+    "predecessor_git_blob_sha1",
+    "predecessor_raw_sha256",
+    "target_profile_id",
+    "target_profile_commit_sha",
+    "target_profile_source_path",
+    "target_profile_git_blob_sha1",
+    "target_profile_raw_sha256",
+    "recomputation_rule",
+    "binding_status",
+    "binding_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/entailment-question-source-binding/v2"
+    },
+    "binding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predecessor_binding_id": {
+      "const": "AIFC-SAL-V1.8-ENTAILMENT-QUESTION-SOURCE-BINDING-V1"
+    },
+    "predecessor_binding_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predecessor_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "predecessor_source_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predecessor_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "predecessor_raw_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_profile_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "target_profile_source_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_profile_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "target_profile_raw_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "recomputation_rule": {
+      "const": "EXACT_HISTORICAL_TREE_MEMBERSHIP_THEN_RAW_SHA256_V1"
+    },
+    "binding_status": {
+      "enum": [
+        "SUCCESSOR_CANDIDATE_RECOMPUTATION_REQUIRED_NOT_AUTHORITY_ADMISSIBLE",
+        "DUAL_IDENTITY_ESTABLISHED"
+      ]
+    },
+    "binding_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "description": "Non-retroactive successor binding. A DUAL_IDENTITY_ESTABLISHED claim is admissible only after exact historical membership and SHA-256 recomputation over the bound source bytes."
+}

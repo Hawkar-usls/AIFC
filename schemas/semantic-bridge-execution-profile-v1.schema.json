@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/semantic-bridge-execution-profile-v1.schema.json",
+  "title": "AIFC Semantic Bridge Execution Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "execution_profile_id",
+    "entailment_question_id",
+    "semantic_bridge_theory_id",
+    "semantic_bridge_theory_content_hash",
+    "entailment_method_profile_id",
+    "entailment_method_profile_content_hash",
+    "composition_rule",
+    "bridge_axiom_schema_id",
+    "bridge_axiom_schema_git_blob_sha1",
+    "bridge_axiom_schema_raw_sha256",
+    "formula_ast_schema_id",
+    "formula_ast_schema_git_blob_sha1",
+    "formula_ast_schema_raw_sha256",
+    "execution_implementation_path",
+    "execution_implementation_git_blob_sha1",
+    "execution_implementation_raw_sha256",
+    "execution_authority_status",
+    "profile_content_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "AIFC/semantic-bridge-execution-profile/v1"
+    },
+    "execution_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entailment_question_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semantic_bridge_theory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "composition_rule": {
+      "const": "PREMISE_AND_ORDERED_BRIDGE_AXIOMS_V1"
+    },
+    "bridge_axiom_schema_id": {
+      "const": "AIFC/semantic-bridge-axiom/v1"
+    },
+    "bridge_axiom_schema_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "bridge_axiom_schema_raw_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "formula_ast_schema_id": {
+      "const": "AIFC/semantic-formula/v1"
+    },
+    "formula_ast_schema_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "formula_ast_schema_raw_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "execution_implementation_path": {
+      "const": "reference/verifier/semantic_bridge_execution_v1.py"
+    },
+    "execution_implementation_git_blob_sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "execution_implementation_raw_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "execution_authority_status": {
+      "enum": [
+        "SUCCESSOR_CANDIDATE_NOT_AUTHORITY_ADMISSIBLE",
+        "AUTHORITY_ADMISSIBLE"
+      ]
+    },
+    "profile_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semantic_bridge_theory_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "entailment_method_profile_id": {
+      "const": "AIFC-SAL-V1.8-ENTAILMENT-METHOD-PROFILE-V1"
+    },
+    "entailment_method_profile_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "description": "Binds the exact executable rule that composes an authority-admissible bridge into the prover premise. Identity is not authority."
+}

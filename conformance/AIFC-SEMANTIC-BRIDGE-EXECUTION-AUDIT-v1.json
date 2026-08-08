@@ -1,0 +1,20 @@
+{
+  "schema": "AIFC/semantic-bridge-execution-audit/v1",
+  "audit_id": "AIFC-SAL-V1.9-SEMANTIC-BRIDGE-EXECUTION-AUDIT-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "bridge_theory_id": "AIFC-SAL-V1.9-CROSS-FORMULA-SEMANTIC-BRIDGE-V2",
+  "execution_profile_id": "AIFC-SAL-V1.9-SEMANTIC-BRIDGE-EXECUTION-PROFILE-V1",
+  "question_source_binding_id": "AIFC-SAL-V1.9-ENTAILMENT-QUESTION-SOURCE-BINDING-V2",
+  "bridge_axiom_executable_semantics": "STRICT_EXECUTABLE_AST_AND_ATOM_BINDINGS_IMPLEMENTED_CANDIDATE",
+  "semantic_bridge_execution_binding": "PASS_CANDIDATE_EXACT_IMPLEMENTATION_BOUND",
+  "bridge_theory_composition_replay": "PASS_NONEMPTY_EFFECT_VECTOR_AND_EMPTY_PRODUCTION_REPLAY",
+  "bridge_aware_method_capacity": "BLOCKED_ATOM_LIMIT_18_GT_16",
+  "question_source_raw_sha256_recomputation": "PASS_EXACT_HISTORICAL_MEMBERSHIP_RECOMPUTED_NOT_YET_BOUND",
+  "current_bridge_axiom_count": 0,
+  "current_bridge_aware_atom_count": 18,
+  "solver_invocation_count": 0,
+  "result": "BLOCKED",
+  "blocked_subtype": "BLOCKED_UNAUTHORIZED_INTERPRETATION",
+  "normative_countermodel": null,
+  "audit_content_hash": "e9df55671902d54e6d093d926de6027b66c3ce66eb95e7bf82b2461d7bec9d21"
+}
