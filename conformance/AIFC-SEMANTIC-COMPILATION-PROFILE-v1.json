@@ -1,0 +1,15 @@
+{
+  "schema": "AIFC/semantic-compilation-profile/v1",
+  "profile_id": "AIFC-SEMANTIC-COMPILATION-PROFILE-V1",
+  "profile_domain": "AIFC:SEMANTIC-COMPILATION-PROFILE:v1",
+  "supported_logical_fragment": "FINITE_PROPOSITIONAL_AND_OR_NOT_ATOM_V1",
+  "semantic_locator_policy": "EXACT_TYPED_LOCATOR_PLUS_LOCATED_VALUE_HASH_V1",
+  "semantic_coverage_policy": "EXACT_SET_EQUALITY_NO_OMISSION_V1",
+  "ambiguity_resolution_policy": "AMBIGUITY_BLOCKS_COMPILATION",
+  "unsupported_construct_policy": "UNSUPPORTED_CONSTRUCT_BLOCKS_COMPILATION",
+  "compiler_source_path": "reference/verifier/semantic_compiler_v1.py",
+  "compiler_git_blob_sha1": "b0aa58f1d82f736ee271f4969de4830a523d46ff",
+  "compiler_raw_sha256": "a91e5c11e64bce61b8f2bf7b37db3bbde50d10a24d3d326175dfadfa3780f35d",
+  "compiler_authority_status": "SUCCESSOR_CREATED_COMPILER_IDENTITY_ONLY",
+  "profile_authority_status": "SUCCESSOR_CANDIDATE_REQUIRES_PREDECESSOR_AUTHORITY"
+}
