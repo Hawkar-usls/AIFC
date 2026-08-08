@@ -1,0 +1,13 @@
+{
+  "schema": "AIFC/semantic-bridge-theory/v1",
+  "bridge_theory_id": "AIFC-SAL-V1.8-CROSS-FORMULA-SEMANTIC-BRIDGE-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "predecessor_formula_content_hash": "b8d4771e7fc598ef3398b6995323fbd8d0b3b9f8b86b1b8b736d990527a88353",
+  "target_formula_content_hash": "74f0bac1ee3c2229fff6f1b92e1c02fc4a9439c43ab56bc6d199b261c7def047",
+  "logical_fragment": "FINITE_CLASSICAL_PROPOSITIONAL_V1",
+  "bridge_axioms": [],
+  "bridge_status": "ABSENT_NO_AUTHORITY_ADMISSIBLE_AXIOMS",
+  "bridge_authority_status": "NOT_ESTABLISHED",
+  "abstraction_adequacy_status": "NOT_ESTABLISHED",
+  "theory_content_hash": "30a5dbe7f8e0d62c8d9a8fa5bcbfa649847ae0394ba7a3c9889d44fb06ab56d6"
+}
