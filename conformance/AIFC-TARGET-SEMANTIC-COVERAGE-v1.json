@@ -1,0 +1,38 @@
+{
+  "schema": "AIFC/semantic-coverage-manifest/v1",
+  "coverage_id": "AIFC-SAL-V1.7-TARGET-SEMANTIC-COVERAGE-V1",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "source_artifact_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "required_normative_semantic_surface": [
+    "PROFILE_FIELD:allowed_authority_transition.from",
+    "PROFILE_FIELD:allowed_authority_transition.to",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.0",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.1",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.2",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.3",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.4",
+    "PROFILE_FIELD:receipt_binding_rule",
+    "PROFILE_FIELD:workflow_definition_rule",
+    "PROFILE_FIELD:registry_delta_rule",
+    "PROFILE_FIELD:artifact_semantic_replay_rule",
+    "PROFILE_FIELD:successor_registry_rule",
+    "PROFILE_FIELD:authority_status"
+  ],
+  "covered_semantic_surface": [
+    "PROFILE_FIELD:allowed_authority_transition.from",
+    "PROFILE_FIELD:allowed_authority_transition.to",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.0",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.1",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.2",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.3",
+    "PROFILE_FIELD:allowed_authority_transition.required_evidence.4",
+    "PROFILE_FIELD:receipt_binding_rule",
+    "PROFILE_FIELD:workflow_definition_rule",
+    "PROFILE_FIELD:registry_delta_rule",
+    "PROFILE_FIELD:artifact_semantic_replay_rule",
+    "PROFILE_FIELD:successor_registry_rule",
+    "PROFILE_FIELD:authority_status"
+  ],
+  "coverage_policy": "EXACT_SET_EQUALITY_NO_OMISSION_V1",
+  "coverage_status": "CANDIDATE_EXACT_COVERAGE"
+}
