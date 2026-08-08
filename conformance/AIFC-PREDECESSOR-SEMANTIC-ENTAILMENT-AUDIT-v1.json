@@ -1,0 +1,33 @@
+{
+  "schema": "AIFC/predecessor-semantic-entailment-audit/v1",
+  "audit_id": "AIFC-SAL-V1.6-PREDECESSOR-SEMANTIC-ENTAILMENT-AUDIT",
+  "predecessor_registry_id": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V2",
+  "predecessor_registry_git_blob_sha1": "d2bb7f3917f8761836825a4e80f03c1e282fc37d",
+  "predecessor_authority_commit": "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+  "authoritative_premise_artifact_ids": [
+    "AIFC-RELEASE-GATE-v1.0.9-draft"
+  ],
+  "target_profile_id": "AIFC-LINEAGE-TRANSITION-PROFILE-V1",
+  "target_profile_git_blob_sha1": "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b",
+  "entailment_method": "ANCHOR_GATED_FINITE_PROPOSITIONAL_IMPLICATION_V1",
+  "observed_textual_constraints": [
+    "AUTHORITY_CLOSED_PROOF_REQUIRED_TEXT_PRESENT",
+    "GATE_DEFINITION_HISTORICAL_ANCHOR_REQUIRED_TEXT_PRESENT",
+    "GATE_ATOM_SEMANTIC_IDENTITY_REQUIRED_TEXT_PRESENT",
+    "TRANSITION_THEOREM_SELF_SEMANTICS_FORBIDDEN_TEXT_PRESENT",
+    "DESCENDANT_ROOT_SELF_AUTHENTICATION_FORBIDDEN_TEXT_PRESENT"
+  ],
+  "required_semantic_anchor_ids": [
+    "AIFC-SEMANTIC-ANCHOR-AUTHORITY-CLOSED-PROOF-V1",
+    "AIFC-SEMANTIC-ANCHOR-GATE-DEFINITION-HISTORICAL-ANCHOR-V1",
+    "AIFC-SEMANTIC-ANCHOR-GATE-ATOM-SEMANTIC-IDENTITY-V1"
+  ],
+  "missing_semantic_anchor_ids": [
+    "AIFC-SEMANTIC-ANCHOR-AUTHORITY-CLOSED-PROOF-V1",
+    "AIFC-SEMANTIC-ANCHOR-GATE-DEFINITION-HISTORICAL-ANCHOR-V1",
+    "AIFC-SEMANTIC-ANCHOR-GATE-ATOM-SEMANTIC-IDENTITY-V1"
+  ],
+  "direct_predecessor_transition_profile_authority": "ABSENT",
+  "result": "BLOCKED_UNANCHORED_SEMANTICS",
+  "countermodel": null
+}
