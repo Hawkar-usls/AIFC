@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/historical-replay-environment-audit-v1.schema.json",
+  "title": "AIFC Historical Replay Environment Audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "audit_id",
+    "dependency_lock_path",
+    "expected_git_blob_sha1",
+    "tested_commits",
+    "same_dependency_lock_blob",
+    "historical_interpreter_identity_bound",
+    "historical_platform_identity_bound",
+    "result"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/historical-replay-environment-audit/v1"},
+    "audit_id": {"const": "AIFC-SAL-V1.6-HISTORICAL-REPLAY-ENVIRONMENT-AUDIT"},
+    "dependency_lock_path": {"const": "reference/verifier/requirements.lock.txt"},
+    "expected_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "tested_commits": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+    },
+    "same_dependency_lock_blob": {"type": "boolean"},
+    "historical_interpreter_identity_bound": {"type": "boolean"},
+    "historical_platform_identity_bound": {"type": "boolean"},
+    "result": {"enum": [
+      "CURRENT_CORPUS_DEPENDENCY_LOCK_SAME_GENERAL_ENVIRONMENT_IDENTITY_NOT_ESTABLISHED",
+      "HISTORICAL_EXECUTION_ENVIRONMENT_IDENTITY_ESTABLISHED"
+    ]}
+  },
+  "description": "Separates historical source replay from historical execution-environment identity. The current corpus may share an exact dependency lock while interpreter and platform semantics remain a general frontier."
+}
