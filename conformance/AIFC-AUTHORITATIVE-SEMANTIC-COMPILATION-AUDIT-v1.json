@@ -1,0 +1,20 @@
+{
+  "schema": "AIFC/authoritative-semantic-compilation-audit/v1",
+  "audit_id": "AIFC-SAL-V1.7-AUTHORITATIVE-SEMANTIC-COMPILATION-AUDIT",
+  "entailment_question_id": "994c979c702b81a0940f28b8039ad36cb48060c426f42eb1f333bf1630e473b6",
+  "predecessor_formula_content_hash": "b8d4771e7fc598ef3398b6995323fbd8d0b3b9f8b86b1b8b736d990527a88353",
+  "target_formula_content_hash": "74f0bac1ee3c2229fff6f1b92e1c02fc4a9439c43ab56bc6d199b261c7def047",
+  "semantic_compilation_profile_id": "AIFC-SEMANTIC-COMPILATION-PROFILE-V1",
+  "historical_semantic_anchor_provenance": "PASS_CANDIDATE_PROVENANCE",
+  "normative_semantic_coverage": "PASS_CANDIDATE_EXACT_COVERAGE",
+  "semantic_compilation_profile_content_identity": "PASS",
+  "semantic_compilation_profile_authority": "NOT_ESTABLISHED_SUCCESSOR_CANDIDATE",
+  "semantic_anchor_to_formula_binding": "PASS_DETERMINISTIC_CANDIDATE_DERIVATION",
+  "entailment_question_identity_preserved": "PASS",
+  "caller_supplied_normative_formula_forbidden": "PASS",
+  "solver_execution_gated_by_semantic_closure": "PASS",
+  "solver_invocation_count": 0,
+  "result": "BLOCKED",
+  "blocked_subtype": "BLOCKED_UNAUTHORIZED_INTERPRETATION",
+  "countermodel": null
+}
