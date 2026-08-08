@@ -1,0 +1,69 @@
+name: AIFC SAL v1.14 Completeness Basis Authority Reachability
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  sal-v114-completeness-basis-authority-reachability:
+    runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact tested source commit with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Confirm exact checkout and immutable v1.13 predecessor tree
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          echo "TESTED_SOURCE_COMMIT_SHA = $actual"
+          test "$actual" = "$EXPECTED_SHA"
+          git cat-file -e 880ef146214e85b32f0974d5fee80a61a299e0b9^{commit}
+          test "$(git rev-parse 880ef146214e85b32f0974d5fee80a61a299e0b9^{tree})" = "fb91405c02d9df7747fd95ad2bdef507b6877721"
+          echo "SAL_V114_PREDECESSOR_TREE = PASS"
+
+      - name: Set up exact Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.13
+          check-latest: false
+
+      - name: Install hash-locked verifier runtime
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
+
+      - name: Capture authority-reachability implementation identity
+        shell: bash
+        run: |
+          mkdir -p sal-completeness-basis-authority-reachability-evidence
+          impl=reference/verifier/completeness_basis_authority_reachability_v1.py
+          echo "COMPLETENESS_AUTHORITY_REACHABILITY_IMPLEMENTATION_PATH = $impl" | tee sal-completeness-basis-authority-reachability-evidence/implementation-identity.txt
+          echo "COMPLETENESS_AUTHORITY_REACHABILITY_IMPLEMENTATION_GIT_BLOB_SHA1 = $(git hash-object "$impl")" | tee -a sal-completeness-basis-authority-reachability-evidence/implementation-identity.txt
+          echo "COMPLETENESS_AUTHORITY_REACHABILITY_IMPLEMENTATION_RAW_SHA256 = $(sha256sum "$impl" | awk '{print $1}')" | tee -a sal-completeness-basis-authority-reachability-evidence/implementation-identity.txt
+
+      - name: Run SAL v1.14 adversarial unit module
+        shell: bash
+        run: |
+          python -m unittest discover -s reference/tests -p 'test_sal_completeness_basis_authority_reachability_v114.py' -v 2>&1 | tee sal-completeness-basis-authority-reachability-evidence/sal-v114-unit-tests.txt
+
+      - name: Run attested SAL v1.14 authority reachability checker
+        shell: bash
+        run: |
+          python reference/verifier/sal_completeness_basis_authority_reachability_checker_v114.py | tee sal-completeness-basis-authority-reachability-evidence/sal-completeness-basis-authority-reachability-v114.txt
+          sha256sum sal-completeness-basis-authority-reachability-evidence/sal-completeness-basis-authority-reachability-v114.txt | tee sal-completeness-basis-authority-reachability-evidence/sal-completeness-basis-authority-reachability-v114.sha256
+
+      - name: Upload SAL v1.14 authority reachability evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sal-v114-completeness-basis-authority-reachability-${{ github.run_id }}
+          path: sal-completeness-basis-authority-reachability-evidence/
+          if-no-files-found: error
+          retention-days: 90
