@@ -115,13 +115,14 @@ class SalAuthorityClosureV15Tests(unittest.TestCase):
         self.assertEqual(params, {"token"})
 
     def test_v1_receipt_binding_uses_exact_role_run_id_projection(self):
+        receipt = self.load_json("conformance/AIFC-NORMATIVE-AUTHORITY-RECEIPT-7e58b47-v1.json")
         provenance = self.load_json(v15.PROVENANCE_V2_PATH)
         first = copy.deepcopy(provenance["receipts"][0])
+        mode, receipt_projection = v15._receipt_workflow_projection(receipt)
+        self.assertEqual(mode, "v1")
+        self.assertEqual(receipt_projection, v15._provenance_workflow_projection(first, mode))
         first["workflow_runs"][0]["workflow_name"] = "different live metadata name"
-        # The historical v1 receipt named role/run_id but did not carry workflow_name.
-        # Changing only extra provenance metadata does not disconnect the receipt content;
-        # live workflow identity checks are a separate boundary.
-        v15._verify_receipt_content_binding({"receipts": [first]})
+        self.assertEqual(receipt_projection, v15._provenance_workflow_projection(first, mode))
 
 
 if __name__ == "__main__":
