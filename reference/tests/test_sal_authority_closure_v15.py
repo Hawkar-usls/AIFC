@@ -17,8 +17,28 @@ class SalAuthorityClosureV15Tests(unittest.TestCase):
     def load_json(self, relative_path):
         return json.loads((ROOT / relative_path).read_text(encoding="utf-8"))
 
+    def tree_map(self):
+        return {
+            v15.HISTORICAL_COMMIT: "e3aa8a8cd09f0faa9a6f9e976d0f5cbe8291f2c9",
+            v15.V13_PREDECESSOR_COMMIT: "2e939271d22d0a1906c93bd7e0fced77780aa88c",
+            v15.V14_MAIN_COMMIT: "495188b12f8b8d728732ee44a502b2089203ebb9",
+        }
+
+    def workflow_blob_map(self):
+        provenance = self.load_json(v15.PROVENANCE_V2_PATH)
+        return {
+            (receipt["tested_source_commit"], run["workflow_path"]): run["workflow_git_blob_sha1"]
+            for receipt in provenance["receipts"]
+            for run in receipt["workflow_runs"]
+        }
+
     def test_local_hardening_passes_but_authority_closed_induction_stays_blocked(self):
-        report = v15.verify_authority_closure_local()
+        trees = self.tree_map()
+        workflow_blobs = self.workflow_blob_map()
+        with patch.object(v15, "verify_lineage_activation_local", return_value=None):
+            with patch.object(v15, "git_tree_sha", side_effect=lambda commit: trees[commit]):
+                with patch.object(v15, "git_tree_blob", side_effect=lambda commit, path: workflow_blobs[(commit, path)]):
+                    report = v15.verify_authority_closure_local()
         self.assertTrue(report.provenance_receipt_content_binding)
         self.assertTrue(report.historical_workflow_definition_identity)
         self.assertTrue(report.successor_registry_exact_delta)
@@ -33,22 +53,28 @@ class SalAuthorityClosureV15Tests(unittest.TestCase):
         provenance = self.load_json(v15.PROVENANCE_V2_PATH)
         tampered = copy.deepcopy(provenance)
         tampered["receipts"][1]["workflow_runs"][0]["run_id"] += 1
-        with self.assertRaisesRegex(v15.ScientificAssuranceLineageV15Error, "PROVENANCE_RECEIPT_WORKFLOW_CONTENT_DISCONNECT"):
-            v15._verify_receipt_content_binding(tampered)
+        trees = self.tree_map()
+        with patch.object(v15, "git_tree_sha", side_effect=lambda commit: trees[commit]):
+            with self.assertRaisesRegex(v15.ScientificAssuranceLineageV15Error, "PROVENANCE_RECEIPT_WORKFLOW_CONTENT_DISCONNECT"):
+                v15._verify_receipt_content_binding(tampered)
 
     def test_provenance_receipt_artifact_content_disconnect_is_rejected(self):
         provenance = self.load_json(v15.PROVENANCE_V2_PATH)
         tampered = copy.deepcopy(provenance)
         tampered["receipts"][2]["artifacts"][0]["artifact_id"] += 1
-        with self.assertRaisesRegex(v15.ScientificAssuranceLineageV15Error, "PROVENANCE_RECEIPT_ARTIFACT_CONTENT_DISCONNECT"):
-            v15._verify_receipt_content_binding(tampered)
+        trees = self.tree_map()
+        with patch.object(v15, "git_tree_sha", side_effect=lambda commit: trees[commit]):
+            with self.assertRaisesRegex(v15.ScientificAssuranceLineageV15Error, "PROVENANCE_RECEIPT_ARTIFACT_CONTENT_DISCONNECT"):
+                v15._verify_receipt_content_binding(tampered)
 
     def test_historical_workflow_definition_rebinding_is_rejected(self):
         provenance = self.load_json(v15.PROVENANCE_V2_PATH)
         tampered = copy.deepcopy(provenance)
+        original_blob = provenance["receipts"][0]["workflow_runs"][0]["workflow_git_blob_sha1"]
         tampered["receipts"][0]["workflow_runs"][0]["workflow_git_blob_sha1"] = "0" * 40
-        with self.assertRaisesRegex(v15.ScientificAssuranceLineageV15Error, "HISTORICAL_WORKFLOW_DEFINITION_REBINDING"):
-            v15._verify_workflow_definition_membership(tampered)
+        with patch.object(v15, "git_tree_blob", return_value=original_blob):
+            with self.assertRaisesRegex(v15.ScientificAssuranceLineageV15Error, "HISTORICAL_WORKFLOW_DEFINITION_REBINDING"):
+                v15._verify_workflow_definition_membership(tampered)
 
     def test_successor_registry_extra_record_injection_is_rejected(self):
         v2 = self.load_json(v15.ROOT_V2_PATH)
