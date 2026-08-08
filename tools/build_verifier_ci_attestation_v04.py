@@ -104,6 +104,7 @@ def checker_paths() -> list[Path]:
         ROOT / "tools" / "check_sal_root_closure_v13.py",
         ROOT / "tools" / "check_sal_lineage_activation_v14.py",
         ROOT / "tools" / "check_sal_authority_closure_v15.py",
+        ROOT / "tools" / "check_sal_predecessor_entailment_v16.py",
         ROOT / "tools" / "build_execution_environment_manifest.py",
         ROOT / "tools" / "build_verifier_ci_attestation_v04.py",
         ROOT / "tools" / "verify_verifier_ci_attestation_v04.py",
