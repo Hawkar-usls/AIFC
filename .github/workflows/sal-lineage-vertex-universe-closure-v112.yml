@@ -1,0 +1,61 @@
+name: AIFC SAL v1.12 Lineage Vertex Universe Reference Closure
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  sal-v112-lineage-vertex-universe-reference-closure:
+    runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact tested source commit with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Confirm exact checkout and immutable v1.11u predecessor tree
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          echo "TESTED_SOURCE_COMMIT_SHA = $actual"
+          test "$actual" = "$EXPECTED_SHA"
+          git cat-file -e b71ee1d6606dd41fcf24346e324c56e4407fd537^{commit}
+          test "$(git rev-parse b71ee1d6606dd41fcf24346e324c56e4407fd537^{tree})" = "8a67c43ee6429c48c30e350b0ffd8f802c5c0ab0"
+          echo "SAL_V112_PREDECESSOR_TREE = PASS"
+
+      - name: Set up exact Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.13
+          check-latest: false
+
+      - name: Install hash-locked verifier runtime
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
+
+      - name: Run SAL v1.12 adversarial unit module under full-history checkout
+        shell: bash
+        run: |
+          mkdir -p sal-lineage-vertex-universe-closure-evidence
+          python -m unittest discover -s reference/tests -p 'test_sal_lineage_vertex_universe_closure_v112.py' -v 2>&1 | tee sal-lineage-vertex-universe-closure-evidence/sal-v112-unit-tests.txt
+
+      - name: Run attested SAL v1.12 vertex-universe closure checker
+        shell: bash
+        run: |
+          python reference/verifier/sal_lineage_vertex_universe_closure_checker_v112.py | tee sal-lineage-vertex-universe-closure-evidence/sal-lineage-vertex-universe-closure-v112.txt
+          sha256sum sal-lineage-vertex-universe-closure-evidence/sal-lineage-vertex-universe-closure-v112.txt | tee sal-lineage-vertex-universe-closure-evidence/sal-lineage-vertex-universe-closure-v112.sha256
+
+      - name: Upload SAL v1.12 vertex-universe closure evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sal-v112-lineage-vertex-universe-closure-${{ github.run_id }}
+          path: sal-lineage-vertex-universe-closure-evidence/
+          if-no-files-found: error
+          retention-days: 90
