@@ -1,0 +1,23 @@
+{
+  "schema": "AIFC/bootstrap-authority-base-case-status/v1",
+  "status_id": "AIFC-SAL-BOOTSTRAP-AUTHORITY-BASE-CASE-STATUS-V1",
+  "designation_source_registry_id": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V1",
+  "designation_source_registry_git_blob_sha1": "0aec9d6ad0d54ce10d312d28a8cb0def1729f835",
+  "designated_bootstrap_commit": "908de7afddcf9f72c98c2b3fb696a41be1e438e0",
+  "designated_historical_objects": [
+    {
+      "artifact_id": "AIFC-RELEASE-GATE-v1.0.8-draft",
+      "relative_path": "conformance/AIFC-RELEASE-GATE-v1.0.8-draft.json",
+      "git_blob_sha1": "656bda0bae1d1af515a642f157149450c78d879e"
+    },
+    {
+      "artifact_id": "AIFC-ADMISSION-AUTHORITY-PARTIAL-ORDER-V1",
+      "relative_path": "conformance/AIFC-ADMISSION-AUTHORITY-ORDER-v1.json",
+      "git_blob_sha1": "38eeb695caf781dcdc79115d4903c743db7311f9"
+    }
+  ],
+  "authority_basis_status": "IMPLICIT_NOT_YET_FIRST_CLASS",
+  "retroactive_discovery_of_preexisting_authority": false,
+  "external_bootstrap_ratification_status": "NOT_PERFORMED",
+  "normative_authority_claim": "NOT_ESTABLISHED_BY_THIS_OBJECT"
+}

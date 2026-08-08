@@ -1,0 +1,16 @@
+{
+  "schema": "AIFC/historical-replay-environment-audit/v1",
+  "audit_id": "AIFC-SAL-V1.6-HISTORICAL-REPLAY-ENVIRONMENT-AUDIT",
+  "dependency_lock_path": "reference/verifier/requirements.lock.txt",
+  "expected_git_blob_sha1": "1fb5b20d71b3eac742573fb3b4885537e6c512b7",
+  "tested_commits": [
+    "7e58b47398fe585b24db6304ee6122871095d668",
+    "eeee61c6143cde1bea64c643def6eaec461e7aa2",
+    "56370d60f43feca8b82871d30a0b71acf1409a2f",
+    "5afc09e9a965f8b20d0b07059f1ff753aad920b7"
+  ],
+  "same_dependency_lock_blob": true,
+  "historical_interpreter_identity_bound": false,
+  "historical_platform_identity_bound": false,
+  "result": "CURRENT_CORPUS_DEPENDENCY_LOCK_SAME_GENERAL_ENVIRONMENT_IDENTITY_NOT_ESTABLISHED"
+}

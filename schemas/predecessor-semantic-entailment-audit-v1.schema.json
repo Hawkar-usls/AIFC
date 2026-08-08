@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/predecessor-semantic-entailment-audit-v1.schema.json",
+  "title": "AIFC Predecessor Semantic Entailment Audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "audit_id",
+    "predecessor_registry_id",
+    "predecessor_registry_git_blob_sha1",
+    "predecessor_authority_commit",
+    "authoritative_premise_artifact_ids",
+    "target_profile_id",
+    "target_profile_git_blob_sha1",
+    "entailment_method",
+    "observed_textual_constraints",
+    "required_semantic_anchor_ids",
+    "missing_semantic_anchor_ids",
+    "direct_predecessor_transition_profile_authority",
+    "result",
+    "countermodel"
+  ],
+  "properties": {
+    "schema": {"const": "AIFC/predecessor-semantic-entailment-audit/v1"},
+    "audit_id": {"const": "AIFC-SAL-V1.6-PREDECESSOR-SEMANTIC-ENTAILMENT-AUDIT"},
+    "predecessor_registry_id": {"const": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V2"},
+    "predecessor_registry_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "predecessor_authority_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "authoritative_premise_artifact_ids": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "target_profile_id": {"const": "AIFC-LINEAGE-TRANSITION-PROFILE-V1"},
+    "target_profile_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "entailment_method": {"const": "ANCHOR_GATED_FINITE_PROPOSITIONAL_IMPLICATION_V1"},
+    "observed_textual_constraints": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": [
+        "AUTHORITY_CLOSED_PROOF_REQUIRED_TEXT_PRESENT",
+        "GATE_DEFINITION_HISTORICAL_ANCHOR_REQUIRED_TEXT_PRESENT",
+        "GATE_ATOM_SEMANTIC_IDENTITY_REQUIRED_TEXT_PRESENT",
+        "TRANSITION_THEOREM_SELF_SEMANTICS_FORBIDDEN_TEXT_PRESENT",
+        "DESCENDANT_ROOT_SELF_AUTHENTICATION_FORBIDDEN_TEXT_PRESENT"
+      ]}
+    },
+    "required_semantic_anchor_ids": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "missing_semantic_anchor_ids": {
+      "type": "array", "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "direct_predecessor_transition_profile_authority": {"enum": ["PRESENT", "ABSENT"]},
+    "result": {"enum": ["PROVED", "BLOCKED_UNANCHORED_SEMANTICS", "REFUTED_BY_COUNTERMODEL"]},
+    "countermodel": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": {"type": "boolean"}
+        }
+      ]
+    }
+  },
+  "description": "Three-state audit for whether authoritative predecessor semantics entail a candidate transition profile. Missing authoritative semantic anchors produce BLOCKED, never a false refutation."
+}

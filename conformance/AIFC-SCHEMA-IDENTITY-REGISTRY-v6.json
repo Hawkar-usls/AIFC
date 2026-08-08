@@ -1,0 +1,45 @@
+{
+  "schema": "AIFC/schema-identity-registry/v6",
+  "registry_version": 6,
+  "predecessor_registry_path": "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v5.json",
+  "predecessor_registry_git_blob_sha1": "709331f8b59496aac799142ab2311b3abe6353d8",
+  "source_observed_at_commit": "2b0916cafb3ab5a5b6617e08bbb7af68af86b97d",
+  "records": [
+    {
+      "schema_id": "AIFC/predecessor-semantic-entailment-audit/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/predecessor-semantic-entailment-audit-v1.schema.json",
+      "git_blob_sha1": "c150d2a5f295b26ce63dda79af54e166609176ff",
+      "raw_schema_sha256": "a451240430b42e0facd4656d40f7ecd1271fea2c7cd2e413c1f4e7c7c269d93c",
+      "first_registered_by_registry_version": 6,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/bootstrap-authority-base-case-status/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/bootstrap-authority-base-case-status-v1.schema.json",
+      "git_blob_sha1": "37b0cc64e0ff85f10a6e4d0e04f41ea6abc67d05",
+      "raw_schema_sha256": "0aeafe31e0f0c3d35bcf1d70344da19ad8224f476c2e4062d6355f09bf7f8425",
+      "first_registered_by_registry_version": 6,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/historical-replay-environment-audit/v1",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/historical-replay-environment-audit-v1.schema.json",
+      "git_blob_sha1": "ae8f5a360a6096edef7ac7e9413d7bc4307ec98e",
+      "raw_schema_sha256": "75fee307ec0292a125cc9c3bb2b7e646e7cc77d2ad5fd4a3746d62de9dacf59c",
+      "first_registered_by_registry_version": 6,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    },
+    {
+      "schema_id": "AIFC/schema-identity-registry/v6",
+      "dialect": "https://json-schema.org/draft/2020-12/schema",
+      "source_path": "schemas/schema-identity-registry-v6.schema.json",
+      "git_blob_sha1": "1bf65dfa05e778eef9f0b8d203f8fe195d0522e9",
+      "raw_schema_sha256": "bbaa1cb4bc3f60ef4712513f04e075d8a2af173833180852a930df4b1d1a8e01",
+      "first_registered_by_registry_version": 6,
+      "status": "REGISTERED_IMMUTABLE_SUCCESSOR_CANDIDATE"
+    }
+  ]
+}
