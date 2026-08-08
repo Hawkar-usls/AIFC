@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Hawkar-usls/AIFC/schemas/authority-closure-obstruction-v1.schema.json",
+  "title": "AIFC Authority Closure Obstruction v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "obstruction_id", "predecessor_registry_id", "predecessor_registry_path", "predecessor_registry_git_blob_sha1", "predecessor_authority_commit", "required_transition_profile_id", "required_transition_profile_schema", "observed_authoritative_profile_records", "successor_candidate_profile_path", "successor_candidate_profile_git_blob_sha1", "result", "authority_closed_finite_induction"],
+  "properties": {
+    "schema": {"const": "AIFC/authority-closure-obstruction/v1"},
+    "obstruction_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "predecessor_registry_id": {"const": "AIFC-NORMATIVE-ASSURANCE-ROOTS-V2"},
+    "predecessor_registry_path": {"const": "conformance/AIFC-NORMATIVE-ASSURANCE-ROOTS-v2.json"},
+    "predecessor_registry_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "predecessor_authority_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "required_transition_profile_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "required_transition_profile_schema": {"const": "AIFC/lineage-transition-profile/v1"},
+    "observed_authoritative_profile_records": {"const": 0},
+    "successor_candidate_profile_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "successor_candidate_profile_git_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "result": {"const": "BLOCKED_NO_PREDECESSOR_TRANSITION_PROFILE_AUTHORITY"},
+    "authority_closed_finite_induction": {"const": false}
+  },
+  "description": "Machine-readable negative result proving that successor-created transition semantics cannot close their own authority lineage when no authoritative predecessor transition profile exists."
+}
