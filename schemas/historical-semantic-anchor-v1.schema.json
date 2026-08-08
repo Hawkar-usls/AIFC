@@ -24,7 +24,7 @@
         }
       }
     },
-    "interpretation_origin": {"const":"LATER_FORMALIZATION_OF_HISTORICAL_NORMATIVE_TEXT"},
+    "interpretation_origin": {"enum":["LATER_FORMALIZATION_OF_HISTORICAL_NORMATIVE_TEXT","DIRECT_MACHINE_PROFILE_FIELD_BINDING"]},
     "interpretation_status": {"enum":["INTERPRETATION_CANDIDATE","AUTHORITY_RATIFIED_INTERPRETATION","REJECTED_INTERPRETATION"]},
     "retroactive_discovery_of_preexisting_executable_semantics": {"const":false},
     "authority_lineage_status": {"enum":["NOT_ESTABLISHED_SUCCESSOR_CANDIDATE","AUTHORITY_LINEAGE_ESTABLISHED"]}
