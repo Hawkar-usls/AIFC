@@ -17,19 +17,19 @@ REGISTRY_PATH = "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v18.json"
 PREDECESSOR_REGISTRY_PATH = "conformance/AIFC-SCHEMA-IDENTITY-REGISTRY-v17.json"
 PREDECESSOR_REGISTRY_BLOB = "ceade8f9e2e1ec1295f3e4b21d36ba1df7ba65ed"
 AUDIT_PATH = "conformance/AIFC-BOOTSTRAP-NON-SELF-RATIFICATION-AUDIT-v1.json"
-AUDIT_HASH = "2bd56882984dbb9475eb281d4a3595e31e9e302f0361943456d91e877c40c6aa"
+AUDIT_HASH = "991f234732540aa0e21f11c2e64fe8ca1864ba4be52c5a2c81781ea0257cd5fc"
 BINDING_PATH = "conformance/AIFC-BOOTSTRAP-NON-SELF-RATIFICATION-IMPLEMENTATION-BINDING-v1.json"
 BINDING_ID = "AIFC-SAL-V1.16-BOOTSTRAP-NON-SELF-RATIFICATION-IMPLEMENTATION-BINDING-V1"
-BINDING_HASH = "e615ad0fcce02ff7a7cef43e9ef4c17908682109db6c9c5685888260a72fd830"
+BINDING_HASH = "bff319c06c246b5d685f09297f520418783e7ac1d96b1342ac4f2efe5fe985f9"
 BINDING_DOMAIN = "AIFC:BOOTSTRAP-NON-SELF-RATIFICATION-IMPLEMENTATION-BINDING:v1"
 IMPLEMENTATION_PATH = "reference/verifier/bootstrap_non_self_ratification_boundary_v1.py"
-IMPLEMENTATION_BLOB = "870dc67fb3ef4d68d349e32221f1ceae8de81257"
-IMPLEMENTATION_RAW = "d6641923e4ec85f0db4c969dd0304cc7c4ce69c259d92e6a6439981068490f86"
+IMPLEMENTATION_BLOB = "9d4aeca0e68cdf7c48a446d51ec5a49253bde4c7"
+IMPLEMENTATION_RAW = "2b4d91863f25677ab2b312228e380386b2ebaafba79f72281ae9b9c65ed5dac9"
 
 SCHEMAS = (
-    ("AIFC/bootstrap-non-self-ratification-profile/v1", "schemas/bootstrap-non-self-ratification-profile-v1.schema.json", "c3f7cb2d09e88c7f0a1584fab4b28fad1551ffea", "b8d3379585b5a5aaffede1ae0e6e967870b6d253e735dc389a70f53c631fbb6e"),
-    ("AIFC/bootstrap-non-self-ratification-audit/v1", "schemas/bootstrap-non-self-ratification-audit-v1.schema.json", "d5ebdf467475fc8e38010b7dcf65178ea025e717", "1cd0c71714621f116d729d9b1358c11529724846c30de3ccab47380f8fd45912"),
-    ("AIFC/bootstrap-non-self-ratification-implementation-binding/v1", "schemas/bootstrap-non-self-ratification-implementation-binding-v1.schema.json", "a66c21e7257bdb88e52311938f8a2e2cb4b19457", "d9e1e8bf920c41ffa37d356b7e665da46e750bd26c6516b35ab5a2114afb33ed"),
+    ("AIFC/bootstrap-non-self-ratification-profile/v1", "schemas/bootstrap-non-self-ratification-profile-v1.schema.json", "f63c51b5d7615a361a3f6da485b601255ebdf584", "ce6a251fc8ad0dd9c5096c20cc90801eb3355e71eddb535cb291abe53901311a"),
+    ("AIFC/bootstrap-non-self-ratification-audit/v1", "schemas/bootstrap-non-self-ratification-audit-v1.schema.json", "87a304ba3369d0a9e23b4e9e1b7b8e89bc021376", "7142a50d69b0a6e719b68d6a0444805288682911175ee747d9214e06f0254047"),
+    ("AIFC/bootstrap-non-self-ratification-implementation-binding/v1", "schemas/bootstrap-non-self-ratification-implementation-binding-v1.schema.json", "10d5393ee653dd427cd3a0efe834dec98f80048a", "0dedef5e1d83a5cf266cfbf643f46f7c54986794e06daab2bdf4684f1b88a8d0"),
     ("AIFC/schema-identity-registry/v18", "schemas/schema-identity-registry-v18.schema.json", "a3a41257238b3ce6d2bedebd1451ba4084d6ec11", "172fa1857a605abb44273a6eb064dae3be03b7efef788ea5ba7f8841fc4fb9cc"),
 )
 
