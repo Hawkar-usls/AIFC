@@ -11,5 +11,6 @@
   "compiler_git_blob_sha1": "b0aa58f1d82f736ee271f4969de4830a523d46ff",
   "compiler_raw_sha256": "a91e5c11e64bce61b8f2bf7b37db3bbde50d10a24d3d326175dfadfa3780f35d",
   "compiler_authority_status": "SUCCESSOR_CREATED_COMPILER_IDENTITY_ONLY",
-  "profile_authority_status": "SUCCESSOR_CANDIDATE_REQUIRES_PREDECESSOR_AUTHORITY"
+  "profile_authority_status": "SUCCESSOR_CANDIDATE_REQUIRES_PREDECESSOR_AUTHORITY",
+  "profile_content_hash": "5fc4db7bb813a3549246d3b4a3491c314283e3df94cba27b0a63fc7e9ebfa70f"
 }
