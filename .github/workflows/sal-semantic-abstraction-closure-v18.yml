@@ -1,0 +1,59 @@
+name: AIFC SAL v1.8 Semantic Abstraction Closure
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  sal-v18-semantic-abstraction-closure:
+    runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact tested source commit with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Confirm exact checkout and inherited v1.7 semantic sources
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          echo "TESTED_SOURCE_COMMIT_SHA = $actual"
+          test "$actual" = "$EXPECTED_SHA"
+          git cat-file -e 847529fa3c3cbf0a710b2726543634479fef266f^{commit}
+          git cat-file -e 7e58b47398fe585b24db6304ee6122871095d668^{commit}
+          git cat-file -e 5afc09e9a965f8b20d0b07059f1ff753aad920b7^{commit}
+          test "$(git ls-tree 7e58b47398fe585b24db6304ee6122871095d668 -- conformance/AIFC-RELEASE-GATE-v1.0.9-draft.json | awk '{print $3}')" = "e46cfee9963e61a22bc25e4e68ac5f11781e8d47"
+          test "$(git ls-tree 5afc09e9a965f8b20d0b07059f1ff753aad920b7 -- conformance/AIFC-LINEAGE-TRANSITION-PROFILE-v1.json | awk '{print $3}')" = "f096dbbb6d6382f58b3f2bbd3b7ad170b46d5e1b"
+          echo "SAL_V18_HISTORICAL_SEMANTIC_SOURCES_AVAILABLE = PASS"
+
+      - name: Set up exact Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.13
+          check-latest: false
+
+      - name: Install hash-locked verifier runtime
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
+
+      - name: Run attested SAL v1.8 semantic abstraction closure checker
+        shell: bash
+        run: |
+          mkdir -p sal-semantic-abstraction-closure-evidence
+          python reference/verifier/sal_semantic_abstraction_closure_checker_v18.py | tee sal-semantic-abstraction-closure-evidence/sal-semantic-abstraction-closure-v18.txt
+          sha256sum sal-semantic-abstraction-closure-evidence/sal-semantic-abstraction-closure-v18.txt | tee sal-semantic-abstraction-closure-evidence/sal-semantic-abstraction-closure-v18.sha256
+
+      - name: Upload SAL v1.8 semantic abstraction closure evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sal-v18-semantic-abstraction-closure-${{ github.run_id }}
+          path: sal-semantic-abstraction-closure-evidence/
+          if-no-files-found: error
+          retention-days: 90
