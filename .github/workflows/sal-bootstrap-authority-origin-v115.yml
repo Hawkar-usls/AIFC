@@ -1,0 +1,69 @@
+name: AIFC SAL v1.15 Bootstrap Authority Origin Boundary
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  sal-v115-bootstrap-authority-origin-boundary:
+    runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact tested source commit with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Confirm exact checkout and immutable v1.14 predecessor tree
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          echo "TESTED_SOURCE_COMMIT_SHA = $actual"
+          test "$actual" = "$EXPECTED_SHA"
+          git cat-file -e 903631143bc9b9374973f352e23d8ce92c807707^{commit}
+          test "$(git rev-parse 903631143bc9b9374973f352e23d8ce92c807707^{tree})" = "824c5b71f11c83faec09e33bffeab08fd965836d"
+          echo "SAL_V115_PREDECESSOR_TREE = PASS"
+
+      - name: Set up exact Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.13
+          check-latest: false
+
+      - name: Install hash-locked verifier runtime
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
+
+      - name: Capture bootstrap-origin implementation identity
+        shell: bash
+        run: |
+          mkdir -p sal-bootstrap-authority-origin-evidence
+          impl=reference/verifier/bootstrap_authority_origin_boundary_v1.py
+          echo "BOOTSTRAP_AUTHORITY_ORIGIN_IMPLEMENTATION_PATH = $impl" | tee sal-bootstrap-authority-origin-evidence/implementation-identity.txt
+          echo "BOOTSTRAP_AUTHORITY_ORIGIN_IMPLEMENTATION_GIT_BLOB_SHA1 = $(git hash-object "$impl")" | tee -a sal-bootstrap-authority-origin-evidence/implementation-identity.txt
+          echo "BOOTSTRAP_AUTHORITY_ORIGIN_IMPLEMENTATION_RAW_SHA256 = $(sha256sum "$impl" | awk '{print $1}')" | tee -a sal-bootstrap-authority-origin-evidence/implementation-identity.txt
+
+      - name: Run SAL v1.15 adversarial unit module
+        shell: bash
+        run: |
+          python -m unittest discover -s reference/tests -p 'test_sal_bootstrap_authority_origin_v115.py' -v 2>&1 | tee sal-bootstrap-authority-origin-evidence/sal-v115-unit-tests.txt
+
+      - name: Run attested SAL v1.15 bootstrap authority origin checker
+        shell: bash
+        run: |
+          python reference/verifier/sal_bootstrap_authority_origin_checker_v115.py | tee sal-bootstrap-authority-origin-evidence/sal-bootstrap-authority-origin-v115.txt
+          sha256sum sal-bootstrap-authority-origin-evidence/sal-bootstrap-authority-origin-v115.txt | tee sal-bootstrap-authority-origin-evidence/sal-bootstrap-authority-origin-v115.sha256
+
+      - name: Upload SAL v1.15 bootstrap authority origin evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sal-v115-bootstrap-authority-origin-${{ github.run_id }}
+          path: sal-bootstrap-authority-origin-evidence/
+          if-no-files-found: error
+          retention-days: 90
