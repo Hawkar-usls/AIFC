@@ -4,7 +4,7 @@
   "title": "AIFC Historical Semantic Anchor v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema","anchor_id","source_artifact_id","source_commit_sha","source_path","source_git_blob_sha1","source_raw_sha256","semantic_loci","interpretation_origin","interpretation_status","retroactive_discovery_of_preexisting_executable_semantics","authority_lineage_status"],
+  "required": ["schema","anchor_id","source_artifact_id","source_commit_sha","source_path","source_git_blob_sha1","semantic_loci","interpretation_origin","interpretation_status","retroactive_discovery_of_preexisting_executable_semantics","authority_lineage_status"],
   "properties": {
     "schema": {"const": "AIFC/historical-semantic-anchor/v1"},
     "anchor_id": {"type":"string","minLength":1},
@@ -12,7 +12,6 @@
     "source_commit_sha": {"type":"string","pattern":"^[0-9a-f]{40}$"},
     "source_path": {"type":"string","minLength":1},
     "source_git_blob_sha1": {"type":"string","pattern":"^[0-9a-f]{40}$"},
-    "source_raw_sha256": {"type":"string","pattern":"^[0-9a-f]{64}$"},
     "semantic_loci": {
       "type":"array","minItems":1,"uniqueItems":true,
       "items": {
