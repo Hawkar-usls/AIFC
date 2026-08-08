@@ -1,0 +1,86 @@
+name: Validate AIFC internal terminal handoff v1
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  internal-terminal-handoff:
+    runs-on: ubuntu-24.04
+    env:
+      EXPECTED_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_PREDECESSOR_MAIN: b8a1f3acf9d8444affccdb6b0b754f19e6a08949
+      EXPECTED_PREDECESSOR_TREE: 9534c147ba29cc53f7f321b4101907a04818c3bc
+    steps:
+      - name: Checkout exact PR head with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Confirm exact head and predecessor identity
+        shell: bash
+        run: |
+          actual="$(git rev-parse HEAD)"
+          echo "TESTED_SOURCE_COMMIT_SHA = $actual"
+          test "$actual" = "$EXPECTED_PR_HEAD_SHA"
+          git cat-file -e "$EXPECTED_PREDECESSOR_MAIN^{commit}"
+          test "$(git rev-parse "$EXPECTED_PREDECESSOR_MAIN^{tree}")" = "$EXPECTED_PREDECESSOR_TREE"
+          echo "INTERNAL_TERMINAL_PREDECESSOR_BINDING = PASS"
+
+      - name: Set up exact Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.13
+          check-latest: false
+
+      - name: Run dedicated handoff tests
+        shell: bash
+        run: |
+          python -m unittest discover -s reference/tests -p 'test_aifc_internal_terminal_handoff_v1.py' -v
+
+      - name: Replay non-authoritative terminal handoff verifier
+        shell: bash
+        run: |
+          mkdir -p aifc-internal-terminal-handoff-evidence
+          python reference/verifier/aifc_internal_terminal_handoff_v1.py \
+            | tee aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'AIFC_INTERNAL_TERMINAL_HANDOFF_V1 = PASS' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'AIFC_V1_FROZEN = FALSE' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'IMPLEMENTATION_B = NOT_ESTABLISHED' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'EXTERNAL_PUBLIC_RANDOMNESS_BENCH = NOT_ESTABLISHED' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'BOOTSTRAP_AUTHORITY_LEGITIMACY = NOT_ESTABLISHED' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'GLOBAL_NOVELTY = NOT_ESTABLISHED' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          grep -Fx 'PHYSICAL_RETROCAUSALITY = NOT_OBSERVED' \
+            aifc-internal-terminal-handoff-evidence/handoff-result.txt
+          sha256sum aifc-internal-terminal-handoff-evidence/handoff-result.txt \
+            | tee aifc-internal-terminal-handoff-evidence/handoff-result.sha256
+
+      - name: Capture exact source identities
+        shell: bash
+        run: |
+          {
+            echo "TESTED_SOURCE_COMMIT_SHA = $(git rev-parse HEAD)"
+            echo "TESTED_TREE_SHA = $(git rev-parse HEAD^{tree})"
+            echo "V116_AUDIT_GIT_BLOB_SHA1 = $(git hash-object conformance/AIFC-BOOTSTRAP-NON-SELF-RATIFICATION-AUDIT-v1.json)"
+            echo "RELEASE_GATE_GIT_BLOB_SHA1 = $(git hash-object conformance/AIFC-RELEASE-GATE-v1.json)"
+            echo "HANDOFF_VERIFIER_GIT_BLOB_SHA1 = $(git hash-object reference/verifier/aifc_internal_terminal_handoff_v1.py)"
+            echo "HANDOFF_TEST_GIT_BLOB_SHA1 = $(git hash-object reference/tests/test_aifc_internal_terminal_handoff_v1.py)"
+          } | tee aifc-internal-terminal-handoff-evidence/source-identities.txt
+
+      - name: Upload terminal handoff evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: aifc-internal-terminal-handoff-${{ github.run_id }}
+          path: aifc-internal-terminal-handoff-evidence/
+          if-no-files-found: error
+          retention-days: 90
