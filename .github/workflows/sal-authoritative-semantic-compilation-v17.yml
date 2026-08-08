@@ -42,11 +42,11 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
 
-      - name: Run SAL v1.7 authoritative semantic compilation audit
+      - name: Run attested SAL v1.7 authoritative semantic compilation checker
         shell: bash
         run: |
           mkdir -p sal-authoritative-semantic-compilation-evidence
-          python tools/check_sal_authoritative_semantic_compilation_v17.py | tee sal-authoritative-semantic-compilation-evidence/sal-authoritative-semantic-compilation-v17.txt
+          python reference/verifier/sal_authoritative_semantic_compilation_checker_v17.py | tee sal-authoritative-semantic-compilation-evidence/sal-authoritative-semantic-compilation-v17.txt
           sha256sum sal-authoritative-semantic-compilation-evidence/sal-authoritative-semantic-compilation-v17.txt | tee sal-authoritative-semantic-compilation-evidence/sal-authoritative-semantic-compilation-v17.sha256
 
       - name: Upload SAL v1.7 authoritative semantic compilation evidence
