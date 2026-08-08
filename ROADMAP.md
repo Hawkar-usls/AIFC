@@ -2,6 +2,22 @@
 
 AIFC is being developed as an independently reproducible scientific protocol, not as a claim that an anomalous physical effect has already been observed.
 
+## Current internal terminal handoff
+
+The scientific-assurance lineage has reached an explicit internal boundary on exact post-merge verified SAL v1.16 main `b8a1f3acf9d8444affccdb6b0b754f19e6a08949` (tree `9534c147ba29cc53f7f321b4101907a04818c3bc`). In the declared root-relative descendant-closure model, SAL v1.16 establishes that the internal authority closure cannot independently ratify the bootstrap root from which its own normative jurisdiction descends.
+
+```text
+AIFC_INTERNAL_ASSURANCE_LINEAGE_TERMINAL = ESTABLISHED_IN_CURRENT_TESTED_SCOPE
+CURRENT_INTERNAL_VERIFICATION_PATH_TO_BOOTSTRAP_LEGITIMACY = ABSENT
+BOOTSTRAP_AUTHORITY_LEGITIMACY = NOT_ESTABLISHED
+EXTERNAL_BOOTSTRAP_RATIFICATION = NOT_PERFORMED
+AIFC_V1_FROZEN = FALSE
+AIFC_ARTICLE_PUBLICATION_READINESS = READY_WITH_EXPLICIT_DRAFT_AND_CLAIM_CEILING
+NEXT_PHASE = PUBLIC_COMMUNICATION_AND_EXTERNAL_FALSIFICATION
+```
+
+This terminal handoff does **not** complete the v1.0 release gate. The remaining blockers include genuinely external or cross-implementation evidence and must not be manufactured by another internally self-authorized successor layer. See `docs/PUBLICATION_READY_STATUS.md`.
+
 ## Phase 0 — Provenance foundation
 
 **Status: COMPLETE**
