@@ -40,10 +40,15 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r reference/verifier/requirements.lock.txt
 
-      - name: Run attested SAL v1.12 vertex-universe closure checker
+      - name: Run SAL v1.12 adversarial unit module under full-history checkout
         shell: bash
         run: |
           mkdir -p sal-lineage-vertex-universe-closure-evidence
+          python -m unittest discover -s reference/tests -p 'test_sal_lineage_vertex_universe_closure_v112.py' -v 2>&1 | tee sal-lineage-vertex-universe-closure-evidence/sal-v112-unit-tests.txt
+
+      - name: Run attested SAL v1.12 vertex-universe closure checker
+        shell: bash
+        run: |
           python reference/verifier/sal_lineage_vertex_universe_closure_checker_v112.py | tee sal-lineage-vertex-universe-closure-evidence/sal-lineage-vertex-universe-closure-v112.txt
           sha256sum sal-lineage-vertex-universe-closure-evidence/sal-lineage-vertex-universe-closure-v112.txt | tee sal-lineage-vertex-universe-closure-evidence/sal-lineage-vertex-universe-closure-v112.sha256
 

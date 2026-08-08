@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -14,9 +15,48 @@ import lineage_vertex_reference_closure_v1 as closure
 import scientific_assurance_lineage_v111h as v111h
 import scientific_assurance_lineage_v112 as sal
 
+
+def _materialize_bound_predecessor_for_test_harness() -> None:
+    """Make the exact bound predecessor available in shallow CI clones.
+
+    Production verification never performs this fetch. The dedicated v1.12
+    workflow already uses full history. This helper only repairs test-fixture
+    availability in inherited workflows that intentionally checkout depth=1.
+    The fetched object is accepted only if the exact commit and exact tree
+    identities match the v1.12 constants.
+    """
+    probe = subprocess.run(
+        ["git", "cat-file", "-e", f"{sal.SOURCE_MAIN_COMMIT}^{{commit}}"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if probe.returncode != 0:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-tags",
+                "--depth=1",
+                "origin",
+                sal.SOURCE_MAIN_COMMIT,
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+    actual = subprocess.check_output(
+        ["git", "rev-parse", f"{sal.SOURCE_MAIN_COMMIT}^{{tree}}"],
+        text=True,
+    ).strip()
+    if actual != sal.SOURCE_TREE_SHA:
+        raise RuntimeError("V112_TEST_HARNESS_PREDECESSOR_TREE_REBINDING")
+
+
 class TestSALLineageVertexUniverseClosureV112(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        _materialize_bound_predecessor_for_test_harness()
         cls.profile = json.loads((ROOT / sal.PROFILE_PATH).read_text(encoding="utf-8"))
         cls.binding = v111h._load(v111h.BINDING_PATH)
         cls.index = closure.build_repository_object_index(
@@ -203,6 +243,14 @@ class TestSALLineageVertexUniverseClosureV112(unittest.TestCase):
         self.assertEqual(
             rules[0]["classification"], "REQUIRED_INTERNAL_OBJECT_REFERENCE"
         )
+
+    def test_test_harness_materialization_is_exact_tree_bound(self):
+        actual = subprocess.check_output(
+            ["git", "rev-parse", f"{sal.SOURCE_MAIN_COMMIT}^{{tree}}"],
+            text=True,
+        ).strip()
+        self.assertEqual(actual, sal.SOURCE_TREE_SHA)
+
 
 if __name__ == "__main__":
     unittest.main()
