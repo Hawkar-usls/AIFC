@@ -1,0 +1,43 @@
+{
+  "schema": "janus.nexus.reciprocal_source_edge.v1",
+  "link_id": "AIFC_WITNESS_DEMIHEAD_NEXUS_V2_3_RECIPROCAL_EDGE",
+  "status": "PROPOSED_RECIPROCAL_SOURCE_MARKER",
+  "repository": "Hawkar-usls/AIFC",
+  "source_head": "AIFC_WITNESS",
+  "source_role": "INDEPENDENT_WITNESS_AND_EVIDENCE_PROTOCOL",
+  "source_baseline_sha": "221a523a1befd1423a8fd3165018336f7853b577",
+  "demihead": {
+    "repository": "Hawkar-usls/Demi_Head",
+    "contract_id": "NEXUS_V2_3_AIFC_WITNESS_EVIDENCE_FROZEN_CONTRACT",
+    "contract_path": "contracts/NEXUS_V2_3_AIFC_WITNESS_EVIDENCE_FROZEN_CONTRACT.json",
+    "contract_blob_sha": "97c7dde08f036f002228dedc2289d0fa69c28f5b",
+    "target_head": "FUNDAMENTUM"
+  },
+  "edge": {
+    "payload": "EVIDENCE_CANDIDATE",
+    "route": ["AIFC_WITNESS", "FUNDAMENTUM", "EVIDENCE_CANDIDATE"],
+    "direction": "SOURCE_TO_DEMIHEAD",
+    "live_cross_repository_transport": false,
+    "route_receipt_is_fundamentum_verdict": false
+  },
+  "reciprocity_checks": {
+    "demihead_contract_must_name_this_repository": true,
+    "demihead_contract_source_sha_must_equal_source_baseline_sha": true,
+    "demihead_contract_route_must_equal_edge_route": true,
+    "evidence_grade_or_protocol_drift_requires_revalidation": true,
+    "promotion_must_not_rewrite_source_baseline_history": true
+  },
+  "authority_boundary": {
+    "evidence_candidate_is_evidence_admission": false,
+    "evidence_grade_is_world_truth": false,
+    "source_mutation_allowed": false,
+    "external_effect_authority": false,
+    "authority_delta": 0,
+    "mass_effect_budget_delta": 0,
+    "write_back_default": "DENY"
+  },
+  "topology_health": {
+    "validator": "Hawkar-usls/Demi_Head:tools/janus_demihead_topology_health.py",
+    "central_ci_receipt_required": true
+  }
+}
