@@ -1,10 +1,10 @@
 {
-  "acknowledged_at": "2026-10-22T15:41:20.207803Z",
-  "batch_id": "077505c79ead108e69d2",
-  "last_sequence": 38,
+  "acknowledged_at": "2026-10-22T19:33:22.984486Z",
+  "batch_id": "0495164689c8694394e7",
+  "last_sequence": 39,
   "schema": "janus.beetle.inbox_ack.v1",
   "scientific_authority_delta": 0,
-  "sha256": "c5cbc60b129e5c70809ae6b3cd70db4c9ca5306ae6ac9bccafc0554133bb16e9",
+  "sha256": "0a982c5119d5f82451143a4a1472bed633d59915d796ea0ae99833e738056216",
   "status": "INBOX_DURABLE_UNVERIFIED__NOT_RUNTIME_CONSUMPTION",
   "target_repository": "Hawkar-usls/AIFC"
 }
