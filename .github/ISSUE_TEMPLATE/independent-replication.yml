@@ -1,0 +1,82 @@
+name: "Independent replication or counterexample"
+description: "Report an independently reproduced AIFC result, null result, soundness defect, or counterexample."
+title: "[AIFC replication] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template helps independent contributors provide reproducible evidence.
+        Read the [replication guide](https://github.com/Hawkar-usls/AIFC/blob/main/docs/REPLICATION_GUIDE.md) and [contribution policy](https://github.com/Hawkar-usls/AIFC/blob/main/CONTRIBUTING.md).
+        Do not paste secrets, private witness keys, identifiable personal data, or information enabling an active evidence-forgery exploit; follow SECURITY.md for sensitive reports.
+        AIFC does not claim a physical retrocausal effect. Negative results and corrections are welcome.
+  - type: dropdown
+    id: report_type
+    attributes:
+      label: "Report type"
+      options:
+        - "Independent implementation / reproduction"
+        - "Negative or null result"
+        - "Counterexample or specification defect"
+        - "Verifier robustness / fail-closed test"
+        - "Entropy, causal-isolation, or statistical challenge"
+        - "Public-beacon integration"
+    validations:
+      required: true
+  - type: input
+    id: source_commit
+    attributes:
+      label: "Exact source revision"
+      description: "AIFC commit SHA or release, if applicable."
+      placeholder: "40-character commit SHA or exact release tag"
+    validations:
+      required: true
+  - type: textarea
+    id: independent_components
+    attributes:
+      label: "Independent components and environment"
+      description: "Identify what was implemented independently, language, OS, dependencies, and any shared code or infrastructure."
+      placeholder: "Implementation, runtime versions, independent witness domains, and reused code"
+    validations:
+      required: true
+  - type: textarea
+    id: minimum_reproducer
+    attributes:
+      label: "Minimal reproduction"
+      description: "Provide safe public steps, test-vector paths, and public links. Do not post credentials or unreleased secrets."
+      placeholder: "1. Pin commit ...\n2. Run ...\n3. Compare ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected_observed
+    attributes:
+      label: "Expected versus observed"
+      description: "Include failures, null trials and rejected inputs. Do not suppress inconvenient results."
+      placeholder: "Expected gate/grade: ...\nObserved gate/grade: ...\nNumber of attempts: ..."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence_artifacts
+    attributes:
+      label: "Evidence, hashes and provenance"
+      description: "Public hashes, source records, immutable logs and reproducible evidence links; state explicitly what is missing."
+      placeholder: "Source SHA256: ...\nTranscript: ...\nMissing evidence: ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: scientific_scope
+    attributes:
+      label: "Claim / evidence scope"
+      options:
+        - "Engineering reproducibility only"
+        - "Mathematical or specification criticism"
+        - "External measured-data validation"
+        - "Unresolved / evidence insufficient"
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: "Public reporting boundary"
+      options:
+        - label: "I have excluded credentials, private keys, and sensitive unpublished exploit steps; I will use the security policy for sensitive evidence."
+          required: true
