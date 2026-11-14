@@ -91,3 +91,9 @@ Avoid:
 Disagreement with AIFC's premise or usefulness is welcome when technically argued.
 
 The protocol should survive criticism, not avoid it.
+
+## Independent replication intake
+
+Independent researchers can open a structured [replication or counterexample report](https://github.com/Hawkar-usls/AIFC/issues/new?template=independent-replication.yml). The report form asks for a pinned revision, environment, minimal safe reproducer, expected versus observed outputs, and provenance. Null results are as valuable as positive results; no result is promoted to scientific proof by filing a report.
+
+For substantive fixes, attach a narrow pull request to the report and identify real collaborators and their exact contributions in the PR. Do not add attribution or GitHub coauthor trailers for people who did not actually contribute. Read [SECURITY.md](SECURITY.md) before disclosing any exploitable evidence-integrity flaw.
